@@ -26,6 +26,12 @@ header .wrap{display:flex;align-items:center;gap:10px}
 .dot{position:absolute;top:-3px;right:-3px;background:var(--r);color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 3px}
 .inst{background:var(--y);color:var(--ink);font-size:14px;font-weight:600;padding:8px 12px;display:flex;align-items:center;gap:10px}.inst span{flex:1}.inst #instBtn{background:var(--ink);color:#fff;padding:6px 14px;border-radius:8px}
 .demo{background:#fff7ed;color:#9a3412;font-size:12.5px;padding:7px 12px;text-align:center}
+.mz{display:flex;align-items:center;gap:10px;margin-top:10px}
+.mz svg{width:74px;height:74px;flex:none;overflow:visible;touch-action:pan-y}
+.bub{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px 12px;font-size:14px;font-weight:600;line-height:1.35;flex:1;box-shadow:0 2px 8px #0000000d;transition:transform .25s}
+.bub:before{content:"";position:absolute;left:-7px;top:50%;margin-top:-6px;border:6px solid transparent;border-right-color:#fff;border-left:0}
+.bub.pop{transform:scale(1.04)}
+.lid{transform-box:fill-box;transform-origin:50% 0}
 .shut{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 .sc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px}
 .sc small{color:var(--mute);font-size:11.5px;display:block}
@@ -118,6 +124,32 @@ window.AUTOPOOL_CONFIG = {
 <div class="demo" id="demoBar" style="display:none">Demo mode: rides are saved on this device only. Add Firebase (see SETUP.md) to go live.</div>
 
 <main class="wrap">
+  <div class="mz">
+    <svg id="mascot" viewBox="0 0 100 100" role="img" aria-label="Chhotu, the AutoPool auto-rickshaw">
+      <ellipse cx="50" cy="95" rx="30" ry="3.5" fill="#00000022"/>
+      <g id="mHead">
+        <circle cx="26" cy="86" r="8" fill="#111827"/><circle cx="26" cy="86" r="3" fill="#9ca3af"/>
+        <circle cx="74" cy="86" r="8" fill="#111827"/><circle cx="74" cy="86" r="3" fill="#9ca3af"/>
+        <rect x="14" y="38" width="72" height="46" rx="12" fill="#facc15"/>
+        <rect x="9" y="12" width="82" height="28" rx="14" fill="#16a34a"/>
+        <rect x="9" y="33" width="82" height="7" rx="3" fill="#15803d"/>
+        <rect x="40" y="78" width="20" height="6" rx="2" fill="#fff" stroke="#111827" stroke-width="1"/>
+        <g id="mFace">
+          <rect x="21" y="42" width="58" height="32" rx="9" fill="#fffbeb" stroke="#111827" stroke-width="1.5"/>
+          <ellipse cx="38" cy="56" rx="8" ry="9" fill="#fff" stroke="#111827" stroke-width="1.5"/>
+          <ellipse cx="62" cy="56" rx="8" ry="9" fill="#fff" stroke="#111827" stroke-width="1.5"/>
+          <g class="pupil"><circle cx="38" cy="57" r="4.2" fill="#111827"/><circle cx="39.6" cy="55.3" r="1.3" fill="#fff"/></g>
+          <g class="pupil"><circle cx="62" cy="57" r="4.2" fill="#111827"/><circle cx="63.6" cy="55.3" r="1.3" fill="#fff"/></g>
+          <ellipse class="lid" cx="38" cy="56" rx="8.8" ry="9.8" fill="#fde68a" stroke="#111827" stroke-width="1.5"/>
+          <ellipse class="lid" cx="62" cy="56" rx="8.8" ry="9.8" fill="#fde68a" stroke="#111827" stroke-width="1.5"/>
+          <rect class="brow" x="31" y="43.5" width="13" height="2.6" rx="1.3" fill="#111827" transform="rotate(-6 37 45)"/>
+          <rect class="brow" x="56" y="43.5" width="13" height="2.6" rx="1.3" fill="#111827" transform="rotate(6 63 45)"/>
+          <path id="mMouth" d="M44 68 Q50 72 56 68" fill="none" stroke="#111827" stroke-width="1.8" stroke-linecap="round"/>
+        </g>
+      </g>
+    </svg>
+    <div class="bub" id="bub">Hi! I'm Chhotu 🛺</div>
+  </div>
   <div class="shut" id="shut"></div>
   <div class="tabs">
     <button data-d="c2m" class="on">To Campus <span class="n" id="n_c2m">0</span></button>
@@ -127,7 +159,7 @@ window.AUTOPOOL_CONFIG = {
   <div id="list"></div>
 </main>
 
-<button class="fab" id="fab">🛺 I'm leaving: find people</button>
+<button class="fab" id="fab" data-glance>🛺 I'm leaving: find people</button>
 
 <!-- Leave sheet -->
 <div class="ov" id="ovLeave"><div class="sheet">
@@ -137,8 +169,14 @@ window.AUTOPOOL_CONFIG = {
   <div class="lbl">People already with you (incl. you)</div>
   <div class="chips" id="grpChips"></div>
   <div id="leaveNudge"></div>
-  <label class="chk"><input type="checkbox" id="shareWa" checked> Also post in WhatsApp group</label>
   <div class="row"><button class="btn y" id="goLeave">Post auto</button></div>
+</div></div>
+
+<!-- WhatsApp question (after posting) -->
+<div class="ov" id="ovWa"><div class="sheet">
+  <h2>✅ Auto posted!<button data-close>✕</button></h2>
+  <p class="note" style="font-size:15px">Tell the hostel WhatsApp group too? More people see it → fuller auto → cheaper for you.</p>
+  <div class="row"><button class="btn ghost" id="waNo">No thanks</button><button class="btn g" id="waYes">Share on WhatsApp</button></div>
 </div></div>
 
 <!-- Join sheet -->
@@ -366,6 +404,7 @@ function renderBulb() {
 
 function render() {
   renderBulb();
+  try { say(); } catch (e) { log("w", "Mascot line: " + e.message); }
   const L = live();
   ["c2m", "m2c"].forEach(d => $("#n_" + d).textContent = L.filter(r => r.dir === d).length);
   const list = L.filter(r => r.dir === tab);
@@ -405,6 +444,7 @@ function alertNew(r) {
   const mb = myBulb();
   if (mb && mb.dir === r.dir) { toast(`💡 ${u?.name || "Someone"} fixed ${fmt(new Date(r.leaveAt))} to ${DIR[r.dir].label}, you're flexible. Join?`, 6000); navigator.vibrate?.([200, 80, 200, 80, 200]); tab = r.dir; render(); }
   else toast("🛺 " + msg, 4000);
+  setTimeout(() => { mascot?.react(); mascot?.lookAt($(".ride")); }, 50);
   navigator.vibrate?.([120, 60, 120]);
   if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
     try { new Notification("Auto leaving", { body: msg, tag: r.id }); } catch (e) { log("w", "Notification failed: " + e.message); }
@@ -469,13 +509,17 @@ $("#goLeave").onclick = async () => {
     if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
     closeAll(); toast("Posted! Others can see it now ✅");
     ntfyPush(r);
-    if ($("#shareWa").checked) waShare(r);
+    waPending = r; open("#ovWa");
+    mascot?.react("happy");
   } catch (e) { log("e", "Post failed: " + e.message); toast("Couldn't post: " + e.message); }
   b.disabled = false;
 };
+let waPending = null;
+$("#waYes").onclick = () => { if (waPending) waShare(waPending); log("i", "Shared to WhatsApp"); waPending = null; closeAll(); };
+$("#waNo").onclick = () => { waPending = null; closeAll(); };
 $("#goJoin").onclick = async () => {
   const b = $("#goJoin"); b.disabled = true;
-  try { await api.join(joinId, rider(joinN)); closeAll(); toast("You're in! Head to the main gate 🏃"); log("i", "Joined " + joinId);
+  try { await api.join(joinId, rider(joinN)); closeAll(); mascot?.react("happy"); toast("You're in! Head to the main gate 🏃"); log("i", "Joined " + joinId);
     if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message)); }
   catch (e) { log("w", "Join failed: " + e.message); toast(e.message); }
   b.disabled = false;
@@ -539,6 +583,131 @@ $("#lgGo").onclick = () => {
 };
 
 
+
+/* ---------------- Chhotu the mascot (2D port of the Inku follow behaviour) ----------------
+   Eyes lead on a fast spring (ω=22), the head follows on a slower one (ω=6.5), both critically damped (no bounce).
+   Desktop: follows the cursor. Phone: looks where you tap, glances around on its own every 3–6 s.
+   Blinks every 2.5–5.5 s (20% double), blinks on click, brows jump on fast flicks / news, idle → eye contact. */
+let mascot = null;
+function initMascot() {
+  const svg = $("#mascot"); if (!svg) return null;
+  const head = $("#mHead"), face = $("#mFace"), mouth = $("#mMouth");
+  const pupils = [...svg.querySelectorAll(".pupil")], lids = [...svg.querySelectorAll(".lid")], brows = [...svg.querySelectorAll(".brow")];
+  const browBase = brows.map(b => b.getAttribute("transform"));
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const touch = matchMedia("(pointer: coarse)").matches;
+  const s = { gy: 0, gp: 0, yaw: 0, pitch: 0, yawV: 0, pitchV: 0, roll: 0, ey: 0, ep: 0, eyV: 0, epV: 0,
+    blink: 0, blinkT: -1, nextBlink: performance.now() + 3000, dbl: false, brow: 0, browT: 0,
+    pointer: null, lastInput: -1e9, glance: null, tap: null, script: null, nextScript: 0, smile: 0, smileT: 0, visible: true };
+
+  addEventListener("pointermove", e => {
+    if (e.pointerType === "touch") return;
+    const prev = s.pointer; s.pointer = { x: e.clientX, y: e.clientY }; s.lastInput = performance.now();
+    if (prev && Math.hypot(e.clientX - prev.x, e.clientY - prev.y) > 120) s.browT = 1;   // fast flick → surprised
+  }, { passive: true });
+  document.addEventListener("pointerleave", () => s.pointer = null);
+  addEventListener("pointerdown", e => {
+    s.blinkT = 0; s.lastInput = performance.now();                                       // a click/tap = a blink
+    if (e.pointerType === "touch") s.tap = { x: e.clientX, y: e.clientY, until: performance.now() + 1600 };
+  }, { passive: true });
+  // glance at buttons (event delegation, because cards re-render)
+  const glanceSel = "[data-glance], [data-join], #bulbSw, #bulbFix, .call";
+  document.addEventListener("pointerover", e => { const el = e.target.closest?.(glanceSel); if (el) { s.glance = el; if (el.matches("#fab,[data-join],#bulbFix")) s.browT = 1; } });
+  document.addEventListener("pointerout", e => { if (s.glance && !s.glance.contains(e.relatedTarget)) s.glance = null; });
+  document.addEventListener("focusin", e => { const el = e.target.closest?.(glanceSel); if (el) s.glance = el; });
+  document.addEventListener("focusout", () => s.glance = null);
+  new IntersectionObserver(([en]) => s.visible = en.isIntersecting).observe(svg);
+
+  // screen point → total gaze (-1..1). The mascot itself is "straight ahead"; each screen edge = full turn on that side.
+  function gaze(x, y) {
+    const r = svg.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height * 0.55;
+    return { yaw: clamp((x - cx) / Math.max(1, x > cx ? innerWidth - cx : cx), -1, 1),
+             pitch: clamp((y - cy) / Math.max(1, y > cy ? innerHeight - cy : cy), -1, 1) };
+  }
+  const centreOf = el => { const r = el.getBoundingClientRect(); return r.width ? gaze(r.left + r.width / 2, r.top + r.height / 2) : null; };
+  function target(now) {
+    const idle = now - s.lastInput > 4000;
+    let g = null;
+    if (s.tap && now < s.tap.until) g = gaze(s.tap.x, s.tap.y);
+    else if (s.glance && document.contains(s.glance)) g = centreOf(s.glance);
+    else if (!touch && s.pointer && !idle) g = gaze(s.pointer.x, s.pointer.y);
+    else if (touch) {
+      if (now > s.nextScript) {
+        const opts = ["you", "you", "around", "fab", "ride"];
+        s.script = opts[Math.floor(Math.random() * opts.length)];
+        s.scriptPt = [Math.random() * innerWidth, Math.random() * innerHeight * 0.8];
+        s.nextScript = now + 3000 + Math.random() * 3000;
+      }
+      const el = s.script === "fab" ? $("#fab") : s.script === "ride" ? $(".ride") : null;
+      if (el && el.offsetParent) g = centreOf(el); else if (s.script === "around") g = gaze(...s.scriptPt);
+    }
+    if (!g) { const t = now / 1000; g = { yaw: Math.sin(t * 0.7) * 0.06, pitch: Math.sin(t * 0.43) * 0.06 }; }  // eye contact + slow drift
+    return g;
+  }
+
+  function update(dt, now) {
+    const g = target(now);
+    s.gy = damp(s.gy, g.yaw, 30, dt); s.gp = damp(s.gp, g.pitch, 30, dt);                // de-jitter raw input
+    const yT = clamp(s.gy * 0.8, -0.7, 0.7), pT = clamp(s.gp * 0.7, -0.5, 0.6);         // head takes most of the turn
+    const W = 6.5; s.yawV += (-2 * W * s.yawV - W * W * (s.yaw - yT)) * dt; s.yaw += s.yawV * dt;
+    s.pitchV += (-2 * W * s.pitchV - W * W * (s.pitch - pT)) * dt; s.pitch += s.pitchV * dt;
+    s.roll = damp(s.roll, clamp(-s.yawV * 4, -7, 7), 6, dt);                            // small tilt while turning
+    const eyT = clamp(s.gy - s.yaw, -0.6, 0.6), epT = clamp(s.gp - s.pitch, -0.5, 0.5); // eyes: what the head hasn't turned yet
+    const E = 22; s.eyV += (-2 * E * s.eyV - E * E * (s.ey - eyT)) * dt; s.ey += s.eyV * dt;
+    s.epV += (-2 * E * s.epV - E * E * (s.ep - epT)) * dt; s.ep += s.epV * dt;
+    // blink every 2.5–5.5 s, sometimes twice
+    if (now > s.nextBlink && s.blinkT < 0) { s.blinkT = 0; s.nextBlink = now + 2500 + Math.random() * 3000; s.dbl = Math.random() < 0.2; }
+    if (s.blinkT >= 0) { s.blinkT += dt; const d = 0.16; s.blink = s.blinkT < d ? Math.sin(s.blinkT / d * Math.PI) : 0;
+      if (s.blinkT >= d) { s.blinkT = -1; if (s.dbl) { s.dbl = false; s.nextBlink = now + 120; } } }
+    s.brow = damp(s.brow, s.browT, 12, dt); s.browT = damp(s.browT, 0, 3, dt);
+    s.smile = damp(s.smile, s.smileT, 8, dt); s.smileT = damp(s.smileT, 0, 1.2, dt);
+    draw(now / 1000);
+  }
+  function draw(t) {
+    const breath = Math.sin(t * Math.PI * 0.5) * 0.6;
+    head.setAttribute("transform", `translate(${(s.yaw * 6).toFixed(2)} ${(s.pitch * 3 + breath).toFixed(2)}) rotate(${s.roll.toFixed(2)} 50 70)`);
+    face.setAttribute("transform", `translate(${(s.yaw * 4).toFixed(2)} ${(s.pitch * 3).toFixed(2)})`);   // face shifts more = 3D turn feel
+    const px = clamp((s.ey + s.yaw * 0.5) * 6, -3.6, 3.6), py = clamp((s.ep + s.pitch * 0.5) * 6, -4, 4);
+    pupils.forEach(p => p.setAttribute("transform", `translate(${px.toFixed(2)} ${py.toFixed(2)})`));
+    const lidOpen = 0.12 + Math.max(0, -py) * 0.03;                                     // lids follow the gaze up a bit
+    lids.forEach(l => l.style.transform = `scaleY(${(lidOpen + (1 - lidOpen) * s.blink).toFixed(3)})`);
+    brows.forEach((b, i) => b.setAttribute("transform", `translate(0 ${(-s.brow * 3.5).toFixed(2)}) ${browBase[i]}`));
+    const m = 72 + s.smile * 4; mouth.setAttribute("d", `M44 68 Q50 ${m.toFixed(1)} 56 68`);
+  }
+
+  if (reduced) { draw(0); log("i", "Mascot: still (reduce-motion setting)"); }
+  else {
+    let last = performance.now();
+    const tick = now => {
+      const dt = Math.min(1 / 30, (now - last) / 1000); last = now;                     // frame-rate independent, capped
+      if (!document.hidden && s.visible) { try { update(dt, now); } catch (e) { log("e", "Mascot: " + e.message); return; } }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    log("i", `Mascot ready (${touch ? "touch" : "mouse"} mode)`);
+  }
+  return {
+    react(kind) { s.browT = 1; s.blinkT = 0; if (kind === "happy") s.smileT = 1; },
+    lookAt(el, ms = 1600) { if (!el) return; const r = el.getBoundingClientRect(); s.tap = { x: r.left + r.width / 2, y: r.top + r.height / 2, until: performance.now() + ms }; },
+    get state() { return { yaw: s.yaw, eyeYaw: s.ey, blink: s.blink, brow: s.brow }; }
+  };
+}
+
+let lastSay = "";
+function say() {
+  const L = live(), mine = myRide(), B = liveBulbs(tab), here = L.filter(r => r.dir === tab && C.seats - used(r) > 0);
+  const sh = nextShuttle(tab);
+  let t;
+  if (mine) t = `You're in! Auto at ${fmt(new Date(mine.leaveAt))}. Head to the main gate 🏃`;
+  else if (B.length >= 2) t = `💡 ${B.length} people flexible to ${DIR[tab].label}. Fix a time and go!`;
+  else if (here.length) t = `🛺 ${here.length} auto${here.length > 1 ? "s" : ""} leaving for ${DIR[tab].label}. Hop in, pay less!`;
+  else if (sh.mins <= 10) t = `🚌 Free shuttle in ${sh.mins} min. Save your ₹${C.fare}!`;
+  else t = `Going to ${DIR[tab].label}? Post it, I'll find people 🛺`;
+  if (t !== lastSay) { lastSay = t; const b = $("#bub"); b.textContent = t; b.classList.add("pop"); setTimeout(() => b.classList.remove("pop"), 250); }
+}
+
 /* ---------------- Install as app (Android + iPhone) ---------------- */
 const isStandalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -562,6 +731,7 @@ async function start() {
   if (started) return; started = true;
   tab = localStorage.getItem("ap_tab") || (new Date().getHours() >= 13 && new Date().getHours() < 21 ? "m2c" : "c2m");
   document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x.dataset.d === tab));
+  try { mascot = window.__mascot = initMascot(); } catch (e) { log("e", "Mascot failed: " + e.message); }
   await initBackend();
   api.watch((rs, added) => {
     rides = rs;
@@ -575,7 +745,7 @@ async function start() {
     const mb = bs.find(b => b.uid === api.uid && b.until > Date.now());
     if (!bulbBoot && mb) {
       const fresh = bs.filter(b => b.dir === mb.dir && b.uid !== api.uid && b.until > Date.now() && !bulbs.some(o => o.uid === b.uid && o.dir === b.dir && o.until > Date.now()));
-      fresh.forEach(b => { toast(`💡 ${b.name} is also flexible to ${DIR[b.dir].label} (${bs.filter(x => x.dir === mb.dir && x.until > Date.now()).length} now)`, 4500); navigator.vibrate?.(150); });
+      fresh.forEach(b => { mascot?.react("happy"); toast(`💡 ${b.name} is also flexible to ${DIR[b.dir].label} (${bs.filter(x => x.dir === mb.dir && x.until > Date.now()).length} now)`, 4500); navigator.vibrate?.(150); });
     }
     bulbBoot = false; bulbs = bs; render();
   });
