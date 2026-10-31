@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#111827"/>
+<g transform="translate(256 270)"><rect x="-150" y="-110" width="250" height="150" rx="40" fill="#facc15"/>
+<path d="M100 -110 L150 -20 L150 40 L100 40 Z" fill="#facc15"/><rect x="-120" y="-85" width="90" height="60" rx="10" fill="#111827"/>
+<rect x="-15" y="-85" width="90" height="60" rx="10" fill="#111827"/><rect x="-170" y="-125" width="250" height="22" rx="10" fill="#fde047"/>
+<circle cx="-95" cy="55" r="38" fill="#fff"/><circle cx="-95" cy="55" r="16" fill="#111827"/>
+<circle cx="115" cy="55" r="38" fill="#fff"/><circle cx="115" cy="55" r="16" fill="#111827"/></g>
+<text x="256" y="430" font-family="Arial,sans-serif" font-weight="800" font-size="64" fill="#facc15" text-anchor="middle">POOL</text></svg>

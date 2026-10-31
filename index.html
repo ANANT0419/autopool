@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AutoPool">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>AutoPool · CDL ⇄ Campus</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#111827;--mute:#6b7280;--line:#e5e7eb;--y:#facc15;--y2:#fef9c3;--g:#16a34a;--g2:#dcfce7;--r:#dc2626;--b:#2563eb}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;padding-bottom:110px}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input{font:inherit}
+.wrap{max-width:520px;margin:0 auto;padding:0 14px}
+header{background:var(--ink);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 0 12px;position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:19px;flex:1}.logo span{color:var(--y)}
+.ib{width:36px;height:36px;border-radius:10px;background:#1f2937;display:grid;place-items:center;font-size:17px;position:relative}
+.dot{position:absolute;top:-3px;right:-3px;background:var(--r);color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 3px}
+.inst{background:var(--y);color:var(--ink);font-size:14px;font-weight:600;padding:8px 12px;display:flex;align-items:center;gap:10px}.inst span{flex:1}.inst #instBtn{background:var(--ink);color:#fff;padding:6px 14px;border-radius:8px}
+.demo{background:#fff7ed;color:#9a3412;font-size:12.5px;padding:7px 12px;text-align:center}
+.shut{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.sc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px}
+.sc small{color:var(--mute);font-size:11.5px;display:block}
+.sc b{font-size:16px}.sc em{font-style:normal;color:var(--g);font-size:12.5px;font-weight:600}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#e5e7eb;border-radius:12px;padding:4px;gap:4px}
+.tabs button{padding:9px;border-radius:9px;font-weight:600;color:var(--mute)}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px #0002}
+.tabs .n{background:var(--y);color:var(--ink);border-radius:9px;font-size:11px;padding:1px 6px;margin-left:4px}
+h3{font-size:13px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em;margin:16px 2px 8px}
+.bulb{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-top:12px}
+.bulb.on{background:#fffbeb;border-color:var(--y)}
+.bh{display:flex;align-items:center;gap:10px}.bh .bi{font-size:26px;filter:grayscale(1);opacity:.5}.bulb.on .bh .bi{filter:none;opacity:1}
+.bh .bt{flex:1;line-height:1.3}.bh .bt small{display:block;color:var(--mute);font-size:12.5px}
+.sw{width:50px;height:30px;border-radius:15px;background:#d1d5db;position:relative;flex:none;transition:.2s}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px #0003}
+.sw.on{background:var(--g)}.sw.on:after{left:23px}
+.bp{margin-top:10px;border-top:1px dashed var(--line);padding-top:9px;display:flex;flex-direction:column;gap:5px}
+.bfix{margin-top:10px;width:100%;padding:12px}
+.ride{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
+.ride.mine{border-color:var(--y);box-shadow:0 0 0 2px var(--y2)}
+.ride.full{opacity:.6}
+.rt{display:flex;align-items:baseline;gap:8px}
+.rt b{font-size:20px}.cd{font-weight:700;font-size:13px;padding:2px 8px;border-radius:8px;background:var(--y2)}
+.cd.go{background:#fee2e2;color:var(--r)}
+.seats{margin-left:auto;display:flex;gap:3px}
+.seat{width:14px;height:14px;border-radius:4px;background:var(--line)}.seat.t{background:var(--ink)}
+.ppl{margin:9px 0;display:flex;flex-direction:column;gap:5px}
+.p{display:flex;align-items:center;gap:8px;font-size:14px}
+.p .av{width:26px;height:26px;border-radius:50%;background:var(--y2);display:grid;place-items:center;font-weight:700;font-size:12px}
+.p .nm{flex:1}.p .x{color:var(--mute);font-size:12px}
+.call{background:var(--g2);color:var(--g);padding:5px 10px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none}
+.acts{display:flex;gap:8px;align-items:center}
+.fare{font-size:13px;color:var(--mute);flex:1}.fare b{color:var(--ink)}
+.btn{background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700}
+.btn.y{background:var(--y);color:var(--ink)}.btn.g{background:var(--g);color:#fff}
+.btn.ghost{background:#f3f4f6;color:var(--ink)}.btn.red{background:#fee2e2;color:var(--r)}
+.btn:disabled{opacity:.5}
+.empty{text-align:center;color:var(--mute);padding:28px 10px;background:var(--card);border-radius:14px;border:1px dashed var(--line)}
+.empty div{font-size:34px;margin-bottom:6px}
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));width:calc(100% - 28px);max-width:492px;background:var(--y);color:var(--ink);font-weight:800;font-size:17px;padding:16px;border-radius:16px;box-shadow:0 6px 20px #0003;z-index:6}
+.ov{position:fixed;inset:0;background:#0008;z-index:20;display:none;align-items:flex-end;justify-content:center}
+.ov.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheet h2{font-size:19px;margin-bottom:12px;display:flex;align-items:center}.sheet h2 button{margin-left:auto;font-size:22px;color:var(--mute)}
+.lbl{font-size:13px;color:var(--mute);margin:12px 0 6px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:9px 14px;border-radius:10px;background:#f3f4f6;font-weight:600}
+.chip.on{background:var(--ink);color:#fff}
+.nudge{background:var(--g2);color:#14532d;border-radius:10px;padding:10px 12px;font-size:13.5px;margin-top:12px}
+.fld{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;font-size:16px}
+.row{display:flex;gap:8px;margin-top:16px}.row .btn{flex:1;padding:13px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;z-index:30;font-size:14px;max-width:90%;display:none}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:45vh;overflow:auto;white-space:pre-wrap}
+.log .e{color:var(--r)}.log .w{color:#b45309}.log .i{color:var(--mute)}
+.note{font-size:13px;color:var(--mute);line-height:1.5}
+.note code{background:#f3f4f6;padding:1px 5px;border-radius:5px;color:var(--ink)}
+.login{position:fixed;inset:0;background:var(--ink);z-index:40;display:none;align-items:center;justify-content:center;padding:20px}
+.login.show{display:flex}
+.login .box{background:#fff;border-radius:20px;padding:22px;width:100%;max-width:400px}
+.login h1{font-size:24px;margin-bottom:4px}.login p{color:var(--mute);font-size:14px;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<!-- ============ CONFIG: paste your Firebase config here (see SETUP.md). Leave null = demo mode ============ -->
+<script>
+window.AUTOPOOL_CONFIG = {
+  firebase: {
+    apiKey: "AIzaSyBPiSMuocTscBJv8u5Kv2JNoLnox4AjQn4",
+    authDomain: "autopool-93a9d.firebaseapp.com",
+    projectId: "autopool-93a9d",
+    storageBucket: "autopool-93a9d.firebasestorage.app",
+    messagingSenderId: "38116180279",
+    appId: "1:38116180279:web:74aef14d8bbea665489ab2"
+  },
+  ntfyTopic: "imt-cdl-autopool-66cea7",           // e.g. "cdl-autopool-7x3k" — free phone alerts via the ntfy app
+  fare: 80,                // ₹ per auto, flat
+  seats: 4                 // max people per auto
+};
+</script>
+
+<header><div class="wrap">
+  <div class="logo">🛺 Auto<span>Pool</span></div>
+  <button class="ib" id="bAlerts" title="Alerts">🔔</button>
+  <button class="ib" id="bLog" title="Issue log">🐞<span class="dot" id="logDot" style="display:none">0</span></button>
+  <button class="ib" id="bMe" title="Profile">👤</button>
+</div></header>
+<div class="inst" id="instBar" style="display:none"><span>📲 Install AutoPool as an app</span><button id="instBtn">Install</button><button id="instX">✕</button></div>
+<div class="demo" id="demoBar" style="display:none">Demo mode: rides are saved on this device only. Add Firebase (see SETUP.md) to go live.</div>
+
+<main class="wrap">
+  <div class="shut" id="shut"></div>
+  <div class="tabs">
+    <button data-d="c2m" class="on">To Campus <span class="n" id="n_c2m">0</span></button>
+    <button data-d="m2c">To CDL <span class="n" id="n_m2c">0</span></button>
+  </div>
+  <div id="bulb"></div>
+  <div id="list"></div>
+</main>
+
+<button class="fab" id="fab">🛺 I'm leaving: find people</button>
+
+<!-- Leave sheet -->
+<div class="ov" id="ovLeave"><div class="sheet">
+  <h2><span id="leaveTitle">Leaving for Campus</span><button data-close>✕</button></h2>
+  <div class="lbl">Auto leaves the gate in</div>
+  <div class="chips" id="whenChips"></div>
+  <div class="lbl">People already with you (incl. you)</div>
+  <div class="chips" id="grpChips"></div>
+  <div id="leaveNudge"></div>
+  <label class="chk"><input type="checkbox" id="shareWa" checked> Also post in WhatsApp group</label>
+  <div class="row"><button class="btn y" id="goLeave">Post auto</button></div>
+</div></div>
+
+<!-- Join sheet -->
+<div class="ov" id="ovJoin"><div class="sheet">
+  <h2>Join this auto<button data-close>✕</button></h2>
+  <div class="lbl">How many of you?</div>
+  <div class="chips" id="joinChips"></div>
+  <div class="row"><button class="btn g" id="goJoin">Join, I'm coming</button></div>
+</div></div>
+
+<!-- Alerts sheet -->
+<div class="ov" id="ovAlerts"><div class="sheet">
+  <h2>Get alerts<button data-close>✕</button></h2>
+  <div class="lbl">1 · While this app is open</div>
+  <p class="note">Your phone buzzes and shows a pop-up whenever someone posts an auto.</p>
+  <div class="row" style="margin-top:8px"><button class="btn ghost" id="bNotif">Turn on in-app alerts</button></div>
+  <div class="lbl" style="margin-top:18px">2 · Even when the app is closed (free, ntfy app)</div>
+  <p class="note" id="ntfyNote"></p>
+</div></div>
+
+<!-- Bulb sheet -->
+<div class="ov" id="ovBulb"><div class="sheet">
+  <h2><span id="bulbTitle">Flexible</span><button data-close>✕</button></h2>
+  <p class="note">Others will see you're happy to share an auto any time in this window. It turns off by itself.</p>
+  <div class="lbl">I'm flexible for the next</div>
+  <div class="chips" id="bulbChips"></div>
+  <div class="row"><button class="btn g" id="goBulb">💡 Turn on</button></div>
+</div></div>
+
+<!-- iOS install sheet -->
+<div class="ov" id="ovIos"><div class="sheet">
+  <h2>Install on iPhone<button data-close>✕</button></h2>
+  <p class="note" style="font-size:15px;line-height:1.9">1. Open this page in <b>Safari</b> (not Chrome/Instagram)<br>2. Tap the <b>Share</b> button <span style="font-size:18px">⬆️</span> at the bottom<br>3. Scroll and tap <b>Add to Home Screen</b><br>4. Tap <b>Add</b>, then open AutoPool from your home screen</p>
+</div></div>
+
+<!-- Log sheet -->
+<div class="ov" id="ovLog"><div class="sheet">
+  <h2>Issue log<button data-close>✕</button></h2>
+  <p class="note" style="margin-bottom:8px">Errors and events from this phone. Tap Copy and send it if something breaks.</p>
+  <div class="log" id="logBox"></div>
+  <div class="row"><button class="btn ghost" id="logCopy">Copy</button><button class="btn red" id="logClear">Clear</button></div>
+</div></div>
+
+<!-- Profile sheet -->
+<div class="ov" id="ovMe"><div class="sheet">
+  <h2>You<button data-close>✕</button></h2>
+  <input class="fld" id="meName" placeholder="Name">
+  <input class="fld" id="mePhone" placeholder="10-digit phone" inputmode="numeric" maxlength="10">
+  <div class="row"><button class="btn" id="meSave">Save</button></div>
+</div></div>
+
+<!-- Login -->
+<div class="login" id="login"><div class="box">
+  <h1>🛺 AutoPool</h1>
+  <p>Share the ₹80 auto between CDL and Campus. Your number is shown to riders so they can call you to hold the auto.</p>
+  <input class="fld" id="lgName" placeholder="Your name" autocomplete="name">
+  <input class="fld" id="lgPhone" placeholder="10-digit phone number" inputmode="numeric" maxlength="10" autocomplete="tel">
+  <button class="btn y" style="width:100%;padding:14px" id="lgGo">Continue</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+const C = window.AUTOPOOL_CONFIG;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DIR = { c2m: { label: "Campus", from: "CDL", short: "To Campus" }, m2c: { label: "CDL", from: "Campus", short: "To CDL" } };
+const EXPIRE_MS = 3 * 60 * 1000;   // card stays 3 min after leave time
+
+/* ---------------- Issue log ---------------- */
+const LOGK = "ap_log";
+let logs = JSON.parse(localStorage.getItem(LOGK) || "[]");
+let unseenErr = 0;
+function log(level, msg) {
+  logs.push({ t: new Date().toLocaleString("en-IN"), level, msg: String(msg) });
+  logs = logs.slice(-200);
+  localStorage.setItem(LOGK, JSON.stringify(logs));
+  if (level === "e") { unseenErr++; $("#logDot").textContent = unseenErr; $("#logDot").style.display = "grid"; }
+}
+window.addEventListener("error", e => log("e", `${e.message} @${e.filename?.split("/").pop()}:${e.lineno}`));
+window.addEventListener("unhandledrejection", e => log("e", "Promise: " + (e.reason?.message || e.reason)));
+function renderLog() {
+  $("#logBox").innerHTML = logs.length ? logs.slice().reverse().map(l => `<div class="${l.level}">[${esc(l.t)}] ${l.level.toUpperCase()} ${esc(l.msg)}</div>`).join("") : "No issues logged. All good ✅";
+}
+
+/* ---------------- Shuttle schedule (from the official sheet) ---------------- */
+const SHUTTLE = {
+  c2m: ["08:30","08:35","08:50","08:55","10:05","10:20","11:40","11:55","13:55","15:15","15:35","17:00","17:10","17:55","18:15","19:15",
+        "21:00","22:00","23:00","00:00","01:00","02:00","03:00","04:00","05:00"],
+  m2c: ["09:00","09:30","10:45","11:15","11:50","12:30","13:40","14:30","16:00","16:15","17:25","17:30","17:45","18:15","19:00","19:35",
+        "21:30","22:30","23:30","00:30","01:30","02:30","03:30","04:30"]
+};
+function nextShuttle(dir, from = new Date()) {
+  let best = null;
+  for (const hm of SHUTTLE[dir]) {
+    const [h, m] = hm.split(":").map(Number);
+    const d = new Date(from); d.setHours(h, m, 0, 0);
+    if (d < from) d.setDate(d.getDate() + 1);
+    if (!best || d < best) best = d;
+  }
+  return { at: best, mins: Math.round((best - from) / 60000) };
+}
+const fmt = d => d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
+const minsTxt = m => m < 60 ? `${m} min` : `${Math.floor(m/60)}h ${m%60}m`;
+
+/* ---------------- Identity ---------------- */
+let me = JSON.parse(localStorage.getItem("ap_me") || "null");
+function uidLocal() { let u = localStorage.getItem("ap_uid"); if (!u) { u = "u" + Math.random().toString(36).slice(2, 10); localStorage.setItem("ap_uid", u); } return u; }
+const validPhone = p => /^[6-9]\d{9}$/.test(p);
+
+/* ---------------- Backend: Firebase or Demo ---------------- */
+let api;
+async function initBackend() {
+  if (C.firebase && C.firebase.apiKey) {
+    try {
+      const V = "10.12.2";
+      const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+      const { getAuth, signInAnonymously } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+      const fs = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+      const app = initializeApp(C.firebase);
+      const cred = await signInAnonymously(getAuth(app));
+      const db = fs.getFirestore(app);
+      const col = fs.collection(db, "rides");
+      api = {
+        uid: cred.user.uid,
+        watch(cb) {
+          const q = fs.query(col, fs.where("leaveAt", ">", Date.now() - 60 * 60 * 1000));
+          return fs.onSnapshot(q, s => cb(s.docs.map(d => ({ id: d.id, ...d.data() })), s.docChanges().filter(c => c.type === "added").map(c => c.doc.id)),
+            e => { log("e", "Live sync failed: " + e.message); toast("Can't sync rides. Check internet."); });
+        },
+        async create(r) { const ref = await fs.addDoc(col, r); return ref.id; },
+        async join(id, rider) {
+          await fs.runTransaction(db, async tx => {
+            const ref = fs.doc(db, "rides", id); const s = await tx.get(ref);
+            if (!s.exists()) throw new Error("Ride no longer exists");
+            const r = s.data();
+            if (r.cancelled) throw new Error("This auto was cancelled");
+            if (r.riders.some(x => x.uid === rider.uid)) return;
+            if (used(r) + rider.n > C.seats) throw new Error("Not enough seats left");
+            tx.update(ref, { riders: [...r.riders, rider] });
+          });
+        },
+        async leave(id, uid) {
+          await fs.runTransaction(db, async tx => {
+            const ref = fs.doc(db, "rides", id); const s = await tx.get(ref); if (!s.exists()) return;
+            tx.update(ref, { riders: s.data().riders.filter(x => x.uid !== uid) });
+          });
+        },
+        async cancel(id) { await fs.updateDoc(fs.doc(db, "rides", id), { cancelled: true }); },
+        watchBulbs(cb) {
+          const q = fs.query(fs.collection(db, "bulbs"), fs.where("until", ">", Date.now()));
+          return fs.onSnapshot(q, s => cb(s.docs.map(d => d.data())), e => log("e", "Bulb sync failed: " + e.message));
+        },
+        async setBulb(b) { await fs.setDoc(fs.doc(db, "bulbs", b.uid), b); },
+        async clearBulb(uid) { await fs.setDoc(fs.doc(db, "bulbs", uid), { uid, until: 0 }); }
+      };
+      log("i", "Connected to Firebase (live mode)");
+      return;
+    } catch (e) { log("e", "Firebase init failed, falling back to demo: " + e.message); toast("Couldn't connect. Running in demo mode."); }
+  }
+  // Demo mode: localStorage + sync across tabs on the same device
+  $("#demoBar").style.display = "block";
+  const K = "ap_rides", bc = "BroadcastChannel" in window ? new BroadcastChannel("ap") : null;
+  const read = () => JSON.parse(localStorage.getItem(K) || "[]");
+  const write = rs => { localStorage.setItem(K, JSON.stringify(rs)); bc?.postMessage(1); emit(); };
+  let cbs = [], seen = new Set(read().map(r => r.id));
+  const emit = () => { const rs = read(); const added = rs.filter(r => !seen.has(r.id)).map(r => r.id); added.forEach(i => seen.add(i)); cbs.forEach(cb => cb(rs, added)); };
+  const KB = "ap_bulbs", readB = () => JSON.parse(localStorage.getItem(KB) || "[]").filter(b => b.until > Date.now());
+  let bcbs = [];
+  const emitB = () => bcbs.forEach(cb => cb(readB()));
+  const writeB = bs => { localStorage.setItem(KB, JSON.stringify(bs)); bc?.postMessage(2); emitB(); };
+  bc && (bc.onmessage = m => m.data === 2 ? emitB() : emit());
+  window.addEventListener("storage", e => e.key === K ? emit() : e.key === KB && emitB());
+  api = {
+    uid: uidLocal(),
+    watch(cb) { cbs.push(cb); cb(read(), []); },
+    async create(r) { const id = "r" + Date.now().toString(36); write([...read().filter(x => x.leaveAt > Date.now() - 3600e3), { id, ...r }]); return id; },
+    async join(id, rider) {
+      const rs = read(), r = rs.find(x => x.id === id);
+      if (!r) throw new Error("Ride no longer exists");
+      if (r.cancelled) throw new Error("This auto was cancelled");
+      if (r.riders.some(x => x.uid === rider.uid)) return;
+      if (used(r) + rider.n > C.seats) throw new Error("Not enough seats left");
+      r.riders.push(rider); write(rs);
+    },
+    async leave(id, uid) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.riders = r.riders.filter(x => x.uid !== uid); write(rs); } },
+    async cancel(id) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.cancelled = true; write(rs); } },
+    watchBulbs(cb) { bcbs.push(cb); cb(readB()); },
+    async setBulb(b) { writeB([...readB().filter(x => x.uid !== b.uid), b]); },
+    async clearBulb(uid) { writeB(readB().filter(x => x.uid !== uid)); }
+  };
+  log("i", "Demo mode (no Firebase config)");
+}
+
+/* ---------------- State & render ---------------- */
+const used = r => r.riders.reduce((a, x) => a + (x.n || 1), 0);
+let rides = [], tab = "c2m", bootAt = Date.now();
+const live = () => rides.filter(r => !r.cancelled && r.leaveAt > Date.now() - EXPIRE_MS).sort((a, b) => a.leaveAt - b.leaveAt);
+const myRide = () => live().find(r => r.riders.some(x => x.uid === api.uid));
+
+function renderShuttle() {
+  $("#shut").innerHTML = ["c2m", "m2c"].map(d => {
+    const s = nextShuttle(d);
+    return `<div class="sc"><small>Next shuttle ${DIR[d].from} → ${DIR[d].label}</small><b>${fmt(s.at)}</b> <em>in ${minsTxt(s.mins)}</em></div>`;
+  }).join("");
+}
+
+let bulbs = [];
+const liveBulbs = d => bulbs.filter(b => b.until > Date.now() && b.dir === d);
+const myBulb = () => bulbs.find(b => b.uid === api.uid && b.until > Date.now());
+function renderBulb() {
+  const mine = myBulb(), on = mine && mine.dir === tab, B = liveBulbs(tab), others = B.filter(b => b.uid !== api.uid);
+  const n = B.length, each = Math.ceil(C.fare / Math.min(Math.max(n, 1), C.seats));
+  if (myRide()) { $("#bulb").innerHTML = ""; return; }
+  const minsLeft = on ? Math.ceil((mine.until - Date.now()) / 60000) : 0;
+  let h = `<div class="bulb ${on ? "on" : ""}"><div class="bh"><span class="bi">💡</span>
+    <span class="bt"><b>${n ? `${n} flexible to ${DIR[tab].label}` : `Flexible to ${DIR[tab].label}?`}</b>
+    <small>${on ? `You're on · ${minsTxt(minsLeft)} left` : n ? `₹${each} each if you all go together` : "No fixed time? Turn on and find people"}</small></span>
+    <button class="sw ${on ? "on" : ""}" id="bulbSw" aria-label="Flexible toggle"></button></div>`;
+  if (others.length) h += `<div class="bp">${others.map(b => `<div class="p"><span class="av">${esc(b.name[0]?.toUpperCase())}</span><span class="nm">${esc(b.name)} <span class="x">· till ${fmt(new Date(b.until))}</span></span><a class="call" href="tel:${esc(b.phone)}">📞 Call</a></div>`).join("")}</div>`;
+  if (n >= 2) h += `<button class="btn ${n >= 3 ? "y" : "ghost"} bfix" id="bulbFix">${n >= 3 ? "🔥 Enough people! " : ""}Fix a time → post auto</button>`;
+  h += `</div>`;
+  $("#bulb").innerHTML = h;
+}
+
+function render() {
+  renderBulb();
+  const L = live();
+  ["c2m", "m2c"].forEach(d => $("#n_" + d).textContent = L.filter(r => r.dir === d).length);
+  const list = L.filter(r => r.dir === tab);
+  const mine = myRide();
+  $("#fab").style.display = mine ? "none" : "block";
+  $("#fab").textContent = `🛺 I'm leaving for ${DIR[tab].label}`;
+  let h = `<h3>Autos leaving for ${DIR[tab].label}</h3>`;
+  if (!list.length) {
+    const s = nextShuttle(tab);
+    h += `<div class="empty"><div>🛺</div>No one is leaving yet.<br>Tap the button below to post your auto.<br><small>Shuttle at ${fmt(s.at)} (in ${minsTxt(s.mins)})</small></div>`;
+  }
+  for (const r of list) {
+    const u = used(r), left = C.seats - u, ms = r.leaveAt - Date.now();
+    const isIn = r.riders.some(x => x.uid === api.uid), isOwner = r.creator === api.uid;
+    const cdTxt = ms <= 0 ? "Leaving now" : ms < 60000 ? `${Math.ceil(ms/1000)}s` : `in ${Math.ceil(ms/60000)} min`;
+    const seats = Array.from({ length: C.seats }, (_, i) => `<span class="seat ${i < u ? "t" : ""}"></span>`).join("");
+    const ppl = r.riders.map(x => `<div class="p"><span class="av">${esc(x.name[0]?.toUpperCase())}</span><span class="nm">${esc(x.name)}${x.n > 1 ? ` <span class="x">+${x.n - 1}</span>` : ""}${x.uid === r.creator ? ' <span class="x">· posted</span>' : ""}</span>${x.uid !== api.uid ? `<a class="call" href="tel:${esc(x.phone)}">📞 Call</a>` : '<span class="x">you</span>'}</div>`).join("");
+    const each = Math.ceil(C.fare / Math.max(u, 1));
+    let btn = "";
+    if (isOwner) btn = `<button class="btn ghost" data-share="${r.id}">Share</button><button class="btn red" data-cancel="${r.id}">Cancel</button>`;
+    else if (isIn) btn = `<button class="btn red" data-leave="${r.id}">Leave</button>`;
+    else if (left > 0 && !mine) btn = `<button class="btn g" data-join="${r.id}">Join</button>`;
+    else if (left <= 0) btn = `<span class="x">Full</span>`;
+    h += `<div class="ride ${isIn ? "mine" : ""} ${left <= 0 && !isIn ? "full" : ""}">
+      <div class="rt"><b>${fmt(new Date(r.leaveAt))}</b><span class="cd ${ms < 60000 ? "go" : ""}" data-at="${r.leaveAt}">${cdTxt}</span><span class="seats">${seats}</span></div>
+      <div class="ppl">${ppl}</div>
+      <div class="acts"><span class="fare"><b>₹${each}</b> each · ${left > 0 ? `${left} seat${left > 1 ? "s" : ""} left` : "full"}</span>${btn}</div></div>`;
+  }
+  $("#list").innerHTML = h;
+}
+
+/* ---------------- Alerts ---------------- */
+function toast(t, ms = 2600) { const el = $("#toast"); el.textContent = t; el.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = "none", ms); }
+function alertNew(r) {
+  const u = r.riders.find(x => x.uid === r.creator);
+  const msg = `${u?.name || "Someone"} → ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))} · ${C.seats - used(r)} seats`;
+  const mb = myBulb();
+  if (mb && mb.dir === r.dir) { toast(`💡 ${u?.name || "Someone"} fixed ${fmt(new Date(r.leaveAt))} to ${DIR[r.dir].label}, you're flexible. Join?`, 6000); navigator.vibrate?.([200, 80, 200, 80, 200]); tab = r.dir; render(); }
+  else toast("🛺 " + msg, 4000);
+  navigator.vibrate?.([120, 60, 120]);
+  if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+    try { new Notification("Auto leaving", { body: msg, tag: r.id }); } catch (e) { log("w", "Notification failed: " + e.message); }
+  }
+}
+function shareText(r) {
+  return `🛺 Auto ${DIR[r.dir].from} → ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} seat(s) left. ₹${Math.ceil(C.fare / C.seats)} each if full. Join: ${location.href.split("#")[0]}`;
+}
+const waShare = r => window.open("https://wa.me/?text=" + encodeURIComponent(shareText(r)), "_blank");
+async function ntfyPush(r) {
+  if (!C.ntfyTopic) return;
+  try {
+    const res = await fetch("https://ntfy.sh/" + encodeURIComponent(C.ntfyTopic), {
+      method: "POST", body: shareText(r),
+      headers: { Title: `Auto to ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))}`, Tags: "auto_rickshaw", Click: location.href.split("#")[0] }
+    });
+    if (!res.ok) log("w", "ntfy push HTTP " + res.status); else log("i", "ntfy push sent");
+  } catch (e) { log("w", "ntfy push failed: " + e.message); }
+}
+
+/* ---------------- Sheets ---------------- */
+const open = id => $(id).classList.add("show");
+const closeAll = () => document.querySelectorAll(".ov").forEach(o => o.classList.remove("show"));
+document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o || e.target.dataset.close !== undefined) closeAll(); }));
+function chips(el, opts, val, onPick) {
+  el.innerHTML = opts.map(o => `<button class="chip ${o.v === val ? "on" : ""}" data-v="${o.v}">${o.t}</button>`).join("");
+  el.onclick = e => { const b = e.target.closest(".chip"); if (!b) return; el.querySelectorAll(".chip").forEach(c => c.classList.remove("on")); b.classList.add("on"); onPick(+b.dataset.v); };
+}
+
+let leaveMin = 3, grp = 1;
+function openLeave() {
+  leaveMin = 3; grp = 1;
+  $("#leaveTitle").textContent = `Leaving for ${DIR[tab].label}`;
+  const nudge = () => {
+    const s = nextShuttle(tab), at = Date.now() + leaveMin * 60000;
+    const gap = Math.round((s.at - at) / 60000);
+    $("#leaveNudge").innerHTML = gap >= -2 && gap <= 10
+      ? `<div class="nudge">🚌 Free shuttle at <b>${fmt(s.at)}</b> (in ${minsTxt(s.mins)}). Take it and save ₹${Math.ceil(C.fare / grp)}?</div>` : "";
+  };
+  chips($("#whenChips"), [{ v: 1, t: "Now" }, { v: 3, t: "3 min" }, { v: 5, t: "5 min" }, { v: 10, t: "10 min" }, { v: 15, t: "15 min" }], leaveMin, v => { leaveMin = v; nudge(); });
+  chips($("#grpChips"), [1, 2, 3].map(v => ({ v, t: v === 1 ? "Just me" : `${v} of us` })), grp, v => { grp = v; nudge(); });
+  nudge(); open("#ovLeave");
+}
+let joinId = null, joinN = 1;
+function openJoin(id) {
+  joinId = id; joinN = 1;
+  const r = rides.find(x => x.id === id), left = C.seats - used(r);
+  chips($("#joinChips"), Array.from({ length: left }, (_, i) => ({ v: i + 1, t: i ? `${i + 1} of us` : "Just me" })), 1, v => joinN = v);
+  open("#ovJoin");
+}
+
+/* ---------------- Actions ---------------- */
+const rider = n => ({ uid: api.uid, name: me.name, phone: me.phone, n });
+$("#fab").onclick = openLeave;
+$("#goLeave").onclick = async () => {
+  if (myRide()) return toast("You're already in an auto");
+  const b = $("#goLeave"); b.disabled = true;
+  try {
+    const r = { dir: tab, leaveAt: Date.now() + leaveMin * 60000, createdAt: Date.now(), creator: api.uid, riders: [rider(grp)], cancelled: false };
+    r.id = await api.create(r);
+    log("i", `Posted ride ${r.id} ${tab} +${leaveMin}m`);
+    if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
+    closeAll(); toast("Posted! Others can see it now ✅");
+    ntfyPush(r);
+    if ($("#shareWa").checked) waShare(r);
+  } catch (e) { log("e", "Post failed: " + e.message); toast("Couldn't post: " + e.message); }
+  b.disabled = false;
+};
+$("#goJoin").onclick = async () => {
+  const b = $("#goJoin"); b.disabled = true;
+  try { await api.join(joinId, rider(joinN)); closeAll(); toast("You're in! Head to the main gate 🏃"); log("i", "Joined " + joinId);
+    if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message)); }
+  catch (e) { log("w", "Join failed: " + e.message); toast(e.message); }
+  b.disabled = false;
+};
+$("#list").onclick = async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  try {
+    if (b.dataset.join) openJoin(b.dataset.join);
+    if (b.dataset.leave) { await api.leave(b.dataset.leave, api.uid); toast("You left the auto"); }
+    if (b.dataset.cancel && confirm("Cancel this auto for everyone?")) { await api.cancel(b.dataset.cancel); toast("Auto cancelled"); }
+    if (b.dataset.share) waShare(rides.find(r => r.id === b.dataset.share));
+  } catch (err) { log("e", "Action failed: " + err.message); toast(err.message); }
+};
+let bulbMin = 60;
+$("#bulb").onclick = async e => {
+  if (e.target.closest("#bulbSw")) {
+    const mine = myBulb();
+    if (mine && mine.dir === tab) { try { await api.clearBulb(api.uid); toast("Bulb off"); log("i", "Bulb off"); } catch (err) { log("e", "Bulb off failed: " + err.message); toast(err.message); } return; }
+    bulbMin = 60; $("#bulbTitle").textContent = `Flexible to ${DIR[tab].label}`;
+    chips($("#bulbChips"), [{ v: 30, t: "30 min" }, { v: 60, t: "1 hour" }, { v: 120, t: "2 hours" }], bulbMin, v => bulbMin = v);
+    open("#ovBulb");
+  }
+  if (e.target.closest("#bulbFix")) openLeave();
+};
+$("#goBulb").onclick = async () => {
+  try {
+    await api.setBulb({ uid: api.uid, name: me.name, phone: me.phone, dir: tab, until: Date.now() + bulbMin * 60000 });
+    closeAll(); log("i", `Bulb on ${tab} ${bulbMin}m`);
+    const n = liveBulbs(tab).length;
+    toast(n >= 2 ? `💡 ${n} flexible now. Fix a time!` : "💡 You're on. We'll show you when others join");
+  } catch (err) { log("e", "Bulb on failed: " + err.message); toast(err.message); }
+};
+
+document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b)); localStorage.setItem("ap_tab", tab); render(); };
+
+$("#bLog").onclick = () => { unseenErr = 0; $("#logDot").style.display = "none"; renderLog(); open("#ovLog"); };
+$("#logCopy").onclick = async () => { try { await navigator.clipboard.writeText(logs.map(l => `[${l.t}] ${l.level} ${l.msg}`).join("\n")); toast("Copied"); } catch { toast("Copy blocked: select the text manually"); } };
+$("#logClear").onclick = () => { logs = []; localStorage.setItem(LOGK, "[]"); renderLog(); };
+$("#bAlerts").onclick = () => {
+  $("#ntfyNote").innerHTML = C.ntfyTopic
+    ? `Install the free <b>ntfy</b> app (App Store / Play Store), tap <b>+</b>, and subscribe to topic <code>${esc(C.ntfyTopic)}</code>. You'll get a push every time someone posts an auto.`
+    : `Not set up yet. The admin adds a topic name in the app's config (see SETUP.md).`;
+  open("#ovAlerts");
+};
+$("#bNotif").onclick = async () => {
+  if (!("Notification" in window)) { toast("This browser doesn't support pop-ups. iPhone: add to Home Screen first, or use ntfy."); log("w", "Notification API unavailable"); return; }
+  const p = await Notification.requestPermission(); toast(p === "granted" ? "Alerts on ✅" : "Alerts blocked in browser settings"); log("i", "Notification permission: " + p);
+};
+$("#bMe").onclick = () => { $("#meName").value = me.name; $("#mePhone").value = me.phone; open("#ovMe"); };
+$("#meSave").onclick = () => {
+  const n = $("#meName").value.trim(), p = $("#mePhone").value.trim();
+  if (!n || !validPhone(p)) return toast("Enter name and a valid 10-digit number");
+  me = { name: n, phone: p }; localStorage.setItem("ap_me", JSON.stringify(me)); closeAll(); toast("Saved (applies to new rides)");
+};
+$("#lgGo").onclick = () => {
+  const n = $("#lgName").value.trim(), p = $("#lgPhone").value.replace(/\D/g, "").slice(-10);
+  if (!n) return toast("Enter your name");
+  if (!validPhone(p)) return toast("Enter a valid 10-digit mobile number");
+  me = { name: n, phone: p }; localStorage.setItem("ap_me", JSON.stringify(me));
+  $("#login").classList.remove("show"); start();
+};
+
+
+/* ---------------- Install as app (Android + iPhone) ---------------- */
+const isStandalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+let deferredPrompt = null;
+if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
+  navigator.serviceWorker.register("sw.js").catch(e => log("w", "Service worker failed: " + e.message));
+const showInst = () => { if (!isStandalone && localStorage.getItem("ap_instX") !== "1") $("#instBar").style.display = "flex"; };
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; showInst(); });   // Android Chrome
+if (isIOS) showInst();
+$("#instBtn").onclick = async () => {
+  if (deferredPrompt) { deferredPrompt.prompt(); const r = await deferredPrompt.userChoice; log("i", "Install: " + r.outcome); deferredPrompt = null; $("#instBar").style.display = "none"; }
+  else if (isIOS) open("#ovIos");
+  else toast("Use your browser menu (⋮) → Install app / Add to Home screen");
+};
+$("#instX").onclick = () => { localStorage.setItem("ap_instX", "1"); $("#instBar").style.display = "none"; };
+window.addEventListener("appinstalled", () => { log("i", "App installed"); $("#instBar").style.display = "none"; });
+
+/* ---------------- Boot ---------------- */
+let started = false;
+async function start() {
+  if (started) return; started = true;
+  tab = localStorage.getItem("ap_tab") || (new Date().getHours() >= 13 && new Date().getHours() < 21 ? "m2c" : "c2m");
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x.dataset.d === tab));
+  await initBackend();
+  api.watch((rs, added) => {
+    rides = rs;
+    added.map(id => rs.find(r => r.id === id))
+      .filter(r => r && r.creator !== api.uid && r.createdAt > bootAt && !r.cancelled)
+      .forEach(alertNew);
+    render();
+  });
+  let bulbBoot = true;
+  api.watchBulbs(bs => {
+    const mb = bs.find(b => b.uid === api.uid && b.until > Date.now());
+    if (!bulbBoot && mb) {
+      const fresh = bs.filter(b => b.dir === mb.dir && b.uid !== api.uid && b.until > Date.now() && !bulbs.some(o => o.uid === b.uid && o.dir === b.dir && o.until > Date.now()));
+      fresh.forEach(b => { toast(`💡 ${b.name} is also flexible to ${DIR[b.dir].label} (${bs.filter(x => x.dir === mb.dir && x.until > Date.now()).length} now)`, 4500); navigator.vibrate?.(150); });
+    }
+    bulbBoot = false; bulbs = bs; render();
+  });
+  renderShuttle(); render();
+  let lastCount = -1, lastBulbs = -1;
+  setInterval(() => {
+    const n = live().length;
+    const bn = bulbs.filter(b => b.until > Date.now()).length;
+    if (n !== lastCount || bn !== lastBulbs) { lastCount = n; lastBulbs = bn; return render(); }   // a card expired → full re-render
+    document.querySelectorAll(".cd[data-at]").forEach(el => {   // otherwise just tick countdowns
+      const ms = +el.dataset.at - Date.now();
+      el.textContent = ms <= 0 ? "Leaving now" : ms < 60000 ? `${Math.ceil(ms/1000)}s` : `in ${Math.ceil(ms/60000)} min`;
+      el.classList.toggle("go", ms < 60000);
+    });
+  }, 1000);
+  setInterval(renderShuttle, 30000);
+}
+if (me) start(); else $("#login").classList.add("show");
+</script>
+</body>
+</html>
