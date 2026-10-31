@@ -26,9 +26,14 @@ header .wrap{display:flex;align-items:center;gap:10px}
 .dot{position:absolute;top:-3px;right:-3px;background:var(--r);color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 3px}
 .inst{background:var(--y);color:var(--ink);font-size:14px;font-weight:600;padding:8px 12px;display:flex;align-items:center;gap:10px}.inst span{flex:1}.inst #instBtn{background:var(--ink);color:#fff;padding:6px 14px;border-radius:8px}
 .demo{background:#fff7ed;color:#9a3412;font-size:12.5px;padding:7px 12px;text-align:center}
-.mz{display:flex;align-items:center;gap:10px;margin-top:10px}
-.mz svg{width:74px;height:74px;flex:none;overflow:visible;touch-action:pan-y}
-.bub{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px 12px;font-size:14px;font-weight:600;line-height:1.35;flex:1;box-shadow:0 2px 8px #0000000d;transition:transform .25s}
+.mz{display:flex;align-items:center;gap:12px;margin-top:12px;padding:12px 14px 10px;border-radius:20px;
+  background:radial-gradient(circle at 18% 30%,#fff7c2 0,#fef3c7 35%,#fde68a 100%);border:1px solid #fcd34d;position:relative;overflow:hidden}
+.mz:after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background:repeating-linear-gradient(90deg,#11182714 0 18px,transparent 18px 30px)}
+.mz svg{width:112px;height:112px;flex:none;overflow:visible;touch-action:pan-y;filter:drop-shadow(0 6px 8px #92400e33);position:relative;z-index:1}
+.bub{position:relative;z-index:1;background:#fff;border:1px solid #fcd34d;border-radius:16px;padding:11px 13px;font-size:14.5px;font-weight:600;line-height:1.4;flex:1;box-shadow:0 4px 14px #92400e1f;transition:transform .25s}
+.bub small{display:block;font-weight:500;color:var(--mute);font-size:12px;margin-top:3px}
+.bub.urgent{background:#fff1f2;border-color:#fda4af}
+.bub.good{background:#f0fdf4;border-color:#86efac}
 .bub:before{content:"";position:absolute;left:-7px;top:50%;margin-top:-6px;border:6px solid transparent;border-right-color:#fff;border-left:0}
 .bub.pop{transform:scale(1.04)}
 .lid{transform-box:fill-box;transform-origin:50% 0}
@@ -93,6 +98,28 @@ h3{font-size:13px;color:var(--mute);text-transform:uppercase;letter-spacing:.04e
 .login.show{display:flex}
 .login .box{background:#fff;border-radius:20px;padding:22px;width:100%;max-width:400px}
 .login h1{font-size:24px;margin-bottom:4px}.login p{color:var(--mute);font-size:14px;margin-bottom:16px}
+.lang{font-size:14px;font-weight:800;color:var(--y)}
+.acts{flex-wrap:wrap}
+.ok{color:var(--g);font-size:12px;font-weight:700;margin-left:4px}
+.gatebtn{width:100%;margin-top:10px;padding:11px}
+.usual{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:12px}
+.usual .ul{font-size:12.5px;color:var(--mute);font-weight:700;width:100%}
+.uchip{display:inline-flex;align-items:center;background:var(--card);border:1.5px solid var(--y);border-radius:12px;overflow:hidden}
+.uchip button{padding:9px 12px;font-weight:700}.uchip .ux{padding:9px 10px;color:var(--mute);border-left:1px solid var(--line)}
+.settle{background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:12px 13px;margin-top:12px}
+.settle .sh{font-weight:800;font-size:13px;color:#14532d;margin-bottom:6px}.settle p{margin:4px 0 8px;font-size:14.5px}
+a.btn{text-decoration:none;display:inline-block}
+.set{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.set span{flex:1}.set small{display:block;color:var(--mute);font-size:12.5px}
+.lglang{float:right;font-size:13px;font-weight:700;color:var(--b);padding:4px 0}
+:focus-visible{outline:3px solid var(--b);outline-offset:2px}
+/* 🔠 big text & high contrast */
+body.big{--mute:#1f2937;--line:#6b7280;--bg:#fff}
+body.big main,body.big .sheet,body.big .fab,body.big .login .box{zoom:1.2}
+body.big .btn,body.big .chip,body.big .call{border:2px solid var(--ink)}
+body.big .ride,body.big .sc,body.big .bulb,body.big .bub{border-width:2px;border-color:var(--ink)}
+body.big .x,body.big .note,body.big small{color:#111827!important}
+body.big .fab{bottom:calc(10px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
@@ -116,12 +143,13 @@ window.AUTOPOOL_CONFIG = {
 
 <header><div class="wrap">
   <div class="logo">🛺 Auto<span>Pool</span></div>
-  <button class="ib" id="bAlerts" title="Alerts">🔔</button>
-  <button class="ib" id="bLog" title="Issue log">🐞<span class="dot" id="logDot" style="display:none">0</span></button>
-  <button class="ib" id="bMe" title="Profile">👤</button>
+  <button class="ib lang" id="bLang" aria-label="Switch language / भाषा बदलें">हि</button>
+  <button class="ib" id="bAlerts" data-al="Alerts|अलर्ट">🔔</button>
+  <button class="ib" id="bLog" data-al="Issue log|समस्या लॉग">🐞<span class="dot" id="logDot" style="display:none">0</span></button>
+  <button class="ib" id="bMe" data-al="Profile and settings|प्रोफ़ाइल और सेटिंग">👤</button>
 </div></header>
-<div class="inst" id="instBar" style="display:none"><span>📲 Install AutoPool as an app</span><button id="instBtn">Install</button><button id="instX">✕</button></div>
-<div class="demo" id="demoBar" style="display:none">Demo mode: rides are saved on this device only. Add Firebase (see SETUP.md) to go live.</div>
+<div class="inst" id="instBar" style="display:none"><span data-t="📲 Install AutoPool as an app|📲 AutoPool को ऐप की तरह इंस्टॉल करें"></span><button id="instBtn" data-t="Install|इंस्टॉल"></button><button id="instX" data-al="Close|बंद करें">✕</button></div>
+<div class="demo" id="demoBar" style="display:none" data-t="Demo mode: rides are saved on this device only.|डेमो मोड: राइड सिर्फ़ इसी फ़ोन पर सेव हैं।"></div>
 
 <main class="wrap">
   <div class="mz">
@@ -148,103 +176,133 @@ window.AUTOPOOL_CONFIG = {
         </g>
       </g>
     </svg>
-    <div class="bub" id="bub">Hi! I'm Chhotu 🛺</div>
+    <div class="bub" id="bub" aria-live="polite">Hi! I'm Chhotu 🛺</div>
   </div>
+  <div id="settle"></div>
   <div class="shut" id="shut"></div>
-  <div class="tabs">
-    <button data-d="c2m" class="on">To Campus <span class="n" id="n_c2m">0</span></button>
-    <button data-d="m2c">To CDL <span class="n" id="n_m2c">0</span></button>
+  <div class="tabs" role="tablist">
+    <button data-d="c2m" class="on" role="tab"><span class="tl"></span> <span class="n" id="n_c2m">0</span></button>
+    <button data-d="m2c" role="tab"><span class="tl"></span> <span class="n" id="n_m2c">0</span></button>
   </div>
+  <div id="usual"></div>
   <div id="bulb"></div>
   <div id="list"></div>
 </main>
 
-<button class="fab" id="fab" data-glance>🛺 I'm leaving: find people</button>
+<button class="fab" id="fab" data-glance></button>
 
 <!-- Leave sheet -->
-<div class="ov" id="ovLeave"><div class="sheet">
-  <h2><span id="leaveTitle">Leaving for Campus</span><button data-close>✕</button></h2>
-  <div class="lbl">Auto leaves the gate in</div>
+<div class="ov" id="ovLeave" role="dialog"><div class="sheet">
+  <h2><span id="leaveTitle"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div class="lbl" data-t="Auto leaves the gate|ऑटो गेट से कब निकलेगा"></div>
   <div class="chips" id="whenChips"></div>
-  <div class="lbl">People already with you (incl. you)</div>
+  <div id="atWrap" style="display:none;margin-top:10px"><input type="time" class="fld" id="atTime" data-al="Leaving time|निकलने का समय"></div>
+  <div class="lbl" data-t="People already with you (incl. you)|आपके साथ कितने लोग (आप समेत)"></div>
   <div class="chips" id="grpChips"></div>
+  <label class="chk"><input type="checkbox" id="saveUsual"> <span data-t="⭐ Save this time as my usual ride|⭐ यह समय मेरी रोज़ की राइड में सेव करें"></span></label>
   <div id="leaveNudge"></div>
-  <div class="row"><button class="btn y" id="goLeave">Post auto</button></div>
+  <div class="row"><button class="btn y" id="goLeave" data-t="Post auto|ऑटो पोस्ट करें"></button></div>
 </div></div>
 
 <!-- WhatsApp question (after posting) -->
-<div class="ov" id="ovWa"><div class="sheet">
-  <h2>✅ Auto posted!<button data-close>✕</button></h2>
-  <p class="note" style="font-size:15px">Tell the hostel WhatsApp group too? More people see it → fuller auto → cheaper for you.</p>
-  <div class="row"><button class="btn ghost" id="waNo">No thanks</button><button class="btn g" id="waYes">Share on WhatsApp</button></div>
+<div class="ov" id="ovWa" role="dialog"><div class="sheet">
+  <h2><span data-t="✅ Auto posted!|✅ ऑटो पोस्ट हो गया!"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <p class="note" style="font-size:15px" data-t="Tell the hostel WhatsApp group too? More people see it → fuller auto → cheaper for you.|हॉस्टल के WhatsApp ग्रुप में भी बताएँ? ज़्यादा लोग देखेंगे → ऑटो भरेगा → आपके लिए सस्ता।"></p>
+  <div class="row"><button class="btn ghost" id="waNo" data-t="No thanks|नहीं, रहने दें"></button><button class="btn g" id="waYes" data-t="Share on WhatsApp|WhatsApp पर भेजें"></button></div>
 </div></div>
 
 <!-- Join sheet -->
-<div class="ov" id="ovJoin"><div class="sheet">
-  <h2>Join this auto<button data-close>✕</button></h2>
-  <div class="lbl">How many of you?</div>
+<div class="ov" id="ovJoin" role="dialog"><div class="sheet">
+  <h2><span data-t="Join this auto|इस ऑटो में जुड़ें"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div class="lbl" data-t="How many of you?|आप कितने लोग हैं?"></div>
   <div class="chips" id="joinChips"></div>
-  <div class="row"><button class="btn g" id="goJoin">Join, I'm coming</button></div>
+  <div class="row"><button class="btn g" id="goJoin" data-t="Join, I'm coming|जुड़ें, मैं आ रहा/रही हूँ"></button></div>
 </div></div>
 
 <!-- Alerts sheet -->
-<div class="ov" id="ovAlerts"><div class="sheet">
-  <h2>Get alerts<button data-close>✕</button></h2>
-  <div class="lbl">1 · While this app is open</div>
-  <p class="note">Your phone buzzes and shows a pop-up whenever someone posts an auto.</p>
-  <div class="row" style="margin-top:8px"><button class="btn ghost" id="bNotif">Turn on in-app alerts</button></div>
-  <div class="lbl" style="margin-top:18px">2 · Even when the app is closed (free, ntfy app)</div>
+<div class="ov" id="ovAlerts" role="dialog"><div class="sheet">
+  <h2><span data-t="Get alerts|अलर्ट पाएँ"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div class="lbl" data-t="1 · While this app is open|1 · जब ऐप खुला हो"></div>
+  <p class="note" data-t="Your phone buzzes and shows a pop-up when someone posts an auto, and 3 min before your auto leaves.|कोई ऑटो पोस्ट करे तो, और आपका ऑटो निकलने से 3 मिनट पहले, फ़ोन वाइब्रेट होगा और पॉप-अप दिखेगा।"></p>
+  <div class="row" style="margin-top:8px"><button class="btn ghost" id="bNotif" data-t="Turn on in-app alerts|ऐप अलर्ट चालू करें"></button></div>
+  <div class="lbl" style="margin-top:18px" data-t="2 · Even when the app is closed (free ntfy app)|2 · ऐप बंद हो तब भी (मुफ़्त ntfy ऐप)"></div>
   <p class="note" id="ntfyNote"></p>
 </div></div>
 
 <!-- Bulb sheet -->
-<div class="ov" id="ovBulb"><div class="sheet">
-  <h2><span id="bulbTitle">Flexible</span><button data-close>✕</button></h2>
-  <p class="note">Others will see you're happy to share an auto any time in this window. It turns off by itself.</p>
-  <div class="lbl">I'm flexible for the next</div>
+<div class="ov" id="ovBulb" role="dialog"><div class="sheet">
+  <h2><span id="bulbTitle"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <p class="note" data-t="Others will see you're happy to share an auto any time in this window. It turns off by itself.|दूसरों को दिखेगा कि आप इस समय में कभी भी ऑटो शेयर कर सकते हैं। यह अपने आप बंद हो जाएगा।"></p>
+  <div class="lbl" data-t="I'm flexible for the next|मैं अगले इतने समय तक फ़्री हूँ"></div>
   <div class="chips" id="bulbChips"></div>
-  <div class="row"><button class="btn g" id="goBulb">💡 Turn on</button></div>
+  <div class="row"><button class="btn g" id="goBulb" data-t="💡 Turn on|💡 चालू करें"></button></div>
 </div></div>
 
 <!-- iOS install sheet -->
-<div class="ov" id="ovIos"><div class="sheet">
-  <h2>Install on iPhone<button data-close>✕</button></h2>
-  <p class="note" style="font-size:15px;line-height:1.9">1. Open this page in <b>Safari</b> (not Chrome/Instagram)<br>2. Tap the <b>Share</b> button <span style="font-size:18px">⬆️</span> at the bottom<br>3. Scroll and tap <b>Add to Home Screen</b><br>4. Tap <b>Add</b>, then open AutoPool from your home screen</p>
+<div class="ov" id="ovIos" role="dialog"><div class="sheet">
+  <h2><span data-t="Install on iPhone|iPhone पर इंस्टॉल करें"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <p class="note" style="font-size:15px;line-height:1.9" data-th="1. Open this page in &lt;b&gt;Safari&lt;/b&gt; (not Chrome/Instagram)&lt;br&gt;2. Tap the &lt;b&gt;Share&lt;/b&gt; button ⬆️ at the bottom&lt;br&gt;3. Scroll and tap &lt;b&gt;Add to Home Screen&lt;/b&gt;&lt;br&gt;4. Tap &lt;b&gt;Add&lt;/b&gt;, then open AutoPool from your home screen|1. यह पेज &lt;b&gt;Safari&lt;/b&gt; में खोलें (Chrome/Instagram में नहीं)&lt;br&gt;2. नीचे &lt;b&gt;Share&lt;/b&gt; बटन ⬆️ दबाएँ&lt;br&gt;3. नीचे जाकर &lt;b&gt;Add to Home Screen&lt;/b&gt; दबाएँ&lt;br&gt;4. &lt;b&gt;Add&lt;/b&gt; दबाएँ, फिर होम स्क्रीन से AutoPool खोलें"></p>
 </div></div>
 
 <!-- Log sheet -->
-<div class="ov" id="ovLog"><div class="sheet">
-  <h2>Issue log<button data-close>✕</button></h2>
-  <p class="note" style="margin-bottom:8px">Errors and events from this phone. Tap Copy and send it if something breaks.</p>
+<div class="ov" id="ovLog" role="dialog"><div class="sheet">
+  <h2><span data-t="Issue log|समस्या लॉग"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <p class="note" style="margin-bottom:8px" data-t="Errors and events from this phone. Tap Copy and send it if something breaks.|इस फ़ोन की गड़बड़ियाँ और घटनाएँ। कुछ ख़राब हो तो Copy दबाकर भेजें।"></p>
   <div class="log" id="logBox"></div>
-  <div class="row"><button class="btn ghost" id="logCopy">Copy</button><button class="btn red" id="logClear">Clear</button></div>
+  <div class="row"><button class="btn ghost" id="logCopy" data-t="Copy|कॉपी"></button><button class="btn red" id="logClear" data-t="Clear|साफ़ करें"></button></div>
 </div></div>
 
-<!-- Profile sheet -->
-<div class="ov" id="ovMe"><div class="sheet">
-  <h2>You<button data-close>✕</button></h2>
-  <input class="fld" id="meName" placeholder="Name">
-  <input class="fld" id="mePhone" placeholder="10-digit phone" inputmode="numeric" maxlength="10">
-  <div class="row"><button class="btn" id="meSave">Save</button></div>
+<!-- Profile + settings sheet -->
+<div class="ov" id="ovMe" role="dialog"><div class="sheet">
+  <h2><span data-t="You & settings|आप और सेटिंग"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <input class="fld" id="meName" data-ph="Name|नाम" data-al="Name|नाम">
+  <input class="fld" id="mePhone" data-ph="10-digit phone|10 अंकों का फ़ोन" data-al="Phone|फ़ोन" inputmode="numeric" maxlength="10">
+  <input class="fld" id="meUpi" data-ph="UPI ID (optional), e.g. name@okaxis|UPI ID (वैकल्पिक), जैसे name@okaxis" data-al="UPI ID|UPI ID" autocapitalize="off" autocomplete="off">
+  <p class="note" style="margin:-4px 0 10px" data-t="With a UPI ID, co-riders can pay you back in one tap when you pay the driver.|UPI ID डालने पर, जब आप ड्राइवर को पैसे देंगे, साथी एक टैप में आपको लौटा पाएँगे।"></p>
+  <div class="set"><span><b data-t="🔠 Big text & high contrast|🔠 बड़ा टेक्स्ट और गहरे रंग"></b><small data-t="Easier to read in sunlight or with weak eyesight|धूप में या कमज़ोर नज़र में पढ़ना आसान"></small></span><button class="sw" id="bigSw" role="switch" data-al="Big text|बड़ा टेक्स्ट"></button></div>
+  <div class="set"><span><b data-t="🌐 Language|🌐 भाषा"></b><small data-t="English or Hindi|अंग्रेज़ी या हिंदी"></small></span><div class="chips" id="langChips"></div></div>
+  <div class="row"><button class="btn" id="meSave" data-t="Save|सेव करें"></button></div>
 </div></div>
 
 <!-- Login -->
 <div class="login" id="login"><div class="box">
+  <button class="lglang" id="lgLang">हिंदी में देखें</button>
   <h1>🛺 AutoPool</h1>
-  <p>Share the auto (₹80–120) between CDL and Campus. Your number is shown to riders so they can call you to hold the auto.</p>
-  <input class="fld" id="lgName" placeholder="Your name" autocomplete="name">
-  <input class="fld" id="lgPhone" placeholder="10-digit phone number" inputmode="numeric" maxlength="10" autocomplete="tel">
-  <button class="btn y" style="width:100%;padding:14px" id="lgGo">Continue</button>
+  <p data-t="Share the auto (₹80–120) between CDL and Campus. Your number is shown to riders so they can call you to hold the auto.|CDL और कैंपस के बीच ऑटो (₹80–120) शेयर करें। आपका नंबर साथियों को दिखेगा ताकि वे ऑटो रुकवाने के लिए कॉल कर सकें।"></p>
+  <input class="fld" id="lgName" data-ph="Your name|आपका नाम" data-al="Your name|आपका नाम" autocomplete="name">
+  <input class="fld" id="lgPhone" data-ph="10-digit phone number|10 अंकों का फ़ोन नंबर" data-al="Phone number|फ़ोन नंबर" inputmode="numeric" maxlength="10" autocomplete="tel">
+  <button class="btn y" style="width:100%;padding:14px" id="lgGo" data-t="Continue|आगे बढ़ें"></button>
 </div></div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="assertive"></div>
 
 <script type="module">
 const C = window.AUTOPOOL_CONFIG;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const DIR = { c2m: { label: "Campus", from: "CDL", short: "To Campus" }, m2c: { label: "CDL", from: "Campus", short: "To CDL" } };
-const EXPIRE_MS = 3 * 60 * 1000;   // card stays 3 min after leave time
+const EXPIRE_MS = 40 * 1000;        // card shows "Leaving now" for 40 s after leave time, then disappears
+const SETTLE_MS = 45 * 60 * 1000;   // "settle up" card stays 45 min after leave time
+
+/* ---------------- Language (English / Hindi) ---------------- */
+let lang = localStorage.getItem("ap_lang") || "en";
+const tr = (en, hi) => lang === "hi" ? hi : en;
+const lbl = d => d === "c2m" ? tr("Campus", "कैंपस") : "CDL";        // where the auto goes
+const frm = d => d === "c2m" ? "CDL" : tr("Campus", "कैंपस");        // where it starts
+function applyStatic() {
+  document.documentElement.lang = lang;
+  const pick = v => v.split("|")[lang === "hi" ? 1 : 0] ?? v;
+  document.querySelectorAll("[data-t]").forEach(el => el.textContent = pick(el.dataset.t));
+  document.querySelectorAll("[data-th]").forEach(el => el.innerHTML = pick(el.dataset.th));
+  document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = pick(el.dataset.ph));
+  document.querySelectorAll("[data-al]").forEach(el => { el.setAttribute("aria-label", pick(el.dataset.al)); el.title = pick(el.dataset.al); });
+  document.querySelectorAll(".tabs button").forEach(b => b.querySelector(".tl").textContent = tr("To ", "") + lbl(b.dataset.d) + tr("", " की ओर"));
+  $("#bLang").textContent = lang === "hi" ? "EN" : "हि";
+  $("#lgLang").textContent = lang === "hi" ? "View in English" : "हिंदी में देखें";
+}
+function setLang(l) { lang = l; localStorage.setItem("ap_lang", l); applyStatic(); if (started) { renderShuttle(); render(); } log("i", "Language: " + l); }
+
+/* ---------------- Big text & high contrast ---------------- */
+const setBig = on => { document.body.classList.toggle("big", on); localStorage.setItem("ap_big", on ? "1" : "0"); $("#bigSw").classList.toggle("on", on); $("#bigSw").setAttribute("aria-checked", on); };
 
 /* ---------------- Issue log ---------------- */
 const LOGK = "ap_log";
@@ -259,7 +317,7 @@ function log(level, msg) {
 window.addEventListener("error", e => log("e", `${e.message} @${e.filename?.split("/").pop()}:${e.lineno}`));
 window.addEventListener("unhandledrejection", e => log("e", "Promise: " + (e.reason?.message || e.reason)));
 function renderLog() {
-  $("#logBox").innerHTML = logs.length ? logs.slice().reverse().map(l => `<div class="${l.level}">[${esc(l.t)}] ${l.level.toUpperCase()} ${esc(l.msg)}</div>`).join("") : "No issues logged. All good ✅";
+  $("#logBox").innerHTML = logs.length ? logs.slice().reverse().map(l => `<div class="${l.level}">[${esc(l.t)}] ${l.level.toUpperCase()} ${esc(l.msg)}</div>`).join("") : tr("No issues logged. All good ✅", "कोई समस्या नहीं। सब ठीक ✅");
 }
 
 /* ---------------- Shuttle schedule (from the official sheet) ---------------- */
@@ -280,12 +338,16 @@ function nextShuttle(dir, from = new Date()) {
   return { at: best, mins: Math.round((best - from) / 60000) };
 }
 const fmt = d => d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
-const minsTxt = m => m < 60 ? `${m} min` : `${Math.floor(m/60)}h ${m%60}m`;
+const minsTxt = m => m < 60 ? `${m} ${tr("min", "मिनट")}` : `${Math.floor(m/60)}${tr("h", " घंटे")} ${m%60}${tr("m", " मिनट")}`;
 
 /* ---------------- Identity ---------------- */
 let me = JSON.parse(localStorage.getItem("ap_me") || "null");
 function uidLocal() { let u = localStorage.getItem("ap_uid"); if (!u) { u = "u" + Math.random().toString(36).slice(2, 10); localStorage.setItem("ap_uid", u); } return u; }
 const validPhone = p => /^[6-9]\d{9}$/.test(p);
+const validUpi = u => /^[\w.\-]{2,}@[a-zA-Z][a-zA-Z0-9.]{1,}$/.test(u);
+const hash = s => { let h = 5381; for (const c of String(s)) h = ((h << 5) + h + c.charCodeAt(0)) >>> 0; return h.toString(36); };
+const myTopic = () => C.ntfyTopic && me ? `${C.ntfyTopic}-${hash(me.phone)}` : "";   // personal reminder channel (phone not exposed)
+let started = false;
 
 /* ---------------- Backend: Firebase or Demo ---------------- */
 let api;
@@ -305,17 +367,17 @@ async function initBackend() {
         watch(cb) {
           const q = fs.query(col, fs.where("leaveAt", ">", Date.now() - 60 * 60 * 1000));
           return fs.onSnapshot(q, s => cb(s.docs.map(d => ({ id: d.id, ...d.data() })), s.docChanges().filter(c => c.type === "added").map(c => c.doc.id)),
-            e => { log("e", "Live sync failed: " + e.message); toast("Can't sync rides. Check internet."); });
+            e => { log("e", "Live sync failed: " + e.message); toast(tr("Can't sync rides. Check internet.", "राइड सिंक नहीं हो रहीं। इंटरनेट देखें।")); });
         },
         async create(r) { const ref = await fs.addDoc(col, r); return ref.id; },
         async join(id, rider) {
           await fs.runTransaction(db, async tx => {
             const ref = fs.doc(db, "rides", id); const s = await tx.get(ref);
-            if (!s.exists()) throw new Error("Ride no longer exists");
+            if (!s.exists()) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
             const r = s.data();
-            if (r.cancelled) throw new Error("This auto was cancelled");
+            if (r.cancelled) throw new Error(tr("This auto was cancelled", "यह ऑटो रद्द हो गया"));
             if (r.riders.some(x => x.uid === rider.uid)) return;
-            if (used(r) + rider.n > C.seats) throw new Error("Not enough seats left");
+            if (used(r) + rider.n > C.seats) throw new Error(tr("Not enough seats left", "इतनी सीटें बाकी नहीं"));
             tx.update(ref, { riders: [...r.riders, rider] });
           });
         },
@@ -326,6 +388,18 @@ async function initBackend() {
           });
         },
         async cancel(id) { await fs.updateDoc(fs.doc(db, "rides", id), { cancelled: true }); },
+        async patchRider(id, uid, fields) {
+          await fs.runTransaction(db, async tx => {
+            const ref = fs.doc(db, "rides", id); const s = await tx.get(ref); if (!s.exists()) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
+            tx.update(ref, { riders: s.data().riders.map(x => x.uid === uid ? { ...x, ...fields } : x) });
+          });
+        },
+        async setPayer(id, uid, upi) {
+          await fs.runTransaction(db, async tx => {
+            const ref = fs.doc(db, "rides", id); const s = await tx.get(ref); if (!s.exists()) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
+            tx.update(ref, { payer: uid, riders: s.data().riders.map(x => x.uid === uid ? { ...x, paid: true, ...(upi ? { upi } : {}) } : x) });
+          });
+        },
         watchBulbs(cb) {
           const q = fs.query(fs.collection(db, "bulbs"), fs.where("until", ">", Date.now()));
           return fs.onSnapshot(q, s => cb(s.docs.map(d => d.data())), e => log("e", "Bulb sync failed: " + e.message));
@@ -335,7 +409,7 @@ async function initBackend() {
       };
       log("i", "Connected to Firebase (live mode)");
       return;
-    } catch (e) { log("e", "Firebase init failed, falling back to demo: " + e.message); toast("Couldn't connect. Running in demo mode."); }
+    } catch (e) { log("e", "Firebase init failed, falling back to demo: " + e.message); toast(tr("Couldn't connect. Running in demo mode.", "कनेक्ट नहीं हुआ। डेमो मोड चल रहा है।")); }
   }
   // Demo mode: localStorage + sync across tabs on the same device
   $("#demoBar").style.display = "block";
@@ -356,14 +430,16 @@ async function initBackend() {
     async create(r) { const id = "r" + Date.now().toString(36); write([...read().filter(x => x.leaveAt > Date.now() - 3600e3), { id, ...r }]); return id; },
     async join(id, rider) {
       const rs = read(), r = rs.find(x => x.id === id);
-      if (!r) throw new Error("Ride no longer exists");
-      if (r.cancelled) throw new Error("This auto was cancelled");
+      if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
+      if (r.cancelled) throw new Error(tr("This auto was cancelled", "यह ऑटो रद्द हो गया"));
       if (r.riders.some(x => x.uid === rider.uid)) return;
-      if (used(r) + rider.n > C.seats) throw new Error("Not enough seats left");
+      if (used(r) + rider.n > C.seats) throw new Error(tr("Not enough seats left", "इतनी सीटें बाकी नहीं"));
       r.riders.push(rider); write(rs);
     },
     async leave(id, uid) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.riders = r.riders.filter(x => x.uid !== uid); write(rs); } },
     async cancel(id) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.cancelled = true; write(rs); } },
+    async patchRider(id, uid, fields) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.riders = r.riders.map(x => x.uid === uid ? { ...x, ...fields } : x); write(rs); },
+    async setPayer(id, uid, upi) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.payer = uid; r.riders = r.riders.map(x => x.uid === uid ? { ...x, paid: true, ...(upi ? { upi } : {}) } : x); write(rs); },
     watchBulbs(cb) { bcbs.push(cb); cb(readB()); },
     async setBulb(b) { writeB([...readB().filter(x => x.uid !== b.uid), b]); },
     async clearBulb(uid) { writeB(readB().filter(x => x.uid !== uid)); }
@@ -378,14 +454,31 @@ const used = r => r.riders.reduce((a, x) => a + (x.n || 1), 0);
 let rides = [], tab = "c2m", bootAt = Date.now();
 const live = () => rides.filter(r => !r.cancelled && r.leaveAt > Date.now() - EXPIRE_MS).sort((a, b) => a.leaveAt - b.leaveAt);
 const myRide = () => live().find(r => r.riders.some(x => x.uid === api.uid));
+const meIn = r => r.riders.find(x => x.uid === api.uid);
+let dismissed = new Set(JSON.parse(localStorage.getItem("ap_dismiss") || "[]"));
+const settleRides = () => rides.filter(r => !r.cancelled && r.leaveAt <= Date.now() && r.leaveAt > Date.now() - SETTLE_MS
+  && meIn(r) && r.riders.length > 1 && !dismissed.has(r.id));
+const cdText = ms => ms <= 0 ? tr("Leaving now", "अभी निकल रहा") : ms < 60000 ? `${Math.ceil(ms/1000)}s` : tr(`in ${Math.ceil(ms/60000)} min`, `${Math.ceil(ms/60000)} मिनट में`);
 
 function renderShuttle() {
   $("#shut").innerHTML = ["c2m", "m2c"].map(d => {
     const s = nextShuttle(d);
-    return `<div class="sc"><small>Next shuttle ${DIR[d].from} → ${DIR[d].label}</small><b>${fmt(s.at)}</b> <em>in ${minsTxt(s.mins)}</em></div>`;
+    return `<div class="sc"><small>${tr("Next shuttle", "अगली शटल")} ${frm(d)} → ${lbl(d)}</small><b>${fmt(s.at)}</b> <em>${tr("in", "")} ${minsTxt(s.mins)}${tr("", " में")}</em></div>`;
   }).join("");
 }
 
+/* ---- usual rides (one-tap) ---- */
+let usual = JSON.parse(localStorage.getItem("ap_usual") || "[]");
+const saveUsualList = () => localStorage.setItem("ap_usual", JSON.stringify(usual));
+const usualAt = hm => { const [h, m] = hm.split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0); return d; };
+function renderUsual() {
+  const list = usual.filter(u => u.dir === tab).sort((a, b) => a.hm.localeCompare(b.hm));
+  if (!list.length || myRide()) { $("#usual").innerHTML = ""; return; }
+  $("#usual").innerHTML = `<div class="usual"><span class="ul">${tr("⭐ My usual · tap to post", "⭐ रोज़ की राइड · टैप करें")}</span>
+    ${list.map(u => `<span class="uchip"><button data-usual="${u.hm}" data-glance aria-label="${tr("Post auto at", "ऑटो पोस्ट करें")} ${fmt(usualAt(u.hm))}">🛺 ${fmt(usualAt(u.hm))}</button><button class="ux" data-unusual="${u.hm}" aria-label="${tr("Remove", "हटाएँ")} ${fmt(usualAt(u.hm))}">✕</button></span>`).join("")}</div>`;
+}
+
+/* ---- 💡 flexible bulb ---- */
 let bulbs = [];
 const liveBulbs = d => bulbs.filter(b => b.until > Date.now() && b.dir === d);
 const myBulb = () => bulbs.find(b => b.uid === api.uid && b.until > Date.now());
@@ -394,66 +487,120 @@ function renderBulb() {
   const n = B.length, each = perHead(Math.min(n, C.seats));
   if (myRide()) { $("#bulb").innerHTML = ""; return; }
   const minsLeft = on ? Math.ceil((mine.until - Date.now()) / 60000) : 0;
-  let h = `<div class="bulb ${on ? "on" : ""}"><div class="bh"><span class="bi">💡</span>
-    <span class="bt"><b>${n ? `${n} flexible to ${DIR[tab].label}` : `Flexible to ${DIR[tab].label}?`}</b>
-    <small>${on ? `You're on · ${minsTxt(minsLeft)} left` : n ? `₹${each} each if you all go together` : "No fixed time? Turn on and find people"}</small></span>
-    <button class="sw ${on ? "on" : ""}" id="bulbSw" aria-label="Flexible toggle"></button></div>`;
-  if (others.length) h += `<div class="bp">${others.map(b => `<div class="p"><span class="av">${esc(b.name[0]?.toUpperCase())}</span><span class="nm">${esc(b.name)} <span class="x">· till ${fmt(new Date(b.until))}</span></span><a class="call" href="tel:${esc(b.phone)}">📞 Call</a></div>`).join("")}</div>`;
-  if (n >= 2) h += `<button class="btn ${n >= 3 ? "y" : "ghost"} bfix" id="bulbFix">${n >= 3 ? "🔥 Enough people! " : ""}Fix a time → post auto</button>`;
-  h += `</div>`;
-  $("#bulb").innerHTML = h;
+  let h = `<div class="bulb ${on ? "on" : ""}"><div class="bh"><span class="bi" aria-hidden="true">💡</span>
+    <span class="bt"><b>${n ? tr(`${n} flexible to ${lbl(tab)}`, `${n} लोग ${lbl(tab)} जाने को फ़्री`) : tr(`Flexible to ${lbl(tab)}?`, `${lbl(tab)} जाना है, समय तय नहीं?`)}</b>
+    <small>${on ? tr(`You're on · ${minsTxt(minsLeft)} left`, `आप चालू हैं · ${minsTxt(minsLeft)} बाकी`) : n ? tr(`₹${each} each if you all go together`, `सब साथ जाएँ तो ₹${each} प्रति व्यक्ति`) : tr("No fixed time? Turn on and find people", "चालू करें और साथी ढूँढें")}</small></span>
+    <button class="sw ${on ? "on" : ""}" id="bulbSw" role="switch" aria-checked="${!!on}" aria-label="${tr("I'm flexible", "मैं फ़्री हूँ")}"></button></div>`;
+  if (others.length) h += `<div class="bp">${others.map(b => `<div class="p"><span class="av">${esc(b.name[0]?.toUpperCase())}</span><span class="nm">${esc(b.name)} <span class="x">· ${tr("till", "तक")} ${fmt(new Date(b.until))}</span></span><a class="call" href="tel:${esc(b.phone)}">📞 ${tr("Call", "कॉल")}</a></div>`).join("")}</div>`;
+  if (n >= 2) h += `<button class="btn ${n >= 3 ? "y" : "ghost"} bfix" id="bulbFix">${n >= 3 ? tr("🔥 Enough people! ", "🔥 लोग काफ़ी हैं! ") : ""}${tr("Fix a time → post auto", "समय तय करें → ऑटो पोस्ट करें")}</button>`;
+  $("#bulb").innerHTML = h + `</div>`;
+}
+
+/* ---- 💸 settle up (UPI split) ---- */
+function renderSettle() {
+  const S = settleRides();
+  if (!S.length) { $("#settle").innerHTML = ""; return; }
+  $("#settle").innerHTML = S.map(r => {
+    const n = used(r), tot = fareFor(n), mine = meIn(r), share = perHead(n) * (mine.n || 1);
+    const payer = r.payer ? r.riders.find(x => x.uid === r.payer) : null;
+    let body;
+    if (!payer) body = `<p>${tr(`Who paid the driver <b>₹${tot}</b>?`, `ड्राइवर को <b>₹${tot}</b> किसने दिए?`)}</p>
+      <div class="acts"><button class="btn g" data-paiddriver="${r.id}">${tr("I paid", "मैंने दिए")}</button><button class="btn ghost" data-dismiss="${r.id}">${tr("Each paid own share", "सबने अपना दिया")}</button></div>`;
+    else if (payer.uid === api.uid) {
+      const others = r.riders.filter(x => x.uid !== api.uid), allPaid = others.every(x => x.paid);
+      body = `<p>${tr(`You paid ₹${tot}. Collect from:`, `आपने ₹${tot} दिए। इनसे लेने हैं:`)}</p><div class="ppl">${others.map(x => `<div class="p"><span class="nm">${esc(x.name)} · <b>₹${perHead(n) * (x.n || 1)}</b></span>${x.paid ? `<span class="ok">✅ ${tr("paid", "दे दिए")}</span>` : `<a class="call" href="tel:${esc(x.phone)}">📞 ${tr("Remind", "याद दिलाएँ")}</a>`}</div>`).join("")}</div>
+        ${allPaid ? `<button class="btn ghost" data-dismiss="${r.id}">${tr("All settled 🎉 Close", "सब हिसाब हो गया 🎉 बंद करें")}</button>` : ""}
+        ${me.upi ? "" : `<p class="note">${tr("Tip: add your UPI ID in 👤 so others can pay you in one tap.", "सुझाव: 👤 में अपना UPI ID डालें ताकि लोग एक टैप में दे सकें।")}</p>`}`;
+    }
+    else if (mine.paid) body = `<p>✅ ${tr(`You paid ${esc(payer.name)} ₹${share}. All good!`, `आपने ${esc(payer.name)} को ₹${share} दे दिए। बढ़िया!`)}</p><button class="btn ghost" data-dismiss="${r.id}">${tr("Close", "बंद करें")}</button>`;
+    else {
+      const upi = payer.upi ? `upi://pay?pa=${encodeURIComponent(payer.upi)}&pn=${encodeURIComponent(payer.name)}&am=${share}.00&cu=INR&tn=${encodeURIComponent("AutoPool auto share")}` : "";
+      body = `<p>${tr(`Pay <b>₹${share}</b> to <b>${esc(payer.name)}</b>`, `<b>${esc(payer.name)}</b> को <b>₹${share}</b> दें`)}</p>
+        <div class="acts">${upi ? `<a class="btn g" href="${upi}">💸 ${tr("Pay via UPI", "UPI से दें")}</a><button class="btn ghost" data-copy="${esc(payer.upi)}">${tr("Copy UPI ID", "UPI ID कॉपी")}</button>` : `<a class="call" href="tel:${esc(payer.phone)}">📞 ${tr("Ask for UPI / pay cash", "UPI पूछें / नकद दें")}</a>`}
+        <button class="btn ghost" data-mepaid="${r.id}">✅ ${tr("I've paid", "मैंने दे दिए")}</button></div>`;
+    }
+    return `<div class="settle"><div class="sh">💸 ${tr("Settle up", "हिसाब करें")} · ${fmt(new Date(r.leaveAt))} → ${lbl(r.dir)} · ₹${tot} ${tr("total", "कुल")}</div>${body}</div>`;
+  }).join("");
 }
 
 function render() {
-  renderBulb();
+  renderUsual(); renderBulb(); renderSettle();
   try { say(); } catch (e) { log("w", "Mascot line: " + e.message); }
   const L = live();
   ["c2m", "m2c"].forEach(d => $("#n_" + d).textContent = L.filter(r => r.dir === d).length);
   const list = L.filter(r => r.dir === tab);
   const mine = myRide();
   $("#fab").style.display = mine ? "none" : "block";
-  $("#fab").textContent = `🛺 I'm leaving for ${DIR[tab].label}`;
-  let h = `<h3>Autos leaving for ${DIR[tab].label}</h3>`;
+  $("#fab").textContent = tr(`🛺 I'm leaving for ${lbl(tab)}`, `🛺 मैं ${lbl(tab)} जा रहा/रही हूँ`);
+  let h = `<h3>${tr(`Autos leaving for ${lbl(tab)}`, `${lbl(tab)} जाने वाले ऑटो`)}</h3>`;
   if (!list.length) {
     const s = nextShuttle(tab);
-    h += `<div class="empty"><div>🛺</div>No one is leaving yet.<br>Tap the button below to post your auto.<br><small>Shuttle at ${fmt(s.at)} (in ${minsTxt(s.mins)})</small></div>`;
+    h += `<div class="empty"><div aria-hidden="true">🛺</div>${tr("No one is leaving yet.<br>Tap the button below to post your auto.", "अभी कोई नहीं जा रहा।<br>नीचे बटन दबाकर अपना ऑटो पोस्ट करें।")}<br><small>${tr("Shuttle at", "शटल")} ${fmt(s.at)} (${minsTxt(s.mins)})</small></div>`;
   }
   for (const r of list) {
     const u = used(r), left = C.seats - u, ms = r.leaveAt - Date.now();
-    const isIn = r.riders.some(x => x.uid === api.uid), isOwner = r.creator === api.uid;
-    const cdTxt = ms <= 0 ? "Leaving now" : ms < 60000 ? `${Math.ceil(ms/1000)}s` : `in ${Math.ceil(ms/60000)} min`;
+    const my = meIn(r), isIn = !!my, isOwner = r.creator === api.uid;
     const seats = Array.from({ length: C.seats }, (_, i) => `<span class="seat ${i < u ? "t" : ""}"></span>`).join("");
-    const ppl = r.riders.map(x => `<div class="p"><span class="av">${esc(x.name[0]?.toUpperCase())}</span><span class="nm">${esc(x.name)}${x.n > 1 ? ` <span class="x">+${x.n - 1}</span>` : ""}${x.uid === r.creator ? ' <span class="x">· posted</span>' : ""}</span>${x.uid !== api.uid ? `<a class="call" href="tel:${esc(x.phone)}">📞 Call</a>` : '<span class="x">you</span>'}</div>`).join("");
-    const each = perHead(u);
+    const ppl = r.riders.map(x => `<div class="p"><span class="av">${esc(x.name[0]?.toUpperCase())}</span><span class="nm">${esc(x.name)}${x.n > 1 ? ` <span class="x">+${x.n - 1}</span>` : ""}${x.uid === r.creator ? ` <span class="x">· ${tr("posted", "पोस्ट किया")}</span>` : ""}${x.gate ? ` <span class="ok">📍 ${tr("at gate", "गेट पर")}</span>` : ""}</span>${x.uid !== api.uid ? `<a class="call" href="tel:${esc(x.phone)}" aria-label="${tr("Call", "कॉल")} ${esc(x.name)}">📞 ${tr("Call", "कॉल")}</a>` : `<span class="x">${tr("you", "आप")}</span>`}</div>`).join("");
     let btn = "";
-    if (isOwner) btn = `<button class="btn ghost" data-share="${r.id}">Share</button><button class="btn red" data-cancel="${r.id}">Cancel</button>`;
-    else if (isIn) btn = `<button class="btn red" data-leave="${r.id}">Leave</button>`;
-    else if (left > 0 && !mine) btn = `<button class="btn g" data-join="${r.id}">Join</button>`;
-    else if (left <= 0) btn = `<span class="x">Full</span>`;
+    if (isOwner) btn = `<button class="btn ghost" data-share="${r.id}">${tr("Share", "शेयर")}</button><button class="btn red" data-cancel="${r.id}">${tr("Cancel", "रद्द करें")}</button>`;
+    else if (isIn) btn = `<button class="btn red" data-leave="${r.id}">${tr("Leave", "छोड़ें")}</button>`;
+    else if (left > 0 && !mine) btn = `<button class="btn g" data-join="${r.id}">${tr("Join", "जुड़ें")}</button>`;
+    else if (left <= 0) btn = `<span class="x">${tr("Full", "भरा हुआ")}</span>`;
+    const gate = isIn && !my.gate && ms > 0 ? `<button class="btn y gatebtn" data-gate="${r.id}" data-glance>📍 ${tr("I'm at the gate", "मैं गेट पर हूँ")}</button>` : "";
     h += `<div class="ride ${isIn ? "mine" : ""} ${left <= 0 && !isIn ? "full" : ""}">
-      <div class="rt"><b>${fmt(new Date(r.leaveAt))}</b><span class="cd ${ms < 60000 ? "go" : ""}" data-at="${r.leaveAt}">${cdTxt}</span><span class="seats">${seats}</span></div>
+      <div class="rt"><b>${fmt(new Date(r.leaveAt))}</b><span class="cd ${ms < 60000 ? "go" : ""}" data-at="${r.leaveAt}">${cdText(ms)}</span><span class="seats" aria-label="${u}/${C.seats} ${tr("seats taken", "सीट भरीं")}">${seats}</span></div>
       <div class="ppl">${ppl}</div>
-      <div class="acts"><span class="fare"><b>₹${each}</b> each (₹${fareFor(u)} total) · ${left > 0 ? `${left} seat${left > 1 ? "s" : ""} left` : "full"}</span>${btn}</div></div>`;
+      <div class="acts"><span class="fare"><b>₹${perHead(u)}</b> ${tr("each", "प्रति व्यक्ति")} (₹${fareFor(u)} ${tr("total", "कुल")}) · ${left > 0 ? tr(`${left} seat${left > 1 ? "s" : ""} left`, `${left} सीट बाकी`) : tr("full", "भरा")}</span>${btn}</div>${gate}</div>`;
   }
   $("#list").innerHTML = h;
 }
 
 /* ---------------- Alerts ---------------- */
 function toast(t, ms = 2600) { const el = $("#toast"); el.textContent = t; el.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = "none", ms); }
+function notify(title, body, tag) {
+  if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+    try { new Notification(title, { body, tag }); } catch (e) { log("w", "Notification failed: " + e.message); }
+  }
+}
 function alertNew(r) {
-  const u = r.riders.find(x => x.uid === r.creator);
-  const msg = `${u?.name || "Someone"} → ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))} · ${C.seats - used(r)} seats`;
+  const u = r.riders.find(x => x.uid === r.creator), who = u?.name || tr("Someone", "कोई");
+  const msg = tr(`${who} → ${lbl(r.dir)} at ${fmt(new Date(r.leaveAt))} · ${C.seats - used(r)} seats`, `${who} → ${lbl(r.dir)}, ${fmt(new Date(r.leaveAt))} · ${C.seats - used(r)} सीट`);
   const mb = myBulb();
-  if (mb && mb.dir === r.dir) { toast(`💡 ${u?.name || "Someone"} fixed ${fmt(new Date(r.leaveAt))} to ${DIR[r.dir].label}, you're flexible. Join?`, 6000); navigator.vibrate?.([200, 80, 200, 80, 200]); tab = r.dir; render(); }
+  if (mb && mb.dir === r.dir) { toast(tr(`💡 ${who} fixed ${fmt(new Date(r.leaveAt))} to ${lbl(r.dir)}, you're flexible. Join?`, `💡 ${who} ने ${fmt(new Date(r.leaveAt))} तय किया, आप फ़्री हैं। जुड़ें?`), 6000); navigator.vibrate?.([200, 80, 200, 80, 200]); tab = r.dir; render(); }
   else toast("🛺 " + msg, 4000);
   setTimeout(() => { mascot?.react(); mascot?.lookAt($(".ride")); }, 50);
   navigator.vibrate?.([120, 60, 120]);
-  if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
-    try { new Notification("Auto leaving", { body: msg, tag: r.id }); } catch (e) { log("w", "Notification failed: " + e.message); }
+  notify(tr("Auto leaving", "ऑटो निकल रहा है"), msg, r.id);
+}
+// ⏰ reminder 3 min before your auto (in-app). The ntfy one below covers a closed app.
+const reminded = new Set();
+function checkReminder() {
+  const r = myRide(); if (!r || reminded.has(r.id)) return;
+  const ms = r.leaveAt - Date.now();
+  if (ms > 0 && ms <= 180000) {
+    reminded.add(r.id);
+    const msg = tr(`Your auto leaves at ${fmt(new Date(r.leaveAt))}. Head to the main gate!`, `आपका ऑटो ${fmt(new Date(r.leaveAt))} पर निकलेगा। मेन गेट पर पहुँचें!`);
+    toast("⏰ " + msg, 7000); navigator.vibrate?.([300, 100, 300, 100, 300]); mascot?.react();
+    notify("⏰ AutoPool", msg, "rem" + r.id); log("i", "Reminder shown " + r.id);
   }
 }
+async function scheduleReminder(r) {
+  const at = r.leaveAt - 180000;
+  if (at - Date.now() < 20000) { reminded.add(r.id); return; }   // too close: no reminder needed, don't buzz right away either
+  if (!myTopic()) return;
+  try {
+    const res = await fetch(`https://ntfy.sh/${encodeURIComponent(myTopic())}?delay=${Math.floor(at / 1000)}`, {
+      method: "POST",
+      body: tr(`Your auto to ${lbl(r.dir)} leaves at ${fmt(new Date(r.leaveAt))}. Head to the main gate! (Ignore if you left the auto.)`, `${lbl(r.dir)} का आपका ऑटो ${fmt(new Date(r.leaveAt))} पर निकलेगा। मेन गेट पर पहुँचें! (ऑटो छोड़ दिया हो तो ध्यान न दें।)`),
+      headers: { Title: "AutoPool: your auto leaves in 3 min", Tags: "alarm_clock", Click: location.href.split("#")[0] }
+    });
+    log(res.ok ? "i" : "w", res.ok ? `Reminder scheduled for ${fmt(new Date(at))}` : "Reminder HTTP " + res.status);
+  } catch (e) { log("w", "Reminder schedule failed: " + e.message); }
+}
 function shareText(r) {
-  return `🛺 Auto ${DIR[r.dir].from} → ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} seat(s) left. ₹${perHead(C.seats)} each if full (${C.seats} people). Join: ${location.href.split("#")[0]}`;
+  return tr(`🛺 Auto ${frm(r.dir)} → ${lbl(r.dir)} at ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} seat(s) left. ₹${perHead(C.seats)} each if full (${C.seats} people). Join: ${location.href.split("#")[0]}`,
+            `🛺 ऑटो ${frm(r.dir)} → ${lbl(r.dir)}, ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} सीट बाकी। भरा तो ₹${perHead(C.seats)} प्रति व्यक्ति (${C.seats} लोग)। जुड़ें: ${location.href.split("#")[0]}`);
 }
 const waShare = r => window.open("https://wa.me/?text=" + encodeURIComponent(shareText(r)), "_blank");
 async function ntfyPush(r) {
@@ -461,87 +608,130 @@ async function ntfyPush(r) {
   try {
     const res = await fetch("https://ntfy.sh/" + encodeURIComponent(C.ntfyTopic), {
       method: "POST", body: shareText(r),
-      headers: { Title: `Auto to ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))}`, Tags: "auto_rickshaw", Click: location.href.split("#")[0] }
+      headers: { Title: `Auto to ${r.dir === "c2m" ? "Campus" : "CDL"} at ${fmt(new Date(r.leaveAt))}`, Tags: "auto_rickshaw", Click: location.href.split("#")[0] }
     });
     if (!res.ok) log("w", "ntfy push HTTP " + res.status); else log("i", "ntfy push sent");
   } catch (e) { log("w", "ntfy push failed: " + e.message); }
 }
 
 /* ---------------- Sheets ---------------- */
-const open = id => $(id).classList.add("show");
+const open = id => { $(id).classList.add("show"); setTimeout(() => $(id).querySelector("button,input")?.focus({ preventScroll: true }), 50); };
 const closeAll = () => document.querySelectorAll(".ov").forEach(o => o.classList.remove("show"));
-document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o || e.target.dataset.close !== undefined) closeAll(); }));
+document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o || e.target.closest("[data-close]")) closeAll(); }));
+addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); });
 function chips(el, opts, val, onPick) {
-  el.innerHTML = opts.map(o => `<button class="chip ${o.v === val ? "on" : ""}" data-v="${o.v}">${o.t}</button>`).join("");
-  el.onclick = e => { const b = e.target.closest(".chip"); if (!b) return; el.querySelectorAll(".chip").forEach(c => c.classList.remove("on")); b.classList.add("on"); onPick(+b.dataset.v); };
+  el.innerHTML = opts.map(o => `<button class="chip ${o.v === val ? "on" : ""}" data-v="${o.v}" aria-pressed="${o.v === val}">${o.t}</button>`).join("");
+  el.onclick = e => { const b = e.target.closest(".chip"); if (!b) return; el.querySelectorAll(".chip").forEach(c => { c.classList.remove("on"); c.setAttribute("aria-pressed", "false"); }); b.classList.add("on"); b.setAttribute("aria-pressed", "true"); onPick(b.dataset.v); };
 }
 
 let leaveMin = 3, grp = 1;
+function leaveAtFromSheet() {
+  if (leaveMin !== -1) return Date.now() + leaveMin * 60000;
+  const v = $("#atTime").value; if (!v) return null;
+  return usualAt(v).getTime();
+}
 function openLeave() {
-  leaveMin = 3; grp = 1;
-  $("#leaveTitle").textContent = `Leaving for ${DIR[tab].label}`;
+  leaveMin = 3; grp = 1; $("#saveUsual").checked = false; $("#atWrap").style.display = "none";
+  const d = new Date(Date.now() + 10 * 60000); $("#atTime").value = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  $("#leaveTitle").textContent = tr(`Leaving for ${lbl(tab)}`, `${lbl(tab)} जा रहे हैं`);
   const nudge = () => {
-    const s = nextShuttle(tab), at = Date.now() + leaveMin * 60000;
+    const s = nextShuttle(tab), at = leaveAtFromSheet() ?? Date.now();
     const gap = Math.round((s.at - at) / 60000);
     $("#leaveNudge").innerHTML = gap >= -2 && gap <= 10
-      ? `<div class="nudge">🚌 Free shuttle at <b>${fmt(s.at)}</b> (in ${minsTxt(s.mins)}). Take it and save ₹${perHead(grp)}?</div>` : "";
+      ? `<div class="nudge">${tr(`🚌 Free shuttle at <b>${fmt(s.at)}</b> (in ${minsTxt(s.mins)}). Take it and save ₹${perHead(grp)}?`, `🚌 मुफ़्त शटल <b>${fmt(s.at)}</b> पर (${minsTxt(s.mins)} में)। उससे जाकर ₹${perHead(grp)} बचाएँ?`)}</div>` : "";
   };
-  chips($("#whenChips"), [{ v: 1, t: "Now" }, { v: 3, t: "3 min" }, { v: 5, t: "5 min" }, { v: 10, t: "10 min" }, { v: 15, t: "15 min" }], leaveMin, v => { leaveMin = v; nudge(); });
-  chips($("#grpChips"), [1, 2, 3].map(v => ({ v, t: v === 1 ? "Just me" : `${v} of us` })), grp, v => { grp = v; nudge(); });
+  chips($("#whenChips"), [{ v: 1, t: tr("Now", "अभी") }, { v: 3, t: tr("3 min", "3 मिनट") }, { v: 5, t: tr("5 min", "5 मिनट") }, { v: 10, t: tr("10 min", "10 मिनट") }, { v: 15, t: tr("15 min", "15 मिनट") }, { v: -1, t: tr("⏰ Pick time", "⏰ समय चुनें") }], leaveMin,
+    v => { leaveMin = +v; $("#atWrap").style.display = leaveMin === -1 ? "block" : "none"; nudge(); });
+  $("#atTime").oninput = nudge;
+  chips($("#grpChips"), [1, 2, 3, 4].map(v => ({ v, t: v === 1 ? tr("Just me", "सिर्फ़ मैं") : tr(`${v} of us`, `हम ${v}`) })), grp, v => { grp = +v; nudge(); });
   nudge(); open("#ovLeave");
 }
 let joinId = null, joinN = 1;
 function openJoin(id) {
   joinId = id; joinN = 1;
   const r = rides.find(x => x.id === id), left = C.seats - used(r);
-  chips($("#joinChips"), Array.from({ length: left }, (_, i) => ({ v: i + 1, t: i ? `${i + 1} of us` : "Just me" })), 1, v => joinN = v);
+  chips($("#joinChips"), Array.from({ length: left }, (_, i) => ({ v: i + 1, t: i ? tr(`${i + 1} of us`, `हम ${i + 1}`) : tr("Just me", "सिर्फ़ मैं") })), 1, v => joinN = +v);
   open("#ovJoin");
 }
 
 /* ---------------- Actions ---------------- */
-const rider = n => ({ uid: api.uid, name: me.name, phone: me.phone, n });
+const rider = n => ({ uid: api.uid, name: me.name, phone: me.phone, n, ...(me.upi ? { upi: me.upi } : {}) });
+const hmOf = ms => { const d = new Date(ms); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+let waPending = null;
+async function postRide(leaveAt, g, askWa = true) {
+  if (myRide()) { toast(tr("You're already in an auto", "आप पहले से एक ऑटो में हैं")); return false; }
+  if (!leaveAt || leaveAt < Date.now() - 30000) { toast(tr("Pick a time later than now", "अभी के बाद का समय चुनें")); return false; }
+  if (leaveAt > Date.now() + 12 * 3600e3) { toast(tr("You can post up to 12 hours ahead", "12 घंटे पहले तक ही पोस्ट कर सकते हैं")); return false; }
+  const r = { dir: tab, leaveAt: Math.max(leaveAt, Date.now() + 30000), createdAt: Date.now(), creator: api.uid, riders: [rider(g)], cancelled: false };
+  r.id = await api.create(r);
+  log("i", `Posted ride ${r.id} ${tab} at ${fmt(new Date(r.leaveAt))}`);
+  if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
+  toast(tr("Posted! Others can see it now ✅", "पोस्ट हो गया! अब सबको दिख रहा है ✅"));
+  ntfyPush(r); scheduleReminder(r);
+  if (askWa) { waPending = r; open("#ovWa"); }
+  mascot?.react("happy");
+  return true;
+}
 $("#fab").onclick = openLeave;
 $("#goLeave").onclick = async () => {
-  if (myRide()) return toast("You're already in an auto");
   const b = $("#goLeave"); b.disabled = true;
   try {
-    const r = { dir: tab, leaveAt: Date.now() + leaveMin * 60000, createdAt: Date.now(), creator: api.uid, riders: [rider(grp)], cancelled: false };
-    r.id = await api.create(r);
-    log("i", `Posted ride ${r.id} ${tab} +${leaveMin}m`);
-    if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
-    closeAll(); toast("Posted! Others can see it now ✅");
-    ntfyPush(r);
-    waPending = r; open("#ovWa");
-    mascot?.react("happy");
-  } catch (e) { log("e", "Post failed: " + e.message); toast("Couldn't post: " + e.message); }
+    const at = leaveAtFromSheet();
+    if ($("#saveUsual").checked && at) {
+      const hm = hmOf(at);
+      if (!usual.some(u => u.dir === tab && u.hm === hm)) { usual.push({ dir: tab, hm }); usual = usual.slice(-6); saveUsualList(); log("i", `Saved usual ride ${tab} ${hm}`); }
+    }
+    closeAll();
+    await postRide(at, grp);
+  } catch (e) { log("e", "Post failed: " + e.message); toast(tr("Couldn't post: ", "पोस्ट नहीं हुआ: ") + e.message); }
   b.disabled = false;
 };
-let waPending = null;
+$("#usual").onclick = async e => {
+  const x = e.target.closest("[data-unusual]");
+  if (x) { usual = usual.filter(u => !(u.dir === tab && u.hm === x.dataset.unusual)); saveUsualList(); render(); toast(tr("Removed from usual rides", "रोज़ की राइड से हटाया")); return; }
+  const b = e.target.closest("[data-usual]"); if (!b) return;
+  const at = usualAt(b.dataset.usual).getTime();
+  if (at < Date.now() - 30000) return toast(tr(`${fmt(new Date(at))} has passed today. Pick another time.`, `आज ${fmt(new Date(at))} निकल चुका है। दूसरा समय चुनें।`));
+  try { await postRide(at, 1); } catch (err) { log("e", "Usual post failed: " + err.message); toast(err.message); }
+};
 $("#waYes").onclick = () => { if (waPending) waShare(waPending); log("i", "Shared to WhatsApp"); waPending = null; closeAll(); };
 $("#waNo").onclick = () => { waPending = null; closeAll(); };
 $("#goJoin").onclick = async () => {
   const b = $("#goJoin"); b.disabled = true;
-  try { await api.join(joinId, rider(joinN)); closeAll(); mascot?.react("happy"); toast("You're in! Head to the main gate 🏃"); log("i", "Joined " + joinId);
-    if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message)); }
-  catch (e) { log("w", "Join failed: " + e.message); toast(e.message); }
+  try {
+    await api.join(joinId, rider(joinN)); closeAll(); mascot?.react("happy");
+    toast(tr("You're in! Call them to confirm, then head to the main gate 🏃", "आप जुड़ गए! कॉल करके पक्का करें, फिर मेन गेट जाएँ 🏃")); log("i", "Joined " + joinId);
+    const r = rides.find(x => x.id === joinId); if (r) scheduleReminder(r);
+    if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
+  } catch (e) { log("w", "Join failed: " + e.message); toast(e.message); }
   b.disabled = false;
 };
 $("#list").onclick = async e => {
   const b = e.target.closest("button"); if (!b) return;
   try {
     if (b.dataset.join) openJoin(b.dataset.join);
-    if (b.dataset.leave) { await api.leave(b.dataset.leave, api.uid); toast("You left the auto"); }
-    if (b.dataset.cancel && confirm("Cancel this auto for everyone?")) { await api.cancel(b.dataset.cancel); toast("Auto cancelled"); }
+    if (b.dataset.leave) { await api.leave(b.dataset.leave, api.uid); toast(tr("You left the auto", "आपने ऑटो छोड़ दिया")); }
+    if (b.dataset.cancel && confirm(tr("Cancel this auto for everyone?", "सबके लिए यह ऑटो रद्द करें?"))) { await api.cancel(b.dataset.cancel); toast(tr("Auto cancelled", "ऑटो रद्द")); }
     if (b.dataset.share) waShare(rides.find(r => r.id === b.dataset.share));
+    if (b.dataset.gate) { await api.patchRider(b.dataset.gate, api.uid, { gate: true }); mascot?.react("happy"); toast(tr("📍 Everyone can see you're at the gate", "📍 सबको दिख रहा है कि आप गेट पर हैं")); log("i", "At gate " + b.dataset.gate); }
   } catch (err) { log("e", "Action failed: " + err.message); toast(err.message); }
+};
+$("#settle").onclick = async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  try {
+    if (b.dataset.paiddriver) { await api.setPayer(b.dataset.paiddriver, api.uid, me.upi); toast(tr("Got it! Co-riders will be asked to pay you back.", "ठीक है! साथियों को आपको पैसे लौटाने को कहा जाएगा।")); log("i", "Payer set " + b.dataset.paiddriver); }
+    if (b.dataset.mepaid) { await api.patchRider(b.dataset.mepaid, api.uid, { paid: true }); mascot?.react("happy"); toast(tr("✅ Marked as paid", "✅ भुगतान दर्ज")); log("i", "Marked paid " + b.dataset.mepaid); }
+    if (b.dataset.dismiss) { dismissed.add(b.dataset.dismiss); localStorage.setItem("ap_dismiss", JSON.stringify([...dismissed].slice(-50))); render(); }
+    if (b.dataset.copy) { await navigator.clipboard.writeText(b.dataset.copy); toast(tr("UPI ID copied", "UPI ID कॉपी हुआ")); }
+  } catch (err) { log("e", "Settle action failed: " + err.message); toast(err.message); }
 };
 let bulbMin = 60;
 $("#bulb").onclick = async e => {
   if (e.target.closest("#bulbSw")) {
     const mine = myBulb();
-    if (mine && mine.dir === tab) { try { await api.clearBulb(api.uid); toast("Bulb off"); log("i", "Bulb off"); } catch (err) { log("e", "Bulb off failed: " + err.message); toast(err.message); } return; }
-    bulbMin = 60; $("#bulbTitle").textContent = `Flexible to ${DIR[tab].label}`;
-    chips($("#bulbChips"), [{ v: 30, t: "30 min" }, { v: 60, t: "1 hour" }, { v: 120, t: "2 hours" }], bulbMin, v => bulbMin = v);
+    if (mine && mine.dir === tab) { try { await api.clearBulb(api.uid); toast(tr("Bulb off", "बल्ब बंद")); log("i", "Bulb off"); } catch (err) { log("e", "Bulb off failed: " + err.message); toast(err.message); } return; }
+    bulbMin = 60; $("#bulbTitle").textContent = tr(`Flexible to ${lbl(tab)}`, `${lbl(tab)} जाने को फ़्री`);
+    chips($("#bulbChips"), [{ v: 30, t: tr("30 min", "30 मिनट") }, { v: 60, t: tr("1 hour", "1 घंटा") }, { v: 120, t: tr("2 hours", "2 घंटे") }], bulbMin, v => bulbMin = +v);
     open("#ovBulb");
   }
   if (e.target.closest("#bulbFix")) openLeave();
@@ -551,40 +741,47 @@ $("#goBulb").onclick = async () => {
     await api.setBulb({ uid: api.uid, name: me.name, phone: me.phone, dir: tab, until: Date.now() + bulbMin * 60000 });
     closeAll(); log("i", `Bulb on ${tab} ${bulbMin}m`);
     const n = liveBulbs(tab).length;
-    toast(n >= 2 ? `💡 ${n} flexible now. Fix a time!` : "💡 You're on. We'll show you when others join");
+    toast(n >= 2 ? tr(`💡 ${n} flexible now. Fix a time!`, `💡 अभी ${n} लोग फ़्री। समय तय करें!`) : tr("💡 You're on. I'll buzz you when others join", "💡 चालू है। कोई और जुड़े तो बताऊँगा"));
   } catch (err) { log("e", "Bulb on failed: " + err.message); toast(err.message); }
 };
 
-document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b)); localStorage.setItem("ap_tab", tab); render(); };
+document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); }); localStorage.setItem("ap_tab", tab); render(); };
 
 $("#bLog").onclick = () => { unseenErr = 0; $("#logDot").style.display = "none"; renderLog(); open("#ovLog"); };
-$("#logCopy").onclick = async () => { try { await navigator.clipboard.writeText(logs.map(l => `[${l.t}] ${l.level} ${l.msg}`).join("\n")); toast("Copied"); } catch { toast("Copy blocked: select the text manually"); } };
+$("#logCopy").onclick = async () => { try { await navigator.clipboard.writeText(logs.map(l => `[${l.t}] ${l.level} ${l.msg}`).join("\n")); toast(tr("Copied", "कॉपी हुआ")); } catch { toast(tr("Copy blocked: select the text manually", "कॉपी नहीं हुआ: टेक्स्ट ख़ुद चुनें")); } };
 $("#logClear").onclick = () => { logs = []; localStorage.setItem(LOGK, "[]"); renderLog(); };
 $("#bAlerts").onclick = () => {
   $("#ntfyNote").innerHTML = C.ntfyTopic
-    ? `Install the free <b>ntfy</b> app (App Store / Play Store), tap <b>+</b>, and subscribe to topic <code>${esc(C.ntfyTopic)}</code>. You'll get a push every time someone posts an auto.`
-    : `Not set up yet. The admin adds a topic name in the app's config (see SETUP.md).`;
+    ? tr(`Install the free <b>ntfy</b> app (App Store / Play Store), tap <b>+</b>, and subscribe to:<br>• <code>${esc(C.ntfyTopic)}</code> for every new auto<br>• <code>${esc(myTopic())}</code> for <b>your own</b> reminder 3 min before your auto leaves`,
+         `मुफ़्त <b>ntfy</b> ऐप (App Store / Play Store) इंस्टॉल करें, <b>+</b> दबाएँ और जोड़ें:<br>• <code>${esc(C.ntfyTopic)}</code> हर नए ऑटो के लिए<br>• <code>${esc(myTopic())}</code> <b>आपके अपने</b> ऑटो से 3 मिनट पहले रिमाइंडर के लिए`)
+    : tr("Not set up yet.", "अभी सेट नहीं है।");
   open("#ovAlerts");
 };
 $("#bNotif").onclick = async () => {
-  if (!("Notification" in window)) { toast("This browser doesn't support pop-ups. iPhone: add to Home Screen first, or use ntfy."); log("w", "Notification API unavailable"); return; }
-  const p = await Notification.requestPermission(); toast(p === "granted" ? "Alerts on ✅" : "Alerts blocked in browser settings"); log("i", "Notification permission: " + p);
+  if (!("Notification" in window)) { toast(tr("This browser doesn't support pop-ups. iPhone: add to Home Screen first, or use ntfy.", "यह ब्राउज़र पॉप-अप नहीं दिखाता। iPhone: पहले होम स्क्रीन पर जोड़ें, या ntfy इस्तेमाल करें।")); log("w", "Notification API unavailable"); return; }
+  const p = await Notification.requestPermission(); toast(p === "granted" ? tr("Alerts on ✅", "अलर्ट चालू ✅") : tr("Alerts blocked in browser settings", "ब्राउज़र सेटिंग में अलर्ट बंद हैं")); log("i", "Notification permission: " + p);
 };
-$("#bMe").onclick = () => { $("#meName").value = me.name; $("#mePhone").value = me.phone; open("#ovMe"); };
+$("#bLang").onclick = () => setLang(lang === "hi" ? "en" : "hi");
+$("#lgLang").onclick = () => setLang(lang === "hi" ? "en" : "hi");
+$("#bigSw").onclick = () => setBig(!document.body.classList.contains("big"));
+$("#bMe").onclick = () => {
+  $("#meName").value = me.name; $("#mePhone").value = me.phone; $("#meUpi").value = me.upi || "";
+  chips($("#langChips"), [{ v: "en", t: "English" }, { v: "hi", t: "हिंदी" }], lang, v => setLang(v));
+  open("#ovMe");
+};
 $("#meSave").onclick = () => {
-  const n = $("#meName").value.trim(), p = $("#mePhone").value.trim();
-  if (!n || !validPhone(p)) return toast("Enter name and a valid 10-digit number");
-  me = { name: n, phone: p }; localStorage.setItem("ap_me", JSON.stringify(me)); closeAll(); toast("Saved (applies to new rides)");
+  const n = $("#meName").value.trim(), p = $("#mePhone").value.trim(), u = $("#meUpi").value.trim();
+  if (!n || !validPhone(p)) return toast(tr("Enter name and a valid 10-digit number", "नाम और सही 10 अंकों का नंबर डालें"));
+  if (u && !validUpi(u)) return toast(tr("That UPI ID doesn't look right (like name@okaxis)", "UPI ID सही नहीं लगता (जैसे name@okaxis)"));
+  me = { name: n, phone: p, ...(u ? { upi: u } : {}) }; localStorage.setItem("ap_me", JSON.stringify(me)); closeAll(); toast(tr("Saved ✅", "सेव हुआ ✅"));
 };
 $("#lgGo").onclick = () => {
   const n = $("#lgName").value.trim(), p = $("#lgPhone").value.replace(/\D/g, "").slice(-10);
-  if (!n) return toast("Enter your name");
-  if (!validPhone(p)) return toast("Enter a valid 10-digit mobile number");
+  if (!n) return toast(tr("Enter your name", "अपना नाम डालें"));
+  if (!validPhone(p)) return toast(tr("Enter a valid 10-digit mobile number", "सही 10 अंकों का मोबाइल नंबर डालें"));
   me = { name: n, phone: p }; localStorage.setItem("ap_me", JSON.stringify(me));
   $("#login").classList.remove("show"); start();
 };
-
-
 
 /* ---------------- Chhotu the mascot (2D port of the Inku follow behaviour) ----------------
    Eyes lead on a fast spring (ω=22), the head follows on a slower one (ω=6.5), both critically damped (no bounce).
@@ -697,17 +894,68 @@ function initMascot() {
   };
 }
 
-let lastSay = "";
+let lastSay = "", tipIdx = 0, tipAt = 0;
+const TIPS = [
+  ["Meet at the <b>main gate</b>, not outside rooms. Autos don't wait long 🏃", "<b>मेन गेट</b> पर मिलें, कमरे के बाहर नहीं। ऑटो ज़्यादा देर नहीं रुकता 🏃"],
+  ["One person pays the driver, the rest tap <b>Pay via UPI</b>. Done 💸", "एक व्यक्ति ड्राइवर को दे, बाकी <b>UPI से दें</b> दबाएँ। हो गया 💸"],
+  ["Can't make it? Tap <b>Leave</b> so others aren't stuck waiting 🙏", "नहीं आ पा रहे? <b>छोड़ें</b> दबाएँ ताकि कोई इंतज़ार न करे 🙏"],
+  ["Free shuttle beats ₹80. Check the <b>times above</b> first 🚌", "मुफ़्त शटल ₹80 से बेहतर। पहले <b>ऊपर समय</b> देखें 🚌"],
+  ["No fixed time? Turn on the <b>💡 bulb</b> and I'll find company", "समय तय नहीं? <b>💡 बल्ब</b> चालू करें, मैं साथी ढूँढूँगा"],
+  ["Same time every day? Tick <b>⭐ Save as usual</b> and post in one tap", "रोज़ एक ही समय? <b>⭐ रोज़ की राइड</b> सेव करें, एक टैप में पोस्ट"],
+  ["Reached the gate? Tap <b>📍 I'm at the gate</b> so others hurry up", "गेट पर पहुँच गए? <b>📍 मैं गेट पर हूँ</b> दबाएँ ताकि बाकी जल्दी आएँ"],
+  ["Be kind to the driver. Confirm the fare <b>before</b> you sit 🛺", "ड्राइवर से अच्छे से बात करें। बैठने से <b>पहले</b> किराया पक्का करें 🛺"],
+];
 function say() {
-  const L = live(), mine = myRide(), B = liveBulbs(tab), here = L.filter(r => r.dir === tab && C.seats - used(r) > 0);
-  const sh = nextShuttle(tab);
-  let t;
-  if (mine) t = `You're in! Auto at ${fmt(new Date(mine.leaveAt))}. Head to the main gate 🏃`;
-  else if (B.length >= 2) t = `💡 ${B.length} people flexible to ${DIR[tab].label}. Fix a time and go!`;
-  else if (here.length) t = `🛺 ${here.length} auto${here.length > 1 ? "s" : ""} leaving for ${DIR[tab].label}. Hop in, pay less!`;
-  else if (sh.mins <= 10) t = `🚌 Free shuttle in ${sh.mins} min. Save your ₹${fareFor(1)}!`;
-  else t = `Going to ${DIR[tab].label}? Post it, I'll find people 🛺`;
-  if (t !== lastSay) { lastSay = t; const b = $("#bub"); b.textContent = t; b.classList.add("pop"); setTimeout(() => b.classList.remove("pop"), 250); }
+  const now = Date.now(), L = live(), mine = myRide(), B = liveBulbs(tab), mb = myBulb();
+  const here = L.filter(r => r.dir === tab && C.seats - used(r) > 0), sh = nextShuttle(tab);
+  const hr = new Date().getHours(), night = hr >= 21 || hr < 6, S = settleRides();
+  let t = null, sub = "", mood = "";
+  if (mine) {
+    const ms = mine.leaveAt - now, mins = Math.ceil(ms / 60000), n = used(mine), my = meIn(mine);
+    const others = mine.riders.filter(x => x.uid !== api.uid), notHere = others.filter(x => !x.gate);
+    const owner = mine.creator === api.uid, boss = mine.riders.find(x => x.uid === mine.creator);
+    if (ms <= 0) { t = tr(`🛺 It's time! ${n} of you, <b>₹${perHead(n)} each</b> (₹${fareFor(n)} total).`, `🛺 समय हो गया! ${n} लोग, <b>₹${perHead(n)} प्रति व्यक्ति</b> (कुल ₹${fareFor(n)})।`);
+      sub = tr("One person pays the driver, then settle up here.", "एक व्यक्ति ड्राइवर को दे, फिर यहाँ हिसाब करें।"); mood = "good"; }
+    else if (my.gate && notHere.length) { t = tr(`📍 You're at the gate. Waiting for <b>${notHere.map(x => esc(x.name)).join(", ")}</b>.`, `📍 आप गेट पर हैं। <b>${notHere.map(x => esc(x.name)).join(", ")}</b> का इंतज़ार।`);
+      sub = tr("Give them a call if they're late.", "देर हो रही हो तो कॉल कर लें।"); }
+    else if (my.gate) { t = tr("📍 Everyone's at the gate. Let's go! 🎉", "📍 सब गेट पर हैं। चलो! 🎉"); mood = "good"; }
+    else if (ms <= 2 * 60000) { t = tr(`⏰ <b>${mins <= 1 ? "Under a minute" : mins + " min"}!</b> Be at the main gate now. Don't be late!`, `⏰ <b>${mins <= 1 ? "1 मिनट से कम" : mins + " मिनट"}!</b> अभी मेन गेट पहुँचें। देर मत करना!`);
+      sub = others.length ? tr("Others are counting on you.", "बाकी आप पर भरोसा कर रहे हैं।") : ""; mood = "urgent"; }
+    else if (!owner && boss) { t = tr(`📞 Call <b>${esc(boss.name)}</b> and confirm, so they hold the auto for you.`, `📞 <b>${esc(boss.name)}</b> को कॉल करके पक्का करें, ताकि वे ऑटो रोकें।`);
+      sub = tr(`Leaves ${fmt(new Date(mine.leaveAt))} · be sharp!`, `${fmt(new Date(mine.leaveAt))} पर निकलेगा · समय पर रहें!`); }
+    else if (owner && !others.length) { t = tr("No one joined yet. <b>Share on WhatsApp</b> to fill seats faster 📣", "अभी कोई नहीं जुड़ा। सीटें जल्दी भरने के लिए <b>WhatsApp पर भेजें</b> 📣");
+      sub = tr(`You're leaving at ${fmt(new Date(mine.leaveAt))}.`, `आप ${fmt(new Date(mine.leaveAt))} पर निकल रहे हैं।`); }
+    else if (owner) { t = tr(`👥 ${others.length} joined! Call <b>${esc(others[0].name)}</b> to confirm they're coming.`, `👥 ${others.length} जुड़े! <b>${esc(others[0].name)}</b> को कॉल करके पक्का करें।`);
+      sub = tr(`Leave your room 2 min before ${fmt(new Date(mine.leaveAt))}.`, `${fmt(new Date(mine.leaveAt))} से 2 मिनट पहले कमरे से निकलें।`); }
+    if (n >= C.seats && ms > 0 && !my.gate) { sub = tr(`Auto full · ₹${perHead(n)} each.`, `ऑटो भरा · ₹${perHead(n)} प्रति व्यक्ति।`); if (mood !== "urgent") mood = "good"; }
+  }
+  else if (S.length) { const r = S[0], p = r.payer && r.riders.find(x => x.uid === r.payer);
+    t = !p ? tr("💸 Who paid the driver? Tap it in <b>Settle up</b> above.", "💸 ड्राइवर को किसने दिए? ऊपर <b>हिसाब करें</b> में बताएँ।")
+      : p.uid === api.uid ? tr("💸 I'll remind the others to pay you back.", "💸 मैं बाकियों को आपको पैसे लौटाने को कहूँगा।")
+      : meIn(r).paid ? tr("✅ All paid. Thanks for pooling! 🙌", "✅ सब चुकता। पूलिंग के लिए धन्यवाद! 🙌")
+      : tr(`💸 Pay <b>${esc(p.name)}</b> back. One tap with UPI above.`, `💸 <b>${esc(p.name)}</b> को पैसे लौटाएँ। ऊपर UPI से एक टैप में।`);
+    mood = "good"; }
+  else if (mb && mb.dir === tab && B.length < 2) { t = tr("💡 You're flexible. I'll buzz you the moment someone else is free.", "💡 आप फ़्री हैं। कोई और फ़्री होते ही बताऊँगा।"); sub = tr(`Till ${fmt(new Date(mb.until))}.`, `${fmt(new Date(mb.until))} तक।`); }
+  else if (B.length >= 2) { t = tr(`💡 <b>${B.length} people flexible</b> to ${lbl(tab)}. Fix a time and go!`, `💡 <b>${B.length} लोग फ़्री</b> ${lbl(tab)} जाने को। समय तय करें और चलें!`);
+    sub = tr(`₹${perHead(Math.min(B.length, C.seats))} each if you all go.`, `सब जाएँ तो ₹${perHead(Math.min(B.length, C.seats))} प्रति व्यक्ति।`); mood = "good"; }
+  else if (here.length) { const r = here[0], m = Math.max(0, Math.ceil((r.leaveAt - now) / 60000));
+    t = tr(`🛺 Auto to ${lbl(tab)} in <b>${m} min</b>. Hop in, pay ₹${perHead(used(r) + 1)}!`, `🛺 ${lbl(tab)} का ऑटो <b>${m} मिनट</b> में। जुड़ें, सिर्फ़ ₹${perHead(used(r) + 1)}!`);
+    sub = here.length > 1 ? tr(`+${here.length - 1} more below`, `नीचे ${here.length - 1} और`) : tr("Tap Join, then call them to confirm.", "जुड़ें दबाएँ, फिर कॉल करके पक्का करें।"); }
+  else if (sh.mins <= 10) { t = tr(`🚌 Free shuttle in <b>${sh.mins} min</b>. Save your ₹${fareFor(1)}!`, `🚌 मुफ़्त शटल <b>${sh.mins} मिनट</b> में। ₹${fareFor(1)} बचाएँ!`);
+    sub = tr("Walk to the stop now.", "अभी स्टॉप की ओर चलें।"); mood = "good"; }
+  if (!t && night) { t = tr("🌙 Late ride? Go in a group. Share the auto, stay safe.", "🌙 देर रात? ग्रुप में जाएँ। ऑटो शेयर करें, सुरक्षित रहें।"); sub = tr("Tell a friend when you leave.", "निकलते समय किसी दोस्त को बता दें।"); }
+  if (!t) {   // nothing urgent → rotate friendly tips every 9 s
+    if (now - tipAt > 9000) { tipIdx = (tipIdx + 1) % TIPS.length; tipAt = now; }
+    t = tr(...TIPS[tipIdx]); sub = tr(`Going to ${lbl(tab)}? Tap the yellow button.`, `${lbl(tab)} जाना है? पीला बटन दबाएँ।`);
+  }
+  const html = t + (sub ? `<small>${sub}</small>` : "");
+  if (html !== lastSay) {
+    const urgentNow = mood === "urgent" && !$("#bub").classList.contains("urgent");
+    lastSay = html; const b = $("#bub"); b.innerHTML = html;
+    b.classList.toggle("urgent", mood === "urgent"); b.classList.toggle("good", mood === "good");
+    b.classList.add("pop"); setTimeout(() => b.classList.remove("pop"), 250);
+    if (urgentNow) { mascot?.react(); navigator.vibrate?.([100, 60, 100]); }
+  }
 }
 
 /* ---------------- Install as app (Android + iPhone) ---------------- */
@@ -722,17 +970,16 @@ if (isIOS) showInst();
 $("#instBtn").onclick = async () => {
   if (deferredPrompt) { deferredPrompt.prompt(); const r = await deferredPrompt.userChoice; log("i", "Install: " + r.outcome); deferredPrompt = null; $("#instBar").style.display = "none"; }
   else if (isIOS) open("#ovIos");
-  else toast("Use your browser menu (⋮) → Install app / Add to Home screen");
+  else toast(tr("Use your browser menu (⋮) → Install app / Add to Home screen", "ब्राउज़र मेन्यू (⋮) → Install app / Add to Home screen चुनें"));
 };
 $("#instX").onclick = () => { localStorage.setItem("ap_instX", "1"); $("#instBar").style.display = "none"; };
 window.addEventListener("appinstalled", () => { log("i", "App installed"); $("#instBar").style.display = "none"; });
 
 /* ---------------- Boot ---------------- */
-let started = false;
 async function start() {
   if (started) return; started = true;
   tab = localStorage.getItem("ap_tab") || (new Date().getHours() >= 13 && new Date().getHours() < 21 ? "m2c" : "c2m");
-  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x.dataset.d === tab));
+  document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x.dataset.d === tab); x.setAttribute("aria-selected", x.dataset.d === tab); });
   try { mascot = window.__mascot = initMascot(); } catch (e) { log("e", "Mascot failed: " + e.message); }
   await initBackend();
   api.watch((rs, added) => {
@@ -747,24 +994,29 @@ async function start() {
     const mb = bs.find(b => b.uid === api.uid && b.until > Date.now());
     if (!bulbBoot && mb) {
       const fresh = bs.filter(b => b.dir === mb.dir && b.uid !== api.uid && b.until > Date.now() && !bulbs.some(o => o.uid === b.uid && o.dir === b.dir && o.until > Date.now()));
-      fresh.forEach(b => { mascot?.react("happy"); toast(`💡 ${b.name} is also flexible to ${DIR[b.dir].label} (${bs.filter(x => x.dir === mb.dir && x.until > Date.now()).length} now)`, 4500); navigator.vibrate?.(150); });
+      fresh.forEach(b => { mascot?.react("happy"); toast(tr(`💡 ${b.name} is also flexible to ${lbl(b.dir)} (${bs.filter(x => x.dir === mb.dir && x.until > Date.now()).length} now)`, `💡 ${b.name} भी ${lbl(b.dir)} जाने को फ़्री (अब ${bs.filter(x => x.dir === mb.dir && x.until > Date.now()).length})`), 4500); navigator.vibrate?.(150); });
     }
     bulbBoot = false; bulbs = bs; render();
   });
+  // rides you're already in when the app opens: don't buzz for a reminder that is already overdue
+  live().forEach(r => { if (meIn(r) && r.leaveAt - Date.now() <= 180000) reminded.add(r.id); });
   renderShuttle(); render();
-  let lastCount = -1, lastBulbs = -1;
+  let lastCount = -1, lastBulbs = -1, lastSettle = -1;
   setInterval(() => {
-    const n = live().length;
-    const bn = bulbs.filter(b => b.until > Date.now()).length;
-    if (n !== lastCount || bn !== lastBulbs) { lastCount = n; lastBulbs = bn; return render(); }   // a card expired → full re-render
+    const n = live().length, bn = bulbs.filter(b => b.until > Date.now()).length, sn = settleRides().length;
+    checkReminder();
+    if (n !== lastCount || bn !== lastBulbs || sn !== lastSettle) { lastCount = n; lastBulbs = bn; lastSettle = sn; return render(); }   // a card appeared/expired → full re-render
+    try { say(); } catch (e) {}
     document.querySelectorAll(".cd[data-at]").forEach(el => {   // otherwise just tick countdowns
       const ms = +el.dataset.at - Date.now();
-      el.textContent = ms <= 0 ? "Leaving now" : ms < 60000 ? `${Math.ceil(ms/1000)}s` : `in ${Math.ceil(ms/60000)} min`;
+      el.textContent = cdText(ms);
       el.classList.toggle("go", ms < 60000);
     });
   }, 1000);
   setInterval(renderShuttle, 30000);
 }
+applyStatic();
+setBig(localStorage.getItem("ap_big") === "1");
 if (me) start(); else $("#login").classList.add("show");
 </script>
 </body>
