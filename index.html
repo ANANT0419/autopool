@@ -109,8 +109,8 @@ window.AUTOPOOL_CONFIG = {
     appId: "1:38116180279:web:74aef14d8bbea665489ab2"
   },
   ntfyTopic: "imt-cdl-autopool-66cea7",           // e.g. "cdl-autopool-7x3k" — free phone alerts via the ntfy app
-  fare: 80,                // ₹ per auto, flat
-  seats: 4                 // max people per auto
+  fares: { 1: 80, 2: 80, 3: 80, 4: 100, 5: 120 },  // ₹ for the whole auto, by number of people
+  seats: 5                 // max people per auto
 };
 </script>
 
@@ -231,7 +231,7 @@ window.AUTOPOOL_CONFIG = {
 <!-- Login -->
 <div class="login" id="login"><div class="box">
   <h1>🛺 AutoPool</h1>
-  <p>Share the ₹80 auto between CDL and Campus. Your number is shown to riders so they can call you to hold the auto.</p>
+  <p>Share the auto (₹80–120) between CDL and Campus. Your number is shown to riders so they can call you to hold the auto.</p>
   <input class="fld" id="lgName" placeholder="Your name" autocomplete="name">
   <input class="fld" id="lgPhone" placeholder="10-digit phone number" inputmode="numeric" maxlength="10" autocomplete="tel">
   <button class="btn y" style="width:100%;padding:14px" id="lgGo">Continue</button>
@@ -372,6 +372,8 @@ async function initBackend() {
 }
 
 /* ---------------- State & render ---------------- */
+const fareFor = n => C.fares[Math.min(Math.max(n, 1), C.seats)];   // total auto fare for n people
+const perHead = n => Math.ceil(fareFor(n) / Math.max(n, 1));         // what each person pays
 const used = r => r.riders.reduce((a, x) => a + (x.n || 1), 0);
 let rides = [], tab = "c2m", bootAt = Date.now();
 const live = () => rides.filter(r => !r.cancelled && r.leaveAt > Date.now() - EXPIRE_MS).sort((a, b) => a.leaveAt - b.leaveAt);
@@ -389,7 +391,7 @@ const liveBulbs = d => bulbs.filter(b => b.until > Date.now() && b.dir === d);
 const myBulb = () => bulbs.find(b => b.uid === api.uid && b.until > Date.now());
 function renderBulb() {
   const mine = myBulb(), on = mine && mine.dir === tab, B = liveBulbs(tab), others = B.filter(b => b.uid !== api.uid);
-  const n = B.length, each = Math.ceil(C.fare / Math.min(Math.max(n, 1), C.seats));
+  const n = B.length, each = perHead(Math.min(n, C.seats));
   if (myRide()) { $("#bulb").innerHTML = ""; return; }
   const minsLeft = on ? Math.ceil((mine.until - Date.now()) / 60000) : 0;
   let h = `<div class="bulb ${on ? "on" : ""}"><div class="bh"><span class="bi">💡</span>
@@ -422,7 +424,7 @@ function render() {
     const cdTxt = ms <= 0 ? "Leaving now" : ms < 60000 ? `${Math.ceil(ms/1000)}s` : `in ${Math.ceil(ms/60000)} min`;
     const seats = Array.from({ length: C.seats }, (_, i) => `<span class="seat ${i < u ? "t" : ""}"></span>`).join("");
     const ppl = r.riders.map(x => `<div class="p"><span class="av">${esc(x.name[0]?.toUpperCase())}</span><span class="nm">${esc(x.name)}${x.n > 1 ? ` <span class="x">+${x.n - 1}</span>` : ""}${x.uid === r.creator ? ' <span class="x">· posted</span>' : ""}</span>${x.uid !== api.uid ? `<a class="call" href="tel:${esc(x.phone)}">📞 Call</a>` : '<span class="x">you</span>'}</div>`).join("");
-    const each = Math.ceil(C.fare / Math.max(u, 1));
+    const each = perHead(u);
     let btn = "";
     if (isOwner) btn = `<button class="btn ghost" data-share="${r.id}">Share</button><button class="btn red" data-cancel="${r.id}">Cancel</button>`;
     else if (isIn) btn = `<button class="btn red" data-leave="${r.id}">Leave</button>`;
@@ -431,7 +433,7 @@ function render() {
     h += `<div class="ride ${isIn ? "mine" : ""} ${left <= 0 && !isIn ? "full" : ""}">
       <div class="rt"><b>${fmt(new Date(r.leaveAt))}</b><span class="cd ${ms < 60000 ? "go" : ""}" data-at="${r.leaveAt}">${cdTxt}</span><span class="seats">${seats}</span></div>
       <div class="ppl">${ppl}</div>
-      <div class="acts"><span class="fare"><b>₹${each}</b> each · ${left > 0 ? `${left} seat${left > 1 ? "s" : ""} left` : "full"}</span>${btn}</div></div>`;
+      <div class="acts"><span class="fare"><b>₹${each}</b> each (₹${fareFor(u)} total) · ${left > 0 ? `${left} seat${left > 1 ? "s" : ""} left` : "full"}</span>${btn}</div></div>`;
   }
   $("#list").innerHTML = h;
 }
@@ -451,7 +453,7 @@ function alertNew(r) {
   }
 }
 function shareText(r) {
-  return `🛺 Auto ${DIR[r.dir].from} → ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} seat(s) left. ₹${Math.ceil(C.fare / C.seats)} each if full. Join: ${location.href.split("#")[0]}`;
+  return `🛺 Auto ${DIR[r.dir].from} → ${DIR[r.dir].label} at ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} seat(s) left. ₹${perHead(C.seats)} each if full (${C.seats} people). Join: ${location.href.split("#")[0]}`;
 }
 const waShare = r => window.open("https://wa.me/?text=" + encodeURIComponent(shareText(r)), "_blank");
 async function ntfyPush(r) {
@@ -482,7 +484,7 @@ function openLeave() {
     const s = nextShuttle(tab), at = Date.now() + leaveMin * 60000;
     const gap = Math.round((s.at - at) / 60000);
     $("#leaveNudge").innerHTML = gap >= -2 && gap <= 10
-      ? `<div class="nudge">🚌 Free shuttle at <b>${fmt(s.at)}</b> (in ${minsTxt(s.mins)}). Take it and save ₹${Math.ceil(C.fare / grp)}?</div>` : "";
+      ? `<div class="nudge">🚌 Free shuttle at <b>${fmt(s.at)}</b> (in ${minsTxt(s.mins)}). Take it and save ₹${perHead(grp)}?</div>` : "";
   };
   chips($("#whenChips"), [{ v: 1, t: "Now" }, { v: 3, t: "3 min" }, { v: 5, t: "5 min" }, { v: 10, t: "10 min" }, { v: 15, t: "15 min" }], leaveMin, v => { leaveMin = v; nudge(); });
   chips($("#grpChips"), [1, 2, 3].map(v => ({ v, t: v === 1 ? "Just me" : `${v} of us` })), grp, v => { grp = v; nudge(); });
@@ -703,7 +705,7 @@ function say() {
   if (mine) t = `You're in! Auto at ${fmt(new Date(mine.leaveAt))}. Head to the main gate 🏃`;
   else if (B.length >= 2) t = `💡 ${B.length} people flexible to ${DIR[tab].label}. Fix a time and go!`;
   else if (here.length) t = `🛺 ${here.length} auto${here.length > 1 ? "s" : ""} leaving for ${DIR[tab].label}. Hop in, pay less!`;
-  else if (sh.mins <= 10) t = `🚌 Free shuttle in ${sh.mins} min. Save your ₹${C.fare}!`;
+  else if (sh.mins <= 10) t = `🚌 Free shuttle in ${sh.mins} min. Save your ₹${fareFor(1)}!`;
   else t = `Going to ${DIR[tab].label}? Post it, I'll find people 🛺`;
   if (t !== lastSay) { lastSay = t; const b = $("#bub"); b.textContent = t; b.classList.add("pop"); setTimeout(() => b.classList.remove("pop"), 250); }
 }
