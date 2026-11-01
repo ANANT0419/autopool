@@ -257,6 +257,7 @@ window.AUTOPOOL_CONFIG = {
 <!-- Log sheet -->
 <div class="ov" id="ovLog" role="dialog"><div class="sheet">
   <h2><span data-t="Issue log|समस्या लॉग"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <p class="note" style="margin-bottom:4px">v <code id="verTag"></code></p>
   <p class="note" style="margin-bottom:8px" data-t="Errors and events from this phone. Tap Copy and send it if something breaks.|इस फ़ोन की गड़बड़ियाँ और घटनाएँ। कुछ ख़राब हो तो Copy दबाकर भेजें।"></p>
   <div class="log" id="logBox"></div>
   <div class="row"><button class="btn ghost" id="logCopy" data-t="Copy|कॉपी"></button><button class="btn red" id="logClear" data-t="Clear|साफ़ करें"></button></div>
@@ -289,6 +290,7 @@ window.AUTOPOOL_CONFIG = {
 
 <script type="module">
 const C = window.AUTOPOOL_CONFIG;
+const APP_VERSION = "2026-11-01-v11";   // bump on every upload → open apps notice and refresh
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const EXPIRE_MS = 40 * 1000;        // card shows "Leaving now" for 40 s after leave time, then disappears
@@ -815,7 +817,7 @@ $("#goBulb").onclick = async () => {
 
 document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); }); localStorage.setItem("ap_tab", tab); render(); };
 
-$("#bLog").onclick = () => { unseenErr = 0; $("#logDot").style.display = "none"; renderLog(); open("#ovLog"); };
+$("#bLog").onclick = () => { $("#verTag").textContent = APP_VERSION; unseenErr = 0; $("#logDot").style.display = "none"; renderLog(); open("#ovLog"); };
 $("#logCopy").onclick = async () => { try { await navigator.clipboard.writeText(logs.map(l => `[${l.t}] ${l.level} ${l.msg}`).join("\n")); toast(tr("Copied", "कॉपी हुआ")); } catch { toast(tr("Copy blocked: select the text manually", "कॉपी नहीं हुआ: टेक्स्ट ख़ुद चुनें")); } };
 $("#logClear").onclick = () => { logs = []; localStorage.setItem(LOGK, "[]"); renderLog(); };
 $("#bAlerts").onclick = () => {
@@ -1048,6 +1050,25 @@ $("#instBtn").onclick = async () => {
 };
 $("#instX").onclick = () => { localStorage.setItem("ap_instX", "1"); $("#instBar").style.display = "none"; };
 window.addEventListener("appinstalled", () => { log("i", "App installed"); $("#instBar").style.display = "none"; });
+
+/* ---------------- Auto-update: if a newer version is online, refresh ---------------- */
+async function checkUpdate() {
+  if (!location.protocol.startsWith("http") || !navigator.onLine) return;
+  try {
+    const t = await (await fetch("index.html?v=" + Date.now(), { cache: "no-store" })).text();
+    const v = (t.match(/APP_VERSION = "([^"]+)"/) || [])[1];
+    if (!v || v === APP_VERSION) return;
+    log("i", `Update found: ${APP_VERSION} → ${v}`);
+    const busy = document.querySelector(".ov.show");                 // don't reload in the middle of posting/joining
+    if (busy) { toast(tr("✨ New version ready. It'll load when you close this.", "✨ नया वर्ज़न तैयार है। इसे बंद करते ही लोड होगा।"), 4000); return; }
+    toast(tr("✨ Updating AutoPool…", "✨ AutoPool अपडेट हो रहा है…"), 1500);
+    setTimeout(() => location.reload(), 1200);
+  } catch (e) { log("w", "Update check failed: " + e.message); }
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(); });   // every time the app is reopened
+setInterval(checkUpdate, 5 * 60 * 1000);
+setTimeout(checkUpdate, 4000);
+log("i", "App version " + APP_VERSION);
 
 /* ---------------- Boot ---------------- */
 async function start() {
