@@ -29,12 +29,19 @@ header .wrap{display:flex;align-items:center;gap:10px}
 .mz{display:flex;align-items:center;gap:12px;margin-top:12px;padding:12px 14px 10px;border-radius:20px;
   background:radial-gradient(circle at 18% 30%,#fff7c2 0,#fef3c7 35%,#fde68a 100%);border:1px solid #fcd34d;position:relative;overflow:hidden}
 .mz:after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background:repeating-linear-gradient(90deg,#11182714 0 18px,transparent 18px 30px)}
-.mz svg{width:112px;height:112px;flex:none;overflow:visible;touch-action:pan-y;filter:drop-shadow(0 6px 8px #92400e33);position:relative;z-index:1}
+.mz{flex-direction:column;align-items:stretch;padding:8px 14px 18px;gap:6px}
+.mz svg{width:min(62vw,250px);height:min(62vw,250px);align-self:center;margin:-4px 0 -10px;flex:none;overflow:visible;touch-action:pan-y;filter:drop-shadow(0 6px 8px #92400e33);position:relative;z-index:1}
 .bub{position:relative;z-index:1;background:#fff;border:1px solid #fcd34d;border-radius:16px;padding:11px 13px;font-size:14.5px;font-weight:600;line-height:1.4;flex:1;box-shadow:0 4px 14px #92400e1f;transition:transform .25s}
 .bub small{display:block;font-weight:500;color:var(--mute);font-size:12px;margin-top:3px}
 .bub.urgent{background:#fff1f2;border-color:#fda4af}
 .bub.good{background:#f0fdf4;border-color:#86efac}
-.bub:before{content:"";position:absolute;left:-7px;top:50%;margin-top:-6px;border:6px solid transparent;border-right-color:#fff;border-left:0}
+.bub:before{content:"";position:absolute;left:50%;top:-8px;margin-left:-8px;border:8px solid transparent;border-bottom-color:#fff;border-top:0}
+.bub{text-align:center;font-size:15.5px}
+.bj{margin-top:9px;padding:9px 18px}
+.invite{display:block;width:100%;margin-top:22px;padding:13px;border-radius:14px;background:#dcfce7;color:#166534;font-weight:800;border:1.5px dashed #22c55e}
+.credit{text-align:center;color:var(--mute);font-size:12px;margin:22px 0 4px;letter-spacing:.02em}.credit b{color:var(--ink);letter-spacing:.12em}
+@keyframes hop{0%,100%{transform:translateY(0)}30%{transform:translateY(-14px)}55%{transform:translateY(0)}70%{transform:translateY(-5px)}}
+.mz svg.hop{animation:hop .6s ease}
 .bub.pop{transform:scale(1.04)}
 .lid{transform-box:fill-box;transform-origin:50% 0}
 .shut{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
@@ -164,15 +171,16 @@ window.AUTOPOOL_CONFIG = {
         <rect x="40" y="78" width="20" height="6" rx="2" fill="#fff" stroke="#111827" stroke-width="1"/>
         <g id="mFace">
           <rect x="21" y="42" width="58" height="32" rx="9" fill="#fffbeb" stroke="#111827" stroke-width="1.5"/>
-          <ellipse cx="38" cy="56" rx="8" ry="9" fill="#fff" stroke="#111827" stroke-width="1.5"/>
-          <ellipse cx="62" cy="56" rx="8" ry="9" fill="#fff" stroke="#111827" stroke-width="1.5"/>
-          <g class="pupil"><circle cx="38" cy="57" r="4.2" fill="#111827"/><circle cx="39.6" cy="55.3" r="1.3" fill="#fff"/></g>
-          <g class="pupil"><circle cx="62" cy="57" r="4.2" fill="#111827"/><circle cx="63.6" cy="55.3" r="1.3" fill="#fff"/></g>
-          <ellipse class="lid" cx="38" cy="56" rx="8.8" ry="9.8" fill="#fde68a" stroke="#111827" stroke-width="1.5"/>
-          <ellipse class="lid" cx="62" cy="56" rx="8.8" ry="9.8" fill="#fde68a" stroke="#111827" stroke-width="1.5"/>
-          <rect class="brow" x="31" y="43.5" width="13" height="2.6" rx="1.3" fill="#111827" transform="rotate(-6 37 45)"/>
-          <rect class="brow" x="56" y="43.5" width="13" height="2.6" rx="1.3" fill="#111827" transform="rotate(6 63 45)"/>
-          <path id="mMouth" d="M44 68 Q50 72 56 68" fill="none" stroke="#111827" stroke-width="1.8" stroke-linecap="round"/>
+          <ellipse cx="37" cy="56" rx="10" ry="11" fill="#fff" stroke="#111827" stroke-width="1.6"/>
+          <ellipse cx="63" cy="56" rx="10" ry="11" fill="#fff" stroke="#111827" stroke-width="1.6"/>
+          <g class="pupil"><circle cx="37" cy="57" r="5.4" fill="#111827"/><circle cx="39" cy="54.8" r="1.7" fill="#fff"/></g>
+          <g class="pupil"><circle cx="63" cy="57" r="5.4" fill="#111827"/><circle cx="65" cy="54.8" r="1.7" fill="#fff"/></g>
+          <ellipse class="lid" cx="37" cy="56" rx="10.8" ry="11.8" fill="#fde68a" stroke="#111827" stroke-width="1.6"/>
+          <ellipse class="lid" cx="63" cy="56" rx="10.8" ry="11.8" fill="#fde68a" stroke="#111827" stroke-width="1.6"/>
+          <ellipse cx="26" cy="68" rx="4" ry="2.2" fill="#fca5a5" opacity=".7"/><ellipse cx="74" cy="68" rx="4" ry="2.2" fill="#fca5a5" opacity=".7"/>
+          <rect class="brow" x="29" y="41" width="15" height="2.8" rx="1.4" fill="#111827" transform="rotate(-6 36 42)"/>
+          <rect class="brow" x="56" y="41" width="15" height="2.8" rx="1.4" fill="#111827" transform="rotate(6 64 42)"/>
+          <path id="mMouth" d="M44 69 Q50 73 56 69" fill="none" stroke="#111827" stroke-width="1.8" stroke-linecap="round"/>
         </g>
       </g>
     </svg>
@@ -187,6 +195,8 @@ window.AUTOPOOL_CONFIG = {
   <div id="usual"></div>
   <div id="bulb"></div>
   <div id="list"></div>
+  <button class="invite" id="bInvite" data-t="📣 Invite friends to AutoPool|📣 दोस्तों को AutoPool पर बुलाएँ"></button>
+  <p class="credit">🛺 <span data-t="Made with 💛 at CDL by|CDL पर 💛 से बनाया —"></span> <b>MISHU</b></p>
 </main>
 
 <button class="fab" id="fab" data-glance></button>
@@ -197,17 +207,17 @@ window.AUTOPOOL_CONFIG = {
   <div class="lbl" data-t="Auto leaves the gate|ऑटो गेट से कब निकलेगा"></div>
   <div class="chips" id="whenChips"></div>
   <div id="atWrap" style="display:none;margin-top:10px"><input type="time" class="fld" id="atTime" data-al="Leaving time|निकलने का समय"></div>
-  <div class="lbl" data-t="People already with you (incl. you)|आपके साथ कितने लोग (आप समेत)"></div>
-  <div class="chips" id="grpChips"></div>
-  <label class="chk"><input type="checkbox" id="saveUsual"> <span data-t="⭐ Save this time as my usual ride|⭐ यह समय मेरी रोज़ की राइड में सेव करें"></span></label>
+  <div id="grpBlock"><div class="lbl" data-t="People already with you (incl. you)|आपके साथ कितने लोग (आप समेत)"></div>
+  <div class="chips" id="grpChips"></div></div>
+  <label class="chk" id="usualBlock"><input type="checkbox" id="saveUsual"> <span data-t="⭐ Save this time as my usual ride|⭐ यह समय मेरी रोज़ की राइड में सेव करें"></span></label>
   <div id="leaveNudge"></div>
   <div class="row"><button class="btn y" id="goLeave" data-t="Post auto|ऑटो पोस्ट करें"></button></div>
 </div></div>
 
 <!-- WhatsApp question (after posting) -->
 <div class="ov" id="ovWa" role="dialog"><div class="sheet">
-  <h2><span data-t="✅ Auto posted!|✅ ऑटो पोस्ट हो गया!"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
-  <p class="note" style="font-size:15px" data-t="Tell the hostel WhatsApp group too? More people see it → fuller auto → cheaper for you.|हॉस्टल के WhatsApp ग्रुप में भी बताएँ? ज़्यादा लोग देखेंगे → ऑटो भरेगा → आपके लिए सस्ता।"></p>
+  <h2><span id="waTitle"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <p class="note" style="font-size:15px" id="waNote"></p>
   <div class="row"><button class="btn ghost" id="waNo" data-t="No thanks|नहीं, रहने दें"></button><button class="btn g" id="waYes" data-t="Share on WhatsApp|WhatsApp पर भेजें"></button></div>
 </div></div>
 
@@ -272,6 +282,7 @@ window.AUTOPOOL_CONFIG = {
   <input class="fld" id="lgName" data-ph="Your name|आपका नाम" data-al="Your name|आपका नाम" autocomplete="name">
   <input class="fld" id="lgPhone" data-ph="10-digit phone number|10 अंकों का फ़ोन नंबर" data-al="Phone number|फ़ोन नंबर" inputmode="numeric" maxlength="10" autocomplete="tel">
   <button class="btn y" style="width:100%;padding:14px" id="lgGo" data-t="Continue|आगे बढ़ें"></button>
+  <p class="credit" style="margin:14px 0 0">🛺 <span data-t="Made with 💛 at CDL by|CDL पर 💛 से बनाया —"></span> <b>MISHU</b></p>
 </div></div>
 
 <div class="toast" id="toast" role="status" aria-live="assertive"></div>
@@ -393,6 +404,13 @@ async function initBackend() {
           let isNew = true; try { isNew = !(await fs.getDoc(ref)).exists(); } catch (e) {}
           await fs.setDoc(ref, { uid: cred.user.uid, name: p.name, phone: p.phone, lang, hasUpi: !!p.upi, lastSeen: now, ...(isNew ? { firstSeen: now } : {}) }, { merge: true });
         },
+        async setTime(id, leaveAt) {
+          await fs.runTransaction(db, async tx => {
+            const ref = fs.doc(db, "rides", id); const s = await tx.get(ref); if (!s.exists()) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
+            if (s.data().riders.length > 1) throw new Error(tr("Someone already joined, so the time is locked. Call them to change it.", "कोई जुड़ चुका है, समय अब नहीं बदल सकता। उन्हें कॉल करें।"));
+            tx.update(ref, { leaveAt });
+          });
+        },
         async patchRider(id, uid, fields) {
           await fs.runTransaction(db, async tx => {
             const ref = fs.doc(db, "rides", id); const s = await tx.get(ref); if (!s.exists()) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
@@ -444,6 +462,7 @@ async function initBackend() {
     async leave(id, uid) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.riders = r.riders.filter(x => x.uid !== uid); write(rs); } },
     async cancel(id) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.cancelled = true; write(rs); } },
     async saveUser() {},
+    async setTime(id, leaveAt) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); if (r.riders.length > 1) throw new Error(tr("Someone already joined, so the time is locked. Call them to change it.", "कोई जुड़ चुका है, समय अब नहीं बदल सकता। उन्हें कॉल करें।")); r.leaveAt = leaveAt; write(rs); },
     async patchRider(id, uid, fields) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.riders = r.riders.map(x => x.uid === uid ? { ...x, ...fields } : x); write(rs); },
     async setPayer(id, uid, upi) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.payer = uid; r.riders = r.riders.map(x => x.uid === uid ? { ...x, paid: true, ...(upi ? { upi } : {}) } : x); write(rs); },
     watchBulbs(cb) { bcbs.push(cb); cb(readB()); },
@@ -549,8 +568,8 @@ function render() {
     const seats = Array.from({ length: C.seats }, (_, i) => `<span class="seat ${i < u ? "t" : ""}"></span>`).join("");
     const ppl = r.riders.map(x => `<div class="p"><span class="av">${esc(x.name[0]?.toUpperCase())}</span><span class="nm">${esc(x.name)}${x.n > 1 ? ` <span class="x">+${x.n - 1}</span>` : ""}${x.uid === r.creator ? ` <span class="x">· ${tr("posted", "पोस्ट किया")}</span>` : ""}${x.gate ? ` <span class="ok">📍 ${tr("at gate", "गेट पर")}</span>` : ""}</span>${x.uid !== api.uid ? `<a class="call" href="tel:${esc(x.phone)}" aria-label="${tr("Call", "कॉल")} ${esc(x.name)}">📞 ${tr("Call", "कॉल")}</a>` : `<span class="x">${tr("you", "आप")}</span>`}</div>`).join("");
     let btn = "";
-    if (isOwner) btn = `<button class="btn ghost" data-share="${r.id}">${tr("Share", "शेयर")}</button><button class="btn red" data-cancel="${r.id}">${tr("Cancel", "रद्द करें")}</button>`;
-    else if (isIn) btn = `<button class="btn red" data-leave="${r.id}">${tr("Leave", "छोड़ें")}</button>`;
+    if (isOwner) btn = `${r.riders.length === 1 && ms > 0 ? `<button class="btn ghost" data-edit="${r.id}" aria-label="${tr("Change time", "समय बदलें")}">✏️ ${tr("Time", "समय")}</button>` : ""}<button class="btn ghost" data-share="${r.id}">📣 ${tr("Share", "शेयर")}</button><button class="btn red" data-cancel="${r.id}">${tr("Cancel", "रद्द करें")}</button>`;
+    else if (isIn) btn = `${left > 0 ? `<button class="btn ghost" data-share="${r.id}" aria-label="${tr("Share on WhatsApp", "WhatsApp पर भेजें")}">📣</button>` : ""}<button class="btn red" data-leave="${r.id}">${tr("Leave", "छोड़ें")}</button>`;
     else if (left > 0 && !mine) btn = `<button class="btn g" data-join="${r.id}">${tr("Join", "जुड़ें")}</button>`;
     else if (left <= 0) btn = `<span class="x">${tr("Full", "भरा हुआ")}</span>`;
     const gate = isIn && !my.gate && ms > 0 ? `<button class="btn y gatebtn" data-gate="${r.id}" data-glance>📍 ${tr("I'm at the gate", "मैं गेट पर हूँ")}</button>` : "";
@@ -604,17 +623,29 @@ async function scheduleReminder(r) {
     log(res.ok ? "i" : "w", res.ok ? `Reminder scheduled for ${fmt(new Date(at))}` : "Reminder HTTP " + res.status);
   } catch (e) { log("w", "Reminder schedule failed: " + e.message); }
 }
+const appUrl = () => location.href.split("#")[0].split("?")[0];
 function shareText(r) {
+  const left = C.seats - used(r), names = r.riders.map(x => x.name).join(", "), mins = Math.max(0, Math.ceil((r.leaveAt - Date.now()) / 60000));
+  return tr(`🛺 *Join me!* Auto ${frm(r.dir)} → ${lbl(r.dir)} at *${fmt(new Date(r.leaveAt))}* (in ${mins} min)\n👥 Going: ${names}\n💺 *${left} seat${left === 1 ? "" : "s"} left*\nTap to join 👉 ${appUrl()}`,
+            `🛺 *साथ चलो!* ऑटो ${frm(r.dir)} → ${lbl(r.dir)}, *${fmt(new Date(r.leaveAt))}* (${mins} मिनट में)\n👥 जा रहे: ${names}\n💺 *${left} सीट बाकी*\nजुड़ने के लिए 👉 ${appUrl()}`);
+}
+const bulbText = b => tr(`💡 Anyone going to *${lbl(b.dir)}* before ${fmt(new Date(b.until))}? Let's share an auto 🛺\nI'm on AutoPool 👉 ${appUrl()}`,
+                         `💡 कोई *${lbl(b.dir)}* जा रहा है ${fmt(new Date(b.until))} से पहले? चलो ऑटो शेयर करें 🛺\nमैं AutoPool पर हूँ 👉 ${appUrl()}`);
+const inviteText = () => tr(`🛺 I'm using *AutoPool* to share autos between CDL and Campus. See who's leaving, join in one tap, split the fare.\nTry it 👉 ${appUrl()}`,
+                            `🛺 मैं CDL और कैंपस के बीच ऑटो शेयर करने के लिए *AutoPool* इस्तेमाल करता/करती हूँ। कौन जा रहा है देखें, एक टैप में जुड़ें, किराया बाँटें।\nआज़माएँ 👉 ${appUrl()}`);
+const waOpen = text => { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank"); log("i", "Shared to WhatsApp"); };
+function askWa(title, note, text) { $("#waTitle").textContent = title; $("#waNote").textContent = note; waPending = text; open("#ovWa"); }
+function shareTextOld(r) {
   return tr(`🛺 Auto ${frm(r.dir)} → ${lbl(r.dir)} at ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} seat(s) left. ₹${perHead(C.seats)} each if full (${C.seats} people). Join: ${location.href.split("#")[0]}`,
             `🛺 ऑटो ${frm(r.dir)} → ${lbl(r.dir)}, ${fmt(new Date(r.leaveAt))}, ${C.seats - used(r)} सीट बाकी। भरा तो ₹${perHead(C.seats)} प्रति व्यक्ति (${C.seats} लोग)। जुड़ें: ${location.href.split("#")[0]}`);
 }
-const waShare = r => window.open("https://wa.me/?text=" + encodeURIComponent(shareText(r)), "_blank");
-async function ntfyPush(r) {
+const waShare = r => waOpen(shareText(r));
+async function ntfyPush(r, changed = false) {
   if (!C.ntfyTopic) return;
   try {
     const res = await fetch("https://ntfy.sh/" + encodeURIComponent(C.ntfyTopic), {
       method: "POST", body: shareText(r),
-      headers: { Title: `Auto to ${r.dir === "c2m" ? "Campus" : "CDL"} at ${fmt(new Date(r.leaveAt))}`, Tags: "auto_rickshaw", Click: location.href.split("#")[0] }
+      headers: { Title: `${changed ? "Time changed: auto" : "Auto"} to ${r.dir === "c2m" ? "Campus" : "CDL"} at ${fmt(new Date(r.leaveAt))}`, Tags: "auto_rickshaw", Click: location.href.split("#")[0] }
     });
     if (!res.ok) log("w", "ntfy push HTTP " + res.status); else log("i", "ntfy push sent");
   } catch (e) { log("w", "ntfy push failed: " + e.message); }
@@ -636,7 +667,16 @@ function leaveAtFromSheet() {
   const v = $("#atTime").value; if (!v) return null;
   return usualAt(v).getTime();
 }
+let editId = null;
+function openEdit(id) {
+  const r = rides.find(x => x.id === id); if (!r) return;
+  openLeave(); editId = id;
+  $("#leaveTitle").textContent = tr(`Change time · now ${fmt(new Date(r.leaveAt))}`, `समय बदलें · अभी ${fmt(new Date(r.leaveAt))}`);
+  $("#grpBlock").style.display = "none"; $("#usualBlock").style.display = "none";
+  $("#goLeave").textContent = tr("Update time", "समय अपडेट करें");
+}
 function openLeave() {
+  editId = null; $("#grpBlock").style.display = ""; $("#usualBlock").style.display = ""; $("#goLeave").textContent = tr("Post auto", "ऑटो पोस्ट करें");
   leaveMin = 3; grp = 1; $("#saveUsual").checked = false; $("#atWrap").style.display = "none";
   const d = new Date(Date.now() + 10 * 60000); $("#atTime").value = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   $("#leaveTitle").textContent = tr(`Leaving for ${lbl(tab)}`, `${lbl(tab)} जा रहे हैं`);
@@ -664,7 +704,7 @@ function openJoin(id) {
 const rider = n => ({ uid: api.uid, name: me.name, phone: me.phone, n, ...(me.upi ? { upi: me.upi } : {}) });
 const hmOf = ms => { const d = new Date(ms); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
 let waPending = null;
-async function postRide(leaveAt, g, askWa = true) {
+async function postRide(leaveAt, g, wantWa = true) {
   if (myRide()) { toast(tr("You're already in an auto", "आप पहले से एक ऑटो में हैं")); return false; }
   if (!leaveAt || leaveAt < Date.now() - 30000) { toast(tr("Pick a time later than now", "अभी के बाद का समय चुनें")); return false; }
   if (leaveAt > Date.now() + 12 * 3600e3) { toast(tr("You can post up to 12 hours ahead", "12 घंटे पहले तक ही पोस्ट कर सकते हैं")); return false; }
@@ -674,13 +714,26 @@ async function postRide(leaveAt, g, askWa = true) {
   if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
   toast(tr("Posted! Others can see it now ✅", "पोस्ट हो गया! अब सबको दिख रहा है ✅"));
   ntfyPush(r); scheduleReminder(r);
-  if (askWa) { waPending = r; open("#ovWa"); }
+  if (wantWa) askWa(tr("✅ Auto posted!", "✅ ऑटो पोस्ट हो गया!"), tr("Tell the hostel WhatsApp group? More people see it, your seats fill faster.", "हॉस्टल के WhatsApp ग्रुप में बताएँ? ज़्यादा लोग देखेंगे, सीटें जल्दी भरेंगी।"), shareText(r));
   mascot?.react("happy");
   return true;
 }
 $("#fab").onclick = openLeave;
 $("#goLeave").onclick = async () => {
   const b = $("#goLeave"); b.disabled = true;
+  if (editId) {
+    try {
+      const at = leaveAtFromSheet();
+      if (!at || at < Date.now() - 30000) throw new Error(tr("Pick a time later than now", "अभी के बाद का समय चुनें"));
+      if (at > Date.now() + 12 * 3600e3) throw new Error(tr("You can post up to 12 hours ahead", "12 घंटे पहले तक ही पोस्ट कर सकते हैं"));
+      const t = Math.max(at, Date.now() + 30000);
+      await api.setTime(editId, t); closeAll();
+      const r = rides.find(x => x.id === editId) || {}; const nr = { ...r, leaveAt: t };
+      reminded.delete(editId); scheduleReminder(nr); ntfyPush(nr, true);
+      toast(tr(`✏️ Time changed to ${fmt(new Date(t))}`, `✏️ समय ${fmt(new Date(t))} कर दिया`)); mascot?.react("happy"); log("i", `Time changed ${editId} → ${fmt(new Date(t))}`);
+    } catch (e) { log("w", "Change time failed: " + e.message); toast(e.message); }
+    editId = null; b.disabled = false; return;
+  }
   try {
     const at = leaveAtFromSheet();
     if ($("#saveUsual").checked && at) {
@@ -700,7 +753,12 @@ $("#usual").onclick = async e => {
   if (at < Date.now() - 30000) return toast(tr(`${fmt(new Date(at))} has passed today. Pick another time.`, `आज ${fmt(new Date(at))} निकल चुका है। दूसरा समय चुनें।`));
   try { await postRide(at, 1); } catch (err) { log("e", "Usual post failed: " + err.message); toast(err.message); }
 };
-$("#waYes").onclick = () => { if (waPending) waShare(waPending); log("i", "Shared to WhatsApp"); waPending = null; closeAll(); };
+$("#bub").onclick = e => {
+  const j = e.target.closest("[data-joinbub]"); if (j) openJoin(j.dataset.joinbub);
+  const sh = e.target.closest("[data-sharebub]"); if (sh) { const r = rides.find(x => x.id === sh.dataset.sharebub); if (r) waShare(r); }
+};
+$("#bInvite").onclick = () => waOpen(inviteText());
+$("#waYes").onclick = () => { if (waPending) waOpen(waPending); waPending = null; closeAll(); };
 $("#waNo").onclick = () => { waPending = null; closeAll(); };
 $("#goJoin").onclick = async () => {
   const b = $("#goJoin"); b.disabled = true;
@@ -708,6 +766,8 @@ $("#goJoin").onclick = async () => {
     await api.join(joinId, rider(joinN)); closeAll(); mascot?.react("happy");
     toast(tr("You're in! Call them to confirm, then head to the main gate 🏃", "आप जुड़ गए! कॉल करके पक्का करें, फिर मेन गेट जाएँ 🏃")); log("i", "Joined " + joinId);
     const r = rides.find(x => x.id === joinId); if (r) scheduleReminder(r);
+    const jr = r && (r.riders.some(x => x.uid === api.uid) ? r : { ...r, riders: [...r.riders, rider(joinN)] }), jl = jr ? C.seats - used(jr) : 0;
+    if (jr && jl > 0) setTimeout(() => askWa(tr(`🙌 You're in! ${jl} seat${jl === 1 ? "" : "s"} still empty`, `🙌 आप जुड़ गए! ${jl} सीट अभी खाली`), tr("Tell the group so the auto fills up?", "ग्रुप में बताएँ ताकि ऑटो भर जाए?"), shareText(jr)), 900);
     if (myBulb()) api.clearBulb(api.uid).catch(e => log("w", "Bulb clear failed: " + e.message));
   } catch (e) { log("w", "Join failed: " + e.message); toast(e.message); }
   b.disabled = false;
@@ -718,6 +778,7 @@ $("#list").onclick = async e => {
     if (b.dataset.join) openJoin(b.dataset.join);
     if (b.dataset.leave) { await api.leave(b.dataset.leave, api.uid); toast(tr("You left the auto", "आपने ऑटो छोड़ दिया")); }
     if (b.dataset.cancel && confirm(tr("Cancel this auto for everyone?", "सबके लिए यह ऑटो रद्द करें?"))) { await api.cancel(b.dataset.cancel); toast(tr("Auto cancelled", "ऑटो रद्द")); }
+    if (b.dataset.edit) openEdit(b.dataset.edit);
     if (b.dataset.share) waShare(rides.find(r => r.id === b.dataset.share));
     if (b.dataset.gate) { await api.patchRider(b.dataset.gate, api.uid, { gate: true }); mascot?.react("happy"); toast(tr("📍 Everyone can see you're at the gate", "📍 सबको दिख रहा है कि आप गेट पर हैं")); log("i", "At gate " + b.dataset.gate); }
   } catch (err) { log("e", "Action failed: " + err.message); toast(err.message); }
@@ -747,7 +808,8 @@ $("#goBulb").onclick = async () => {
     await api.setBulb({ uid: api.uid, name: me.name, phone: me.phone, dir: tab, until: Date.now() + bulbMin * 60000 });
     closeAll(); log("i", `Bulb on ${tab} ${bulbMin}m`);
     const n = liveBulbs(tab).length;
-    toast(n >= 2 ? tr(`💡 ${n} flexible now. Fix a time!`, `💡 अभी ${n} लोग फ़्री। समय तय करें!`) : tr("💡 You're on. I'll buzz you when others join", "💡 चालू है। कोई और जुड़े तो बताऊँगा"));
+    if (n >= 2) toast(tr(`💡 ${n} flexible now. Fix a time!`, `💡 अभी ${n} लोग फ़्री। समय तय करें!`));
+    else askWa(tr("💡 You're on!", "💡 चालू है!"), tr("Ask the WhatsApp group if anyone's going too?", "WhatsApp ग्रुप में पूछें कि कोई और भी जा रहा है?"), bulbText({ dir: tab, until: Date.now() + bulbMin * 60000 }));
   } catch (err) { log("e", "Bulb on failed: " + err.message); toast(err.message); }
 };
 
@@ -814,6 +876,8 @@ function initMascot() {
     if (prev && Math.hypot(e.clientX - prev.x, e.clientY - prev.y) > 120) s.browT = 1;   // fast flick → surprised
   }, { passive: true });
   document.addEventListener("pointerleave", () => s.pointer = null);
+  addEventListener("touchmove", e => { const t = e.touches[0]; if (t) { s.tap = { x: t.clientX, y: t.clientY, until: performance.now() + 900 }; s.lastInput = performance.now(); } }, { passive: true });
+  addEventListener("scroll", () => { s.lastInput = performance.now(); }, { passive: true });
   addEventListener("pointerdown", e => {
     s.blinkT = 0; s.lastInput = performance.now();                                       // a click/tap = a blink
     if (e.pointerType === "touch") s.tap = { x: e.clientX, y: e.clientY, until: performance.now() + 1600 };
@@ -844,7 +908,7 @@ function initMascot() {
         const opts = ["you", "you", "around", "fab", "ride"];
         s.script = opts[Math.floor(Math.random() * opts.length)];
         s.scriptPt = [Math.random() * innerWidth, Math.random() * innerHeight * 0.8];
-        s.nextScript = now + 3000 + Math.random() * 3000;
+        s.nextScript = now + 2000 + Math.random() * 2500;
       }
       const el = s.script === "fab" ? $("#fab") : s.script === "ride" ? $(".ride") : null;
       if (el && el.offsetParent) g = centreOf(el); else if (s.script === "around") g = gaze(...s.scriptPt);
@@ -873,14 +937,14 @@ function initMascot() {
   }
   function draw(t) {
     const breath = Math.sin(t * Math.PI * 0.5) * 0.6;
-    head.setAttribute("transform", `translate(${(s.yaw * 6).toFixed(2)} ${(s.pitch * 3 + breath).toFixed(2)}) rotate(${s.roll.toFixed(2)} 50 70)`);
-    face.setAttribute("transform", `translate(${(s.yaw * 4).toFixed(2)} ${(s.pitch * 3).toFixed(2)})`);   // face shifts more = 3D turn feel
-    const px = clamp((s.ey + s.yaw * 0.5) * 6, -3.6, 3.6), py = clamp((s.ep + s.pitch * 0.5) * 6, -4, 4);
+    head.setAttribute("transform", `translate(${(s.yaw * 9).toFixed(2)} ${(s.pitch * 4 + breath * 1.6).toFixed(2)}) rotate(${(s.roll * 1.4).toFixed(2)} 50 70)`);
+    face.setAttribute("transform", `translate(${(s.yaw * 7).toFixed(2)} ${(s.pitch * 4.5).toFixed(2)})`);   // face slides further than the body = clear 3D head-turn
+    const px = clamp((s.ey + s.yaw * 0.6) * 7, -4.4, 4.4), py = clamp((s.ep + s.pitch * 0.6) * 7, -4.8, 4.8);
     pupils.forEach(p => p.setAttribute("transform", `translate(${px.toFixed(2)} ${py.toFixed(2)})`));
     const lidOpen = 0.12 + Math.max(0, -py) * 0.03;                                     // lids follow the gaze up a bit
     lids.forEach(l => l.style.transform = `scaleY(${(lidOpen + (1 - lidOpen) * s.blink).toFixed(3)})`);
     brows.forEach((b, i) => b.setAttribute("transform", `translate(0 ${(-s.brow * 3.5).toFixed(2)}) ${browBase[i]}`));
-    const m = 72 + s.smile * 4; mouth.setAttribute("d", `M44 68 Q50 ${m.toFixed(1)} 56 68`);
+    const m = 73 + s.smile * 5; mouth.setAttribute("d", `M44 69 Q50 ${m.toFixed(1)} 56 69`);
   }
 
   if (reduced) { draw(0); log("i", "Mascot: still (reduce-motion setting)"); }
@@ -895,7 +959,7 @@ function initMascot() {
     log("i", `Mascot ready (${touch ? "touch" : "mouse"} mode)`);
   }
   return {
-    react(kind) { s.browT = 1; s.blinkT = 0; if (kind === "happy") s.smileT = 1; },
+    react(kind) { s.browT = 1; s.blinkT = 0; if (kind === "happy") s.smileT = 1; svg.classList.remove("hop"); void svg.getBoundingClientRect(); svg.classList.add("hop"); },
     lookAt(el, ms = 1600) { if (!el) return; const r = el.getBoundingClientRect(); s.tap = { x: r.left + r.width / 2, y: r.top + r.height / 2, until: performance.now() + ms }; },
     get state() { return { yaw: s.yaw, eyeYaw: s.ey, blink: s.blink, brow: s.brow }; }
   };
@@ -910,13 +974,14 @@ const TIPS = [
   ["No fixed time? Turn on the <b>💡 bulb</b> and I'll find company", "समय तय नहीं? <b>💡 बल्ब</b> चालू करें, मैं साथी ढूँढूँगा"],
   ["Same time every day? Tick <b>⭐ Save as usual</b> and post in one tap", "रोज़ एक ही समय? <b>⭐ रोज़ की राइड</b> सेव करें, एक टैप में पोस्ट"],
   ["Reached the gate? Tap <b>📍 I'm at the gate</b> so others hurry up", "गेट पर पहुँच गए? <b>📍 मैं गेट पर हूँ</b> दबाएँ ताकि बाकी जल्दी आएँ"],
+  ["More people on AutoPool = fuller autos. <b>📣 Invite friends</b> at the bottom", "जितने ज़्यादा लोग, उतने भरे ऑटो। नीचे <b>📣 दोस्तों को बुलाएँ</b>"],
   ["Be kind to the driver. Confirm the fare <b>before</b> you sit 🛺", "ड्राइवर से अच्छे से बात करें। बैठने से <b>पहले</b> किराया पक्का करें 🛺"],
 ];
 function say() {
   const now = Date.now(), L = live(), mine = myRide(), B = liveBulbs(tab), mb = myBulb();
   const here = L.filter(r => r.dir === tab && C.seats - used(r) > 0), sh = nextShuttle(tab);
   const hr = new Date().getHours(), night = hr >= 21 || hr < 6, S = settleRides();
-  let t = null, sub = "", mood = "";
+  let t = null, sub = "", mood = "", extra = "";
   if (mine) {
     const ms = mine.leaveAt - now, mins = Math.ceil(ms / 60000), n = used(mine), my = meIn(mine);
     const others = mine.riders.filter(x => x.uid !== api.uid), notHere = others.filter(x => !x.gate);
@@ -930,7 +995,7 @@ function say() {
       sub = others.length ? tr("Others are counting on you.", "बाकी आप पर भरोसा कर रहे हैं।") : ""; mood = "urgent"; }
     else if (!owner && boss) { t = tr(`📞 Call <b>${esc(boss.name)}</b> and confirm, so they hold the auto for you.`, `📞 <b>${esc(boss.name)}</b> को कॉल करके पक्का करें, ताकि वे ऑटो रोकें।`);
       sub = tr(`Leaves ${fmt(new Date(mine.leaveAt))} · be sharp!`, `${fmt(new Date(mine.leaveAt))} पर निकलेगा · समय पर रहें!`); }
-    else if (owner && !others.length) { t = tr("No one joined yet. <b>Share on WhatsApp</b> to fill seats faster 📣", "अभी कोई नहीं जुड़ा। सीटें जल्दी भरने के लिए <b>WhatsApp पर भेजें</b> 📣");
+    else if (owner && !others.length) { extra = `<button class="btn g bj" data-sharebub="${mine.id}">📣 ${tr("Share on WhatsApp", "WhatsApp पर भेजें")}</button>`; t = tr("No one joined yet. <b>Share on WhatsApp</b> to fill seats faster 📣", "अभी कोई नहीं जुड़ा। सीटें जल्दी भरने के लिए <b>WhatsApp पर भेजें</b> 📣");
       sub = tr(`You're leaving at ${fmt(new Date(mine.leaveAt))}.`, `आप ${fmt(new Date(mine.leaveAt))} पर निकल रहे हैं।`); }
     else if (owner) { t = tr(`👥 ${others.length} joined! Call <b>${esc(others[0].name)}</b> to confirm they're coming.`, `👥 ${others.length} जुड़े! <b>${esc(others[0].name)}</b> को कॉल करके पक्का करें।`);
       sub = tr(`Leave your room 2 min before ${fmt(new Date(mine.leaveAt))}.`, `${fmt(new Date(mine.leaveAt))} से 2 मिनट पहले कमरे से निकलें।`); }
@@ -946,6 +1011,7 @@ function say() {
   else if (B.length >= 2) { t = tr(`💡 <b>${B.length} people flexible</b> to ${lbl(tab)}. Fix a time and go!`, `💡 <b>${B.length} लोग फ़्री</b> ${lbl(tab)} जाने को। समय तय करें और चलें!`);
     sub = tr(`₹${perHead(Math.min(B.length, C.seats))} each if you all go.`, `सब जाएँ तो ₹${perHead(Math.min(B.length, C.seats))} प्रति व्यक्ति।`); mood = "good"; }
   else if (here.length) { const r = here[0], m = Math.max(0, Math.ceil((r.leaveAt - now) / 60000));
+    extra = `<button class="btn g bj" data-joinbub="${r.id}">🙋 ${tr("Join", "जुड़ें")} ${esc(r.riders.find(x => x.uid === r.creator)?.name || "")}</button>`;
     t = tr(`🛺 Auto to ${lbl(tab)} in <b>${m} min</b>. Hop in, pay ₹${perHead(used(r) + 1)}!`, `🛺 ${lbl(tab)} का ऑटो <b>${m} मिनट</b> में। जुड़ें, सिर्फ़ ₹${perHead(used(r) + 1)}!`);
     sub = here.length > 1 ? tr(`+${here.length - 1} more below`, `नीचे ${here.length - 1} और`) : tr("Tap Join, then call them to confirm.", "जुड़ें दबाएँ, फिर कॉल करके पक्का करें।"); }
   else if (sh.mins <= 10) { t = tr(`🚌 Free shuttle in <b>${sh.mins} min</b>. Save your ₹${fareFor(1)}!`, `🚌 मुफ़्त शटल <b>${sh.mins} मिनट</b> में। ₹${fareFor(1)} बचाएँ!`);
@@ -955,13 +1021,14 @@ function say() {
     if (now - tipAt > 9000) { tipIdx = (tipIdx + 1) % TIPS.length; tipAt = now; }
     t = tr(...TIPS[tipIdx]); sub = tr(`Going to ${lbl(tab)}? Tap the yellow button.`, `${lbl(tab)} जाना है? पीला बटन दबाएँ।`);
   }
-  const html = t + (sub ? `<small>${sub}</small>` : "");
+  const html = t + (sub ? `<small>${sub}</small>` : "") + extra;
   if (html !== lastSay) {
-    const urgentNow = mood === "urgent" && !$("#bub").classList.contains("urgent");
+    const first = !lastSay, urgentNow = mood === "urgent" && !$("#bub").classList.contains("urgent");
     lastSay = html; const b = $("#bub"); b.innerHTML = html;
     b.classList.toggle("urgent", mood === "urgent"); b.classList.toggle("good", mood === "good");
     b.classList.add("pop"); setTimeout(() => b.classList.remove("pop"), 250);
     if (urgentNow) { mascot?.react(); navigator.vibrate?.([100, 60, 100]); }
+    else if (first && here.length && !mine) { mascot?.react("happy"); setTimeout(() => mascot?.lookAt($(".ride"), 2200), 300); }
   }
 }
 
