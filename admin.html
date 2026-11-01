@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>AutoPool · Admin stats</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#111827;--mute:#6b7280;--line:#e5e7eb;--y:#facc15;--g:#16a34a;--r:#dc2626;--b:#2563eb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;padding-bottom:40px}
+header{background:var(--ink);color:#fff;padding:14px 0}
+.wrap{max-width:980px;margin:0 auto;padding:0 14px}
+header .wrap{display:flex;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:18px;flex:1}.logo span{color:var(--y)}
+button,select{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:8px 14px;font-weight:700}
+.btn{background:var(--y);color:var(--ink)}.ghost{background:#1f2937;color:#fff}.light{background:#f3f4f6;color:var(--ink)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);margin:22px 2px 10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.k{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.k b{display:block;font-size:26px;line-height:1.2}.k small{color:var(--mute);font-size:12px}
+.k.hl{border-color:var(--g);background:#f0fdf4}.k.hl b{color:var(--g)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;overflow:auto}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:16px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:14px}
+.bar i{display:block;width:100%;background:var(--y);border-radius:5px 5px 0 0;min-height:2px;position:relative}
+.bar i.c{background:#fca5a5}
+.bar em{font-style:normal;font-size:10px;color:var(--mute);margin-top:4px;white-space:nowrap}
+.bar span{font-size:10px;font-weight:700;margin-bottom:2px}
+.legend{font-size:12px;color:var(--mute);margin-top:8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin:0 4px 0 10px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:700;font-size:12px;position:sticky;top:0;background:#fff}
+.tag{display:inline-block;padding:1px 8px;border-radius:8px;font-size:11.5px;font-weight:700}
+.t-ok{background:#dcfce7;color:#166534}.t-x{background:#fee2e2;color:#991b1b}.t-up{background:#fef9c3;color:#854d0e}.t-solo{background:#f3f4f6;color:#374151}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.note{color:var(--mute);font-size:12.5px;line-height:1.5;margin-top:8px}
+.gate{max-width:420px;margin:60px auto;background:#fff;border-radius:18px;padding:24px;text-align:center;border:1px solid var(--line)}
+.gate h1{font-size:22px;margin-bottom:6px}.gate p{color:var(--mute);margin-bottom:16px;line-height:1.5}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.split{grid-template-columns:1fr}}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;white-space:pre-wrap;max-height:220px;overflow:auto}
+.log .e{color:var(--r)}.log .w{color:#b45309}.log .i{color:var(--mute)}
+#logDot{background:var(--r);color:#fff;border-radius:8px;font-size:10px;padding:0 5px;margin-left:4px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="logo">🛺 Auto<span>Pool</span> · Admin</div>
+  <button class="ghost" id="bRefresh" style="display:none">↻ Refresh</button>
+  <button class="ghost" id="bLog">🐞 Log<span id="logDot" style="display:none"></span></button>
+  <button class="ghost" id="bOut" style="display:none">Sign out</button>
+</div></header>
+
+<div class="gate" id="gate">
+  <h1>🔒 Admin only</h1>
+  <p>Sign in with the AutoPool owner's Google account to see users and ride stats.</p>
+  <button class="btn" id="bIn">Sign in with Google</button>
+  <p class="note" id="gateMsg" style="margin-top:12px"></p>
+</div>
+
+<main class="wrap" id="main" style="display:none">
+  <div class="tools">
+    <span>Period:</span>
+    <select id="period"><option value="1">Today</option><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="0">All time</option></select>
+    <span class="note" id="updated" style="margin:0"></span>
+  </div>
+
+  <h2>👥 Users</h2>
+  <div class="kpis" id="kUsers"></div>
+
+  <h2>🛺 Rides</h2>
+  <div class="kpis" id="kRides"></div>
+
+  <div class="split">
+    <div><h2>📅 Rides per day</h2><div class="card"><div class="bars" id="cDays"></div><div class="legend"><i style="background:var(--y)"></i>posted (not cancelled)<i style="background:#fca5a5"></i>cancelled</div></div></div>
+    <div><h2>🕘 Busiest leaving hours</h2><div class="card"><div class="bars" id="cHours"></div><div class="legend">Rides by the hour the auto left (not cancelled)</div></div></div>
+  </div>
+
+  <h2>🗂 Recent rides</h2>
+  <div class="card" style="max-height:420px"><table id="tRides"></table></div>
+
+  <h2>📇 Registered users</h2>
+  <div class="card" style="max-height:420px"><table id="tUsers"></table></div>
+
+  <div class="tools">
+    <button class="light" id="dlRides">⬇ Rides CSV</button>
+    <button class="light" id="dlUsers">⬇ Users CSV</button>
+  </div>
+  <p class="note">
+    <b>How these are counted.</b> "Registered" = people whose app saved their sign-up (it saves each time they open the updated app).
+    "Seen in rides" = everyone who ever posted or joined a ride (by phone number), so it also covers people from before sign-ups were saved.
+    "Shared ride" = 2+ people in the auto. "Money saved" = what they'd have paid going alone (₹80 each) minus the shared fare (₹80 for 1–3, ₹100 for 4, ₹120 for 5).
+    A posted ride counts as "completed" once its leaving time has passed and it wasn't cancelled. The app can't know if the auto actually went.
+  </p>
+
+  <div class="card" id="logCard" style="display:none"><b>Issue log</b> <button class="light" id="logCopy" style="padding:4px 10px;margin-left:8px">Copy</button><div class="log" id="logBox" style="margin-top:8px"></div></div>
+</main>
+
+<script type="module">
+const FIREBASE = {
+  apiKey: "AIzaSyBPiSMuocTscBJv8u5Kv2JNoLnox4AjQn4",
+  authDomain: "autopool-93a9d.firebaseapp.com",
+  projectId: "autopool-93a9d",
+  storageBucket: "autopool-93a9d.firebasestorage.app",
+  messagingSenderId: "38116180279",
+  appId: "1:38116180279:web:74aef14d8bbea665489ab2"
+};
+const ADMIN_EMAIL = "anantgarg419@gmail.com";
+const FARES = { 1: 80, 2: 80, 3: 80, 4: 100, 5: 120 };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---- issue log ---- */
+const logs = [];
+function log(level, msg) { logs.push({ t: new Date().toLocaleTimeString("en-IN"), level, msg: String(msg) }); if (level === "e") { $("#logDot").style.display = "inline"; $("#logDot").textContent = logs.filter(l => l.level === "e").length; } renderLog(); }
+const renderLog = () => $("#logBox").innerHTML = logs.slice().reverse().map(l => `<div class="${l.level}">[${l.t}] ${l.level.toUpperCase()} ${esc(l.msg)}</div>`).join("") || "Nothing logged.";
+addEventListener("error", e => log("e", e.message));
+addEventListener("unhandledrejection", e => log("e", e.reason?.message || e.reason));
+$("#bLog").onclick = () => { const c = $("#logCard"); c.style.display = c.style.display === "none" ? "block" : "none"; $("#main").style.display = "block"; c.scrollIntoView(); };
+$("#logCopy").onclick = () => navigator.clipboard.writeText(logs.map(l => `[${l.t}] ${l.level} ${l.msg}`).join("\n"));
+
+/* ---- helpers ---- */
+const used = r => (r.riders || []).reduce((a, x) => a + (x.n || 1), 0);
+const fareFor = n => FARES[Math.min(Math.max(n, 1), 5)];
+const dt = ms => new Date(ms).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+const dayKey = ms => { const d = new Date(ms); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const kpi = (n, label, hl) => `<div class="k ${hl ? "hl" : ""}"><b>${n}</b><small>${label}</small></div>`;
+function csv(rows) { return rows.map(r => r.map(v => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(",")).join("\n"); }
+function download(name, text) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + text], { type: "text/csv" })); a.download = name; a.click(); }
+function bars(el, items, max) {   // items: [{label, a, b?}]
+  const m = max || Math.max(1, ...items.map(i => (i.a || 0) + (i.b || 0)));
+  el.innerHTML = items.map(i => `<div class="bar" title="${esc(i.label)}: ${i.a}${i.b != null ? ` posted, ${i.b} cancelled` : ""}"><span>${(i.a || 0) + (i.b || 0) || ""}</span>${i.b ? `<i class="c" style="height:${i.b / m * 100}%"></i>` : ""}<i style="height:${(i.a || 0) / m * 100}%"></i><em>${esc(i.label)}</em></div>`).join("");
+}
+
+/* ---- Firebase ---- */
+const V = "10.12.2";
+let fs, db, auth, A;
+let RIDES = [], USERS = [];
+async function boot() {
+  try {
+    const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+    A = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+    fs = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+    const app = initializeApp(FIREBASE);
+    auth = A.getAuth(app); db = fs.getFirestore(app);
+    A.onAuthStateChanged(auth, u => {
+      if (u && !u.isAnonymous && u.email === ADMIN_EMAIL) { $("#gate").style.display = "none"; $("#main").style.display = "block"; $("#bRefresh").style.display = $("#bOut").style.display = "inline-block"; log("i", "Signed in as " + u.email); load(); }
+      else if (u && !u.isAnonymous) { $("#gateMsg").textContent = `${u.email} is not the admin account. Sign out and use ${ADMIN_EMAIL}.`; $("#bOut").style.display = "inline-block"; log("w", "Not admin: " + u.email); }
+    });
+    log("i", "Firebase ready");
+  } catch (e) { log("e", "Firebase failed to load: " + e.message); $("#gateMsg").textContent = "Couldn't load Firebase. Check internet."; }
+}
+$("#bIn").onclick = async () => {
+  try { await A.signInWithPopup(auth, new A.GoogleAuthProvider()); }
+  catch (e) { log("e", "Sign-in failed: " + e.code + " " + e.message); $("#gateMsg").textContent = "Sign-in failed: " + (e.code || e.message); }
+};
+$("#bOut").onclick = async () => { await A.signOut(auth); location.reload(); };
+$("#bRefresh").onclick = () => load();
+$("#period").onchange = () => draw();
+
+async function load() {
+  $("#updated").textContent = "Loading…";
+  try {
+    const [rs, us] = await Promise.all([fs.getDocs(fs.collection(db, "rides")), fs.getDocs(fs.collection(db, "users"))]);
+    RIDES = rs.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.leaveAt - a.leaveAt);
+    USERS = us.docs.map(d => d.data()).sort((a, b) => (b.firstSeen || 0) - (a.firstSeen || 0));
+    log("i", `Loaded ${RIDES.length} rides, ${USERS.length} users`);
+    $("#updated").textContent = "Updated " + new Date().toLocaleTimeString("en-IN");
+    draw();
+  } catch (e) { log("e", "Load failed: " + e.message); $("#updated").textContent = "Load failed: " + e.message; }
+}
+
+function draw() {
+  const days = +$("#period").value, now = Date.now();
+  const from = days === 0 ? 0 : days === 1 ? startOfToday() : now - days * 864e5;
+  const inP = t => (t || 0) >= from;
+
+  /* users */
+  const seen = new Map();   // phone → {name, first, rides}
+  for (const r of RIDES) for (const x of r.riders || []) {
+    const s = seen.get(x.phone) || { name: x.name, first: r.createdAt || r.leaveAt, rides: 0 };
+    s.rides++; s.first = Math.min(s.first, r.createdAt || r.leaveAt); seen.set(x.phone, s);
+  }
+  const regPhones = new Set(USERS.map(u => u.phone));
+  const allPeople = new Set([...regPhones, ...seen.keys()]);
+  $("#kUsers").innerHTML =
+    kpi(USERS.length, "registered (saved sign-ups)") +
+    kpi(allPeople.size, "unique people (sign-ups + seen in rides)", true) +
+    kpi(USERS.filter(u => inP(u.firstSeen)).length, "new sign-ups in period") +
+    kpi(USERS.filter(u => (u.lastSeen || 0) >= now - 864e5).length, "opened the app in last 24 h") +
+    kpi(USERS.filter(u => (u.lastSeen || 0) >= now - 7 * 864e5).length, "opened the app in last 7 days") +
+    kpi([...seen.values()].filter(s => s.rides >= 2).length, "repeat riders (2+ rides)");
+
+  /* rides */
+  const P = RIDES.filter(r => inP(r.createdAt || r.leaveAt));
+  const cancelled = P.filter(r => r.cancelled), ok = P.filter(r => !r.cancelled);
+  const done = ok.filter(r => r.leaveAt < now), upcoming = ok.filter(r => r.leaveAt >= now);
+  const shared = done.filter(r => used(r) >= 2), solo = done.filter(r => used(r) < 2);
+  const people = shared.reduce((a, r) => a + used(r), 0);
+  const saved = shared.reduce((a, r) => a + used(r) * FARES[1] - fareFor(used(r)), 0);
+  const settled = shared.filter(r => r.payer).length;
+  const gate = done.filter(r => (r.riders || []).some(x => x.gate)).length;
+  $("#kRides").innerHTML =
+    kpi(P.length, "rides posted") +
+    kpi(cancelled.length, `cancelled (${P.length ? Math.round(cancelled.length / P.length * 100) : 0}%)`) +
+    kpi(done.length, "completed (time passed, not cancelled)") +
+    kpi(upcoming.length, "upcoming right now") +
+    kpi(shared.length, `shared, 2+ people (${done.length ? Math.round(shared.length / done.length * 100) : 0}% of completed)`, true) +
+    kpi(solo.length, "nobody joined (solo)") +
+    kpi(shared.length ? (people / shared.length).toFixed(1) : "–", "avg people per shared auto") +
+    kpi("₹" + saved.toLocaleString("en-IN"), "money saved by students", true) +
+    kpi(P.filter(r => r.dir === "c2m").length + " / " + P.filter(r => r.dir === "m2c").length, "to Campus / to CDL") +
+    kpi(settled, "settled with UPI split") +
+    kpi(gate, "used 'I'm at the gate'");
+
+  /* per-day chart */
+  const nDays = days === 1 ? 1 : days === 0 ? Math.min(30, Math.max(1, Math.ceil((now - Math.min(now, ...RIDES.map(r => r.createdAt || r.leaveAt))) / 864e5))) : days;
+  const dayItems = [];
+  for (let i = nDays - 1; i >= 0; i--) {
+    const d = new Date(startOfToday() - i * 864e5), k = dayKey(d.getTime());
+    const rs = RIDES.filter(r => dayKey(r.createdAt || r.leaveAt) === k);
+    dayItems.push({ label: d.toLocaleDateString("en-IN", { day: "numeric", month: "short" }), a: rs.filter(r => !r.cancelled).length, b: rs.filter(r => r.cancelled).length });
+  }
+  bars($("#cDays"), dayItems);
+  const hrs = Array.from({ length: 24 }, (_, h) => ({ label: h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p", a: ok.filter(r => new Date(r.leaveAt).getHours() === h).length }));
+  const firstH = hrs.findIndex(h => h.a), lastH = 23 - [...hrs].reverse().findIndex(h => h.a);
+  bars($("#cHours"), firstH < 0 ? hrs.slice(7, 23) : hrs.slice(Math.max(0, firstH - 1), Math.min(24, lastH + 2)));
+
+  /* tables */
+  const status = r => r.cancelled ? `<span class="tag t-x">cancelled</span>` : r.leaveAt >= now ? `<span class="tag t-up">upcoming</span>` : used(r) >= 2 ? `<span class="tag t-ok">shared</span>` : `<span class="tag t-solo">solo</span>`;
+  $("#tRides").innerHTML = `<tr><th>Leaves</th><th>Route</th><th>Posted by</th><th>People</th><th>Fare</th><th>Status</th><th>Riders</th></tr>` +
+    P.slice(0, 200).map(r => { const c = (r.riders || []).find(x => x.uid === r.creator) || r.riders?.[0] || {};
+      return `<tr><td>${dt(r.leaveAt)}</td><td>${r.dir === "c2m" ? "CDL → Campus" : "Campus → CDL"}</td><td>${esc(c.name)}</td><td>${used(r)}</td><td>₹${fareFor(used(r))}</td><td>${status(r)}</td><td>${(r.riders || []).map(x => esc(x.name) + (x.n > 1 ? ` +${x.n - 1}` : "")).join(", ")}</td></tr>`; }).join("") ||
+    `<tr><td colspan="7">No rides in this period.</td></tr>`;
+  const list = [...USERS.map(u => ({ name: u.name, phone: u.phone, first: u.firstSeen, last: u.lastSeen, rides: seen.get(u.phone)?.rides || 0, src: "sign-up" })),
+                ...[...seen.entries()].filter(([p]) => !regPhones.has(p)).map(([p, s]) => ({ name: s.name, phone: p, first: s.first, last: null, rides: s.rides, src: "rides only" }))];
+  $("#tUsers").innerHTML = `<tr><th>Name</th><th>Phone</th><th>First seen</th><th>Last opened app</th><th>Rides</th><th>Source</th></tr>` +
+    list.map(u => `<tr><td>${esc(u.name)}</td><td><a href="tel:${esc(u.phone)}">${esc(u.phone)}</a></td><td>${u.first ? dt(u.first) : "–"}</td><td>${u.last ? dt(u.last) : "–"}</td><td>${u.rides}</td><td>${u.src}</td></tr>`).join("") ||
+    `<tr><td colspan="6">No users yet.</td></tr>`;
+
+  $("#dlRides").onclick = () => download(`autopool-rides-${dayKey(now)}.csv`, csv([["ride_id", "posted_at", "leaves_at", "route", "posted_by", "people", "fare_total", "cancelled", "status", "payer", "riders"],
+    ...RIDES.map(r => [r.id, r.createdAt ? new Date(r.createdAt).toISOString() : "", new Date(r.leaveAt).toISOString(), r.dir === "c2m" ? "CDL->Campus" : "Campus->CDL",
+      ((r.riders || []).find(x => x.uid === r.creator) || {}).name, used(r), fareFor(used(r)), !!r.cancelled,
+      r.cancelled ? "cancelled" : r.leaveAt >= now ? "upcoming" : used(r) >= 2 ? "shared" : "solo",
+      ((r.riders || []).find(x => x.uid === r.payer) || {}).name || "", (r.riders || []).map(x => `${x.name} (${x.phone})`).join("; ")])]));
+  $("#dlUsers").onclick = () => download(`autopool-users-${dayKey(now)}.csv`, csv([["name", "phone", "first_seen", "last_opened", "rides", "source"],
+    ...list.map(u => [u.name, u.phone, u.first ? new Date(u.first).toISOString() : "", u.last ? new Date(u.last).toISOString() : "", u.rides, u.src])]));
+}
+boot();
+</script>
+</body>
+</html>

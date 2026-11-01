@@ -388,6 +388,11 @@ async function initBackend() {
           });
         },
         async cancel(id) { await fs.updateDoc(fs.doc(db, "rides", id), { cancelled: true }); },
+        async saveUser(p) {
+          const ref = fs.doc(db, "users", cred.user.uid), now = Date.now();
+          let isNew = true; try { isNew = !(await fs.getDoc(ref)).exists(); } catch (e) {}
+          await fs.setDoc(ref, { uid: cred.user.uid, name: p.name, phone: p.phone, lang, hasUpi: !!p.upi, lastSeen: now, ...(isNew ? { firstSeen: now } : {}) }, { merge: true });
+        },
         async patchRider(id, uid, fields) {
           await fs.runTransaction(db, async tx => {
             const ref = fs.doc(db, "rides", id); const s = await tx.get(ref); if (!s.exists()) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है"));
@@ -438,6 +443,7 @@ async function initBackend() {
     },
     async leave(id, uid) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.riders = r.riders.filter(x => x.uid !== uid); write(rs); } },
     async cancel(id) { const rs = read(), r = rs.find(x => x.id === id); if (r) { r.cancelled = true; write(rs); } },
+    async saveUser() {},
     async patchRider(id, uid, fields) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.riders = r.riders.map(x => x.uid === uid ? { ...x, ...fields } : x); write(rs); },
     async setPayer(id, uid, upi) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.payer = uid; r.riders = r.riders.map(x => x.uid === uid ? { ...x, paid: true, ...(upi ? { upi } : {}) } : x); write(rs); },
     watchBulbs(cb) { bcbs.push(cb); cb(readB()); },
@@ -774,6 +780,7 @@ $("#meSave").onclick = () => {
   if (!n || !validPhone(p)) return toast(tr("Enter name and a valid 10-digit number", "नाम और सही 10 अंकों का नंबर डालें"));
   if (u && !validUpi(u)) return toast(tr("That UPI ID doesn't look right (like name@okaxis)", "UPI ID सही नहीं लगता (जैसे name@okaxis)"));
   me = { name: n, phone: p, ...(u ? { upi: u } : {}) }; localStorage.setItem("ap_me", JSON.stringify(me)); closeAll(); toast(tr("Saved ✅", "सेव हुआ ✅"));
+  api?.saveUser(me).catch(e => log("w", "Registration save failed: " + e.message));
 };
 $("#lgGo").onclick = () => {
   const n = $("#lgName").value.trim(), p = $("#lgPhone").value.replace(/\D/g, "").slice(-10);
@@ -982,6 +989,7 @@ async function start() {
   document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x.dataset.d === tab); x.setAttribute("aria-selected", x.dataset.d === tab); });
   try { mascot = window.__mascot = initMascot(); } catch (e) { log("e", "Mascot failed: " + e.message); }
   await initBackend();
+  api.saveUser(me).then(() => log("i", "Registration saved")).catch(e => log("w", "Registration save failed: " + e.message));
   api.watch((rs, added) => {
     rides = rs;
     added.map(id => rs.find(r => r.id === id))
