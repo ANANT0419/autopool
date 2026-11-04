@@ -19,10 +19,10 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow create: if request.auth != null
         && request.resource.data.creator == request.auth.uid
-        && request.resource.data.riders.size() <= 4;
+        && request.resource.data.riders.size() <= 5;
       allow update: if request.auth != null
         && request.resource.data.creator == resource.data.creator
-        && request.resource.data.riders.size() <= 4;
+        && request.resource.data.riders.size() <= 5;
       allow delete: if false;
     }
     match /bulbs/{uid} {            // 💡 "I'm flexible" — each person can only switch their own bulb
