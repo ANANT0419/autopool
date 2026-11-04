@@ -17,7 +17,7 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 - `index.html`: the whole app (HTML, CSS and JS in one file). The settings block near the top is `window.AUTOPOOL_CONFIG`.
 - `admin.html`: stats page (sign-ups, rides posted or cancelled, money saved, CSV downloads). Only `anantgarg419@gmail.com` can see it.
 - `sw.js` + `manifest.json` + `icon-*`: let the site install like an app and open offline.
-  - **Bump the cache version `V` in `sw.js` (currently "autopool-v2") whenever you change files**, or phones keep showing the old app.
+  - **Bump the cache version `V` in `sw.js` (currently "autopool-v3") whenever you change files**, or phones keep showing the old app.
 - `SETUP.md`: the original go-live guide. Note that its Netlify hosting step is out of date: the app now runs on GitHub Pages.
 
 ## Product decisions (keep these)
@@ -26,7 +26,7 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 - **Both directions:** CDL→Campus and Campus→CDL.
 - **Login:** name + phone number, so riders can call each other to hold the auto. Firebase anonymous sign-in sits underneath.
 - **WhatsApp sharing** is offered *after* posting a ride. It never happens automatically.
-- **Mascot "Chhotu"** (an auto-rickshaw) follows the user, in the spirit of "Inku" from Mishu's tattoo-studio site.
+- **Mascot "Chhotu"** (a kid in a yellow cap, drawn as SVG) follows the user, in the spirit of "Inku" from Mishu's tattoo-studio site.
 - **💡 "Flexible" bulb toggle:** for people who are open to going with no fixed time. They gather first, then agree on a time.
 - **Alerts:**
   - In-app alerts.
