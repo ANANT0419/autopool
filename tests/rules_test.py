@@ -323,5 +323,67 @@ check(f"you list orders, got {n}", True, s)
 check("you correct the counts", True, commit("arcus/counts", counts(0, "fix"), ME))
 check("password login with your email moves an order", False, commit("arcusOrders/c3", {"status": "ready"}, FAKE_PW, mask=["status"]))
 
+print("--- Arcus handlers ---")
+DAY = token("hd", "password", "arcus-day@autopool-93a9d.firebaseapp.com")
+NIGHT = token("hn", "password", "arcus-night@autopool-93a9d.firebaseapp.com")
+STRANGER_PW = token("hx", "password", "someone@autopool-93a9d.firebaseapp.com")
+GOOGLE_SAME = token("hg", "google.com", "arcus-day@autopool-93a9d.firebaseapp.com", True)
+
+
+def step(oid, tok, uid, status, counts_after, open_after=None, reason=None):
+    """The handler's transaction: the order, the counts and, when it finishes, the student's open list."""
+    f = {"status": status}
+    if reason is not None:
+        f.update({"cancelReason": reason, "cancelledBy": "handler"})
+    writes = [{"update": {"name": f"{ROOT}/arcusOrders/{oid}", "fields": fields(f)}, "updateMask": {"fieldPaths": list(f)},
+               "updateTransforms": [{"fieldPath": "statusAt", "setToServerValue": "REQUEST_TIME"}], "currentDocument": {"exists": True}},
+              {"update": {"name": f"{ROOT}/arcus/counts", "fields": fields(counts_after)}}]
+    if open_after is not None:
+        writes.append({"update": {"name": f"{ROOT}/arcusMine/{uid}", "fields": fields({"open": open_after, "lastOrder": oid})}})
+    return call("POST", f"/v1/{ROOT}:commit", {"writes": writes}, tok)[0]
+
+
+def at(status, oid="h1"):
+    fresh("a", [oid], 1)
+    seed(f"arcusOrders/{oid}", order(status=status))
+    return oid
+
+
+check("handler confirms", True, step(at("placed"), DAY, "a", "confirmed", counts(0, "h1", confirmed=1)))
+check("other handler marks ready", True, step(at("confirmed"), NIGHT, "a", "ready", counts(0, "h1", ready=1)))
+check("handler marks done", True, step(at("ready"), DAY, "a", "done", counts(0, "h1"), []))
+check("handler cancels with a reason", True, step(at("confirmed"), DAY, "a", "cancelled", counts(0, "h1"), [], "Item ran out"))
+check("handler reads any order", True, call("GET", f"/v1/{ROOT}/arcusOrders/h1", None, DAY)[0])
+check("handler reads a student's open list", True, call("GET", f"/v1/{ROOT}/arcusMine/a", None, DAY)[0])
+open_q = {"structuredQuery": {"from": [{"collectionId": "arcusOrders"}], "where": {"fieldFilter": {"field": {"fieldPath": "status"}, "op": "IN", "value": val(["placed", "confirmed", "ready"])}}}}
+check("handler's live list of open orders", True, call("POST", f"/v1/{ROOT}:runQuery", open_q, DAY)[0])
+check("student asks for the open orders list", False, call("POST", f"/v1/{ROOT}:runQuery", open_q, A)[0])
+s, n = query("arcusOrders", None, 0, DAY)
+check("handler downloads the full order history", False, s)
+check("handler marks items out of stock", True, commit("arcus/stock", {"out": ["i1", "i2"]}, DAY))
+check("student reads what is out of stock", True, call("GET", f"/v1/{ROOT}/arcus/stock", None, A)[0])
+
+print("--- Arcus handler misuse ---")
+check("skip from Placed to Done", False, step(at("placed"), DAY, "a", "done", counts(0, "h1"), []))
+check("go backwards from Ready to Confirmed", False, step(at("ready"), DAY, "a", "confirmed", counts(0, "h1", confirmed=1)))
+check("reopen a finished order", False, step(at("done"), DAY, "a", "ready", counts(0, "h1", ready=1)))
+check("cancel with no reason", False, step(at("placed"), DAY, "a", "cancelled", counts(0, "h1"), []))
+check("done without clearing the student's list", False, step(at("ready"), DAY, "a", "done", counts(0, "h1")))
+at("placed")
+check("confirm without updating the counts", False, commit("arcusOrders/h1", {"status": "confirmed"}, DAY, mask=["status"]))
+check("handler changes an order's total", False, commit("arcusOrders/h1", {"total": 1}, DAY, mask=["total"]))
+check("handler deletes an order", False, call("POST", f"/v1/{ROOT}:commit", {"writes": [{"delete": f"{ROOT}/arcusOrders/h1"}]}, DAY)[0])
+check("handler changes the menu", False, commit("arcus/menu", {"categories": [], "rev": 9}, DAY))
+check("handler flips the Arcus switch", False, commit("arcus/settings", {"live": False}, DAY))
+check("handler changes hours or phones", False, commit("arcus/shop", shop, DAY))
+check("handler lists sign-ups", False, query("users", None, 0, DAY)[0])
+check("stranger with a password login moves an order", False, step(at("placed"), STRANGER_PW, "a", "confirmed", counts(0, "h1", confirmed=1)))
+check("Google login with a handler's address moves an order", False, step(at("placed"), GOOGLE_SAME, "a", "confirmed", counts(0, "h1", confirmed=1)))
+check("student moves their own order to Confirmed", False, step(at("placed"), A, "a", "confirmed", counts(0, "h1", confirmed=1)))
+check("student marks items out of stock", False, commit("arcus/stock", {"out": ["i1"]}, A))
+check("stranger with a password login changes stock", False, commit("arcus/stock", {"out": []}, STRANGER_PW))
+check("bad alert channel name", False, commit("arcus/shop", {**shop, "dayTopic": "has spaces/slash"}, ME))
+check("you save alert channel names", True, commit("arcus/shop", {**shop, "dayTopic": "arcus-day-abc", "nightTopic": "arcus-night-def"}, ME))
+
 print(f"\n{sum(results)} of {len(results)} passed")
 sys.exit(0 if all(results) else 1)

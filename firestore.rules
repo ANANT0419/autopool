@@ -125,9 +125,29 @@ service cloud.firestore {
     }
 
     // ---- Arcus ordering (new in Stage 3) ----
-    // Stage 4 adds the handlers' logins here. Until then only Mishu can move an order along.
+    // The two handler logins (Stage 4). Only these exact addresses, and only with a password login.
+    function isHandler() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && request.auth.token.get('email', '') in ['arcus-day@autopool-93a9d.firebaseapp.com', 'arcus-night@autopool-93a9d.firebaseapp.com'];
+    }
     function isStaff() {
-      return isOwner();
+      return isOwner() || isHandler();
+    }
+    // A handler moves an order one step at a time. Food, prices and the student's details can't be changed.
+    function validHandlerStep(id) {
+      let d = request.resource.data;
+      let from = resource.data.status;
+      let to = d.status;
+      return isHandler()
+        && d.diff(resource.data).affectedKeys().hasOnly(['status', 'statusAt', 'cancelReason', 'cancelledBy'])
+        && d.statusAt == request.time
+        && ((from == 'placed' && to in ['confirmed', 'cancelled'])
+          || (from == 'confirmed' && to in ['ready', 'cancelled'])
+          || (from == 'ready' && to in ['done', 'cancelled']))
+        && (to != 'cancelled' || (d.cancelledBy == 'handler' && d.cancelReason is string && d.cancelReason.size() > 0 && d.cancelReason.size() <= 80))
+        && getAfter(/databases/$(db)/documents/arcus/counts).data.lastOrder == id
+        && (!(to in ['done', 'cancelled']) || getAfter(/databases/$(db)/documents/arcusMine/$(resource.data.uid)).data.lastOrder == id);
     }
     function orderPath(id) {
       return /databases/$(db)/documents/arcusOrders/$(id);
@@ -184,9 +204,10 @@ service cloud.firestore {
     // Asking for an order that doesn't exist yet is allowed: placing an order checks it wasn't already sent.
     match /arcusOrders/{id} {
       allow get: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || isStaff());
-      allow list: if isStaff();
+      // Handlers can list open orders and the last 24 hours (for today's count), not the full history.
+      allow list: if isOwner() || (isHandler() && (resource.data.status in ['placed', 'confirmed', 'ready'] || resource.data.createdAt > request.time - duration.value(24, 'h')));
       allow create: if signedIn() && validNewOrder(id);
-      allow update: if isStaff() || validStudentCancel(id);
+      allow update: if isOwner() || validStudentCancel(id) || validHandlerStep(id);
       allow delete: if false;
     }
 
@@ -244,7 +265,17 @@ service cloud.firestore {
         && request.resource.data.closeAt.matches('^[0-2][0-9]:[0-5][0-9]$')
         && request.resource.data.lastOrder.matches('^[0-2][0-9]:[0-5][0-9]$')
         && request.resource.data.dayPhone.matches('^([0-9]{10})?$')
-        && request.resource.data.nightPhone.matches('^([0-9]{10})?$');
+        && request.resource.data.nightPhone.matches('^([0-9]{10})?$')
+        && request.resource.data.get('dayTopic', '').matches('^[A-Za-z0-9_-]{0,64}$')
+        && request.resource.data.get('nightTopic', '').matches('^[A-Za-z0-9_-]{0,64}$');
+    }
+
+    // One-tap out of stock: a short list of item IDs. Handlers can change this, but never the menu or its prices.
+    match /arcus/stock {
+      allow read: if signedIn();
+      allow write: if isStaff()
+        && request.resource.data.keys().hasOnly(['out', 'updatedAt'])
+        && request.resource.data.out is list && request.resource.data.out.size() <= 500;
     }
   }
 }

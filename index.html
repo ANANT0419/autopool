@@ -490,7 +490,7 @@ window.AUTOPOOL_CONFIG = {
 
 <script type="module">
 const C = window.AUTOPOOL_CONFIG;
-const APP_VERSION = "2026-11-04-v15";   // bump on every upload → open apps notice and refresh
+const APP_VERSION = "2026-11-04-v16";   // bump on every upload → open apps notice and refresh
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const EXPIRE_MS = 40 * 1000;        // card shows "Leaving now" for 40 s after leave time, then disappears
@@ -653,6 +653,9 @@ async function initBackend() {
         watchShop(cb, onErr) {
           return fs.onSnapshot(fs.doc(db, "arcus", "shop"), s => { if (s.exists() || !s.metadata.fromCache) cb(s.exists() ? s.data() : null); }, onErr);
         },
+        watchStock(cb, onErr) {
+          return fs.onSnapshot(fs.doc(db, "arcus", "stock"), s => { if (s.exists() || !s.metadata.fromCache) cb(s.exists() ? s.data().out || [] : []); }, onErr);
+        },
         watchCounts(cb, onErr) {
           return fs.onSnapshot(fs.doc(db, "arcus", "counts"), s => { if (s.exists() || !s.metadata.fromCache) cb(s.exists() ? s.data() : {}); }, onErr);
         },
@@ -675,10 +678,10 @@ async function initBackend() {
           return fs.runTransaction(db, async tx => {
             const o = await tx.get(oRef);
             if (o.exists()) return o.data();    // a retry after a weak connection: the first try already got through
-            const [menu, mine, cn] = [await tx.get(menuRef), await tx.get(mRef), await tx.get(cRef)];
+            const [menu, mine, cn, st] = [await tx.get(menuRef), await tx.get(mRef), await tx.get(cRef), await tx.get(fs.doc(db, "arcus", "stock"))];
             const open = mine.exists() ? mine.data().open || [] : [], c = cn.exists() ? cn.data() : {};
             if (open.length >= ARCUS_MAX_OPEN) throw new Error("order-limit");
-            const order = build(menu.exists() ? menu.data() : null), now = fs.serverTimestamp();
+            const order = build(menu.exists() ? menu.data() : null, st.exists() ? st.data().out || [] : []), now = fs.serverTimestamp();
             tx.set(oRef, { ...order, createdAt: now, statusAt: now });
             tx.set(mRef, { open: [...open, id], lastOrder: id });
             tx.set(cRef, { placed: (c.placed || 0) + 1, confirmed: c.confirmed || 0, ready: c.ready || 0, lastOrder: id });
@@ -750,6 +753,7 @@ async function initBackend() {
     // Arcus ordering in a test copy: everything stays in this browser. Nothing reaches real students.
     demo: true,
     watchShop(cb) { return demoWatch("ap_demo_arcus_shop", () => cb(readJSON("ap_demo_arcus_shop"))); },
+    watchStock(cb) { return demoWatch("ap_demo_arcus_stock", () => cb(readJSON("ap_demo_arcus_stock")?.out || [])); },
     watchCounts(cb) { return demoWatch("ap_demo_arcus_counts", () => cb(readJSON("ap_demo_arcus_counts") || {})); },
     watchOrder(id, cb) { return demoWatch("ap_demo_orders", () => cb((readJSON("ap_demo_orders") || {})[id] || null)); },
     async myOpenOrders() { return readJSON("ap_demo_mine")?.open || []; },
@@ -759,7 +763,7 @@ async function initBackend() {
       if (all[id]) return all[id];
       const open = readJSON("ap_demo_mine")?.open || [], c = readJSON("ap_demo_arcus_counts") || {};
       if (open.length >= ARCUS_MAX_OPEN) throw new Error("order-limit");
-      const order = { ...build(readJSON("ap_demo_arcus_menu")), id, createdAt: Date.now(), statusAt: Date.now() };
+      const order = { ...build(readJSON("ap_demo_arcus_menu"), readJSON("ap_demo_arcus_stock")?.out || []), id, createdAt: Date.now(), statusAt: Date.now() };
       demoWrite("ap_demo_mine", { open: [...open, id] });
       demoWrite("ap_demo_arcus_counts", { placed: (c.placed || 0) + 1, confirmed: c.confirmed || 0, ready: c.ready || 0 });
       demoWrite("ap_demo_orders", { ...all, [id]: order });
@@ -922,7 +926,7 @@ function renderArcus() {
     $("#arcusMenu").innerHTML = (stale ? `<p class="note" style="margin:6px 4px 0">${tr("No connection. This is the last menu saved on your phone.", "कनेक्शन नहीं है। यह आपके फ़ोन पर सेव आख़िरी मेन्यू है।")}</p>` : "")
       + (cats.length > 1 ? `<div class="achips" id="aChips">${cats.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-jump="${i}">${esc(nameOf(c))}</button>`).join("")}</div>` : "")
       + cats.map((c, i) => `<div class="mcat" id="mcat${i}"><h3>${esc(nameOf(c))}</h3><div class="mlist">${c.items.map(it => {
-          const inStock = it.inStock !== false, veg = it.veg !== false;
+          const inStock = it.inStock !== false && !arcusOut.includes(it.id), veg = it.veg !== false;
           return `<div class="mi ${inStock ? "" : "off"}"><span class="vm ${veg ? "" : "nv"}" role="img" aria-label="${veg ? tr("Veg", "शाकाहारी") : tr("Non-veg", "मांसाहारी")}"></span><span class="mn"><span class="mt">${esc(nameOf(it))}</span>${inStock ? "" : `<span class="oos">${tr("Out of stock", "स्टॉक में नहीं")}</span>`}</span><span class="mr"><span class="mp">₹${esc(it.price)}</span>${inStock && shopNow().accepting ? `<span data-q="${esc(it.id)}">${stepHtml(it)}</span>` : ""}</span></div>`;
         }).join("")}</div></div>`).join("");
     spyChips();
@@ -987,7 +991,8 @@ function setArcusLive(on) {
 $("#nav").onclick = e => { const b = e.target.closest("[data-view]"); if (b && api) setView(b.dataset.view); };
 
 /* ---------------- Arcus: opening hours and the overall order numbers ---------------- */
-const SHOP_DEFAULTS = { dayStart: "09:30", nightStart: "20:30", closeAt: "04:00", lastOrder: "03:45", dayPhone: "", nightPhone: "" };
+const SHOP_DEFAULTS = { dayStart: "09:30", nightStart: "20:30", closeAt: "04:00", lastOrder: "03:45", dayPhone: "", nightPhone: "", dayTopic: "", nightTopic: "" };
+let arcusOut = [], stockUnsub = null;   // items a handler has marked out of stock
 let arcusShop = { ...SHOP_DEFAULTS, ...readJSON("ap_arcus_shop") };
 let arcusCounts = null, shopUnsub = null, countsUnsub = null;
 const toMin = s => { const [h, m] = String(s).split(":").map(Number); return h * 60 + m; };
@@ -1023,10 +1028,12 @@ function syncShopAndCounts(want) {
       try { localStorage.setItem("ap_arcus_shop", JSON.stringify(arcusShop)); } catch (e) { log("w", "Couldn't save opening hours: " + e.message); }
       renderArcus();
     }, e => { shopUnsub = null; log("e", "Arcus hours failed: " + e.message); });
+    stockUnsub = api.watchStock(o => { arcusOut = o; renderArcus(); if ($("#ovCart").classList.contains("show")) renderCart(); },
+      e => { stockUnsub = null; log("e", "Arcus stock failed: " + e.message); });
     countsUnsub = api.watchCounts(c => { arcusCounts = c; if (view === "arcus") renderArcusTop(); },
       e => { countsUnsub = null; arcusCounts = null; log("e", "Arcus order numbers failed: " + e.message); });
   } else if (!want) {
-    shopUnsub?.(); countsUnsub?.(); shopUnsub = countsUnsub = null;
+    shopUnsub?.(); countsUnsub?.(); stockUnsub?.(); shopUnsub = countsUnsub = stockUnsub = null;
   }
 }
 
@@ -1035,11 +1042,11 @@ const QTY_MAX = 20, NOTE_MAX = 140;
 let cart = readJSON("ap_arcus_cart") || {};
 const saveCart = () => { try { localStorage.setItem("ap_arcus_cart", JSON.stringify(cart)); } catch (e) { log("w", "Couldn't save the cart: " + e.message); } };
 // Prices always come from the menu, never from what was saved in the cart.
-function priceCart(menu) {
+function priceCart(menu, out = arcusOut) {
   const cats = Array.isArray(menu?.categories) ? menu.categories : [], lines = [], off = [];
   cats.forEach(c => (c.items || []).forEach(it => {
     const qty = cart[it.id]; if (!qty) return;
-    if (it.inStock === false) off.push(it);
+    if (it.inStock === false || out.includes(it.id)) off.push(it);
     else lines.push({ id: it.id, en: it.en || "", hi: it.hi || "", price: +it.price || 0, qty, veg: it.veg !== false });
   }));
   return { lines, off, count: lines.reduce((a, l) => a + l.qty, 0), total: Math.round(lines.reduce((a, l) => a + l.price * l.qty, 0)) };
@@ -1105,8 +1112,8 @@ $("#bPlace").onclick = async () => {
   if (!attempt || attempt.sig !== sig) { attempt = { id: api.newOrderId(), code: newCode(), sig }; localStorage.setItem("ap_arcus_try", JSON.stringify(attempt)); }
   const b = $("#bPlace"); busyPlacing = true; b.disabled = true; b.textContent = tr("Placing your order…", "ऑर्डर हो रहा है…");
   try {
-    const order = await withTimeout(api.placeOrder(attempt.id, menu => {
-      const p = priceCart(menu);   // checked against the newest menu, at the moment of ordering
+    const order = await withTimeout(api.placeOrder(attempt.id, (menu, out) => {
+      const p = priceCart(menu, out);   // checked against the newest menu, at the moment of ordering
       if (p.total !== seen.total || p.count !== seen.count) throw new Error("cart-changed");
       return { uid: api.uid, code: attempt.code, name: String(me?.name || "").slice(0, 60), phone: String(me?.phone || "").slice(0, 15), mode: "pickup", items: p.lines, count: p.count, total: p.total, note, shift: n.shift, status: "placed" };
     }), 20000);
@@ -1114,6 +1121,7 @@ $("#bPlace").onclick = async () => {
     saveMyOrders(); trackOrders();
     cart = {}; saveCart(); localStorage.removeItem("ap_arcus_note"); localStorage.removeItem("ap_arcus_try"); $("#cartNote").value = "";
     log("i", `Order placed #${attempt.code} (${order.count} items)`);
+    arcusAlert(order);
     closeAll(); renderArcus();
     $("#placedNo").textContent = "#" + attempt.code;
     $("#placedCall").innerHTML = callArcus();
@@ -1129,12 +1137,24 @@ $("#bPlace").onclick = async () => {
   } finally { busyPlacing = false; renderCart(); }
 };
 
+// Tells the handler on shift, even if their screen is closed. Only basics: never a name, phone number or item.
+async function arcusAlert(o) {
+  if (!C.ntfyTopic) return;   // test copies have this empty, so nothing reaches a real channel
+  const topic = o.shift === "day" ? arcusShop.dayTopic : arcusShop.nightTopic;
+  if (!topic) return log("w", "No alert channel set for the " + o.shift + " shift");
+  try {
+    const res = await fetch("https://ntfy.sh/" + encodeURIComponent(topic), { method: "POST", body: `New order #${o.code}, ${o.count} item${o.count > 1 ? "s" : ""}`, headers: { Title: "Arcus", Tags: "fork_and_knife", Priority: "high", Click: new URL("arcus.html", location.href).href } });
+    if (!res.ok) log("w", "Arcus alert HTTP " + res.status); else log("i", "Arcus alert sent");
+  } catch (e) { log("w", "Arcus alert failed: " + e.message); }
+}
+
 /* ---------------- Arcus: my orders. Costs nothing for anyone who hasn't ordered ---------------- */
 const O_STEPS = ["placed", "confirmed", "ready", "done"];
 const O_NAMES = { placed: ["Placed", "ऑर्डर हुआ"], confirmed: ["Confirmed", "पक्का हुआ"], ready: ["Ready", "तैयार"], done: ["Done", "पूरा हुआ"], cancelled: ["Cancelled", "रद्द"] };
 const oName = s => tr(...(O_NAMES[s] || [s, s]));
 const O_REASONS = [["Changed my mind", "मन बदल गया"], ["Ordered by mistake", "ग़लती से ऑर्डर हुआ"], ["Taking too long", "बहुत समय लग रहा है"], ["Something else", "कुछ और"]];
-const reasonText = r => { const f = O_REASONS.find(x => x[0] === r); return f ? tr(f[0], f[1]) : r; };
+const H_REASONS = [["Item ran out", "आइटम ख़त्म हो गया"], ["Closing now", "अभी बंद हो रहा है"], ["Student didn't come", "छात्र नहीं आया"]];
+const reasonText = r => { const f = [...O_REASONS, ...H_REASONS].find(x => x[0] === r); return f ? tr(f[0], f[1]) : r; };
 const isOpenOrder = o => o.status !== "done" && o.status !== "cancelled";
 let myOrders = readJSON("ap_arcus_orders") || {}, orderUnsubs = {}, cancelling = null, cancelReason = "", foundMine = false;
 const openOrders = () => Object.values(myOrders).filter(isOpenOrder);
