@@ -1038,7 +1038,8 @@ function slideRender(dir) {
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("lowfx");
   if (!document.startViewTransition || still) return render();
   document.documentElement.style.setProperty("--vtd", dir);
-  try { document.startViewTransition(render); } catch (e) { log("w", "Tab slide failed: " + e.message); render(); }
+  // A quick second tap cancels the slide in progress. The list still redraws, so that isn't an error.
+  try { document.startViewTransition(render).ready.catch(() => {}); } catch (e) { log("w", "Tab slide failed: " + e.message); render(); }
 }
 document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); }); localStorage.setItem("ap_tab", tab); slideRender(tab === "m2c" ? 1 : -1); };
 
