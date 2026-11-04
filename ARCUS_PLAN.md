@@ -11,6 +11,7 @@ Saved at the start of Stage 2 so later stages can use it. This is Mishu's brief,
 - Handler phone numbers and shift times are edited in admin.html and stored in Firestore, NOT in AUTOPOOL_CONFIG, because the repo is public.
 - ntfy order alerts carry only basics, like "New order #A7K2, 3 items". No names or phone numbers.
 - Limit how many open orders one person can have.
+- Students can't see other people's orders. They can see overall numbers only, like how many orders are placed or waiting, with no names, items or phone numbers. (Added after Stage 2. In Stage 3, keep these counts in one small record to protect the daily reads, and confirm with Mishu what "in cart" should count, because carts live on each phone.)
 - Design: match Stage 1 exactly. Glass, one blue accent, yellow only on Chhotu, dark mode, spring motion, Inter on Android, solid bars on slow phones. Respect reduce-motion. No heavy libraries.
 - Don't invent menu items or prices. Use items labelled "SAMPLE" until I send real ones.
 

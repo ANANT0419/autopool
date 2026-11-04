@@ -39,11 +39,18 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 
 ## Backend
 - Firebase project `autopool-93a9d` (Firestore + anonymous Auth). The web config in `index.html` is safe to be public. The Firestore security rules are what protect the data.
-- **Check the live rules:** `SETUP.md` now says `riders.size() <= 5` (it used to say 4). The app allows 5 people.
+- **Live rules:** the same as `firestore.rules` once published. The 5-rider limit is in them.
   - Check the live rules in the Firebase console. If they still say 4, a 5th person can't join. Update them to 5.
 - **Arcus records:** `arcus/settings` (`live` = the off switch; 1 read per app open) and `arcus/menu` (the whole menu as one record; read only while the Arcus tab is open).
 - `admin.html` signs in under its own Firebase app name ("admin"), so the Google login and the app's anonymous login on one phone don't replace each other.
   - Any new feature that adds data needs matching rule changes. Write out the new rules for Mishu to paste into the console, because Claude can't edit the console.
+
+## How to test and release safely
+- **App changes:** test on a copy outside the repo with `firebase: null`, `ntfyTopic: ""` and `FIREBASE = null` in `admin.html`. Nothing reaches real students, and Arcus can be switched on in the copy's own admin page.
+- **Rule changes:** run them against Google's Firestore emulator on this computer, then `python3 tests/rules_test.py`. Download `cloud-firestore-emulator-v1.19.8.jar` to a temporary folder, not the repo (ask Mishu first), and start it with `--host 127.0.0.1 --port 8791 --project_id demo-autopool --rules firestore.rules`. Add a check for every new rule. Firebase's Rules playground can't test lists or a whole join.
+- **Publishing rules:** Claude can load rules into the console editor once Mishu has signed in, but Mishu clicks Publish. Keep `firestore.rules` and the block in `SETUP.md` the same.
+- **Arcus off switch:** Mishu flips it himself. Claude's safety checks block that action.
+- **The site doesn't reload the admin page's data by itself:** reload `admin.html` before trusting the switch it shows.
 
 ## Status (Nov 2026)
 Live and in use. Arcus Stage 2 (browsable menu, switched off for students) is built. See `ARCUS_PLAN.md` for the next stages.
