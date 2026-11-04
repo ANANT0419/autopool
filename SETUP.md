@@ -137,6 +137,129 @@ service cloud.firestore {
         && request.resource.data.categories is list
         && request.resource.data.rev is int;
     }
+
+    // ---- Arcus ordering (new in Stage 3) ----
+    // Stage 4 adds the handlers' logins here. Until then only Mishu can move an order along.
+    function isStaff() {
+      return isOwner();
+    }
+    function orderPath(id) {
+      return /databases/$(db)/documents/arcusOrders/$(id);
+    }
+    function isNewOrder(path) {
+      return !exists(path) && getAfter(path).data.uid == request.auth.uid;
+    }
+    function isStudentCancel(path) {
+      return exists(path)
+        && get(path).data.uid == request.auth.uid
+        && get(path).data.status == 'placed'
+        && getAfter(path).data.status == 'cancelled';
+    }
+    // The order, the counts and "my open orders" must all change together, so they can't drift apart.
+    function movesAllTogether(id) {
+      return getAfter(/databases/$(db)/documents/arcus/counts).data.lastOrder == id
+        && getAfter(/databases/$(db)/documents/arcusMine/$(request.auth.uid)).data.lastOrder == id;
+    }
+    function validNewOrder(id) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['uid', 'code', 'name', 'phone', 'mode', 'items', 'count', 'total', 'note', 'shift', 'status', 'createdAt', 'statusAt'])
+        && d.keys().hasAll(['uid', 'code', 'name', 'phone', 'mode', 'items', 'count', 'total', 'note', 'shift', 'status', 'createdAt', 'statusAt'])
+        && d.uid == request.auth.uid
+        && d.status == 'placed'
+        && d.mode == 'pickup'
+        && d.shift in ['day', 'night']
+        && d.code is string && d.code.size() == 4
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 60
+        && d.phone is string && d.phone.size() > 0 && d.phone.size() <= 15
+        && d.note is string && d.note.size() <= 140
+        && d.items is list && d.items.size() > 0 && d.items.size() <= 30
+        && d.count is int && d.count > 0 && d.count <= 200
+        && d.total is int && d.total >= 0
+        && d.createdAt == request.time
+        && d.statusAt == request.time
+        && get(/databases/$(db)/documents/arcus/settings).data.live == true
+        && movesAllTogether(id);
+    }
+    // A student can cancel only their own order, only while it is still "Placed", and must give a reason.
+    function validStudentCancel(id) {
+      let d = request.resource.data;
+      return signedIn()
+        && resource.data.uid == request.auth.uid
+        && resource.data.status == 'placed'
+        && d.diff(resource.data).affectedKeys().hasOnly(['status', 'statusAt', 'cancelReason', 'cancelledBy'])
+        && d.status == 'cancelled'
+        && d.statusAt == request.time
+        && d.cancelledBy == 'student'
+        && d.cancelReason is string && d.cancelReason.size() > 0 && d.cancelReason.size() <= 80
+        && movesAllTogether(id);
+    }
+
+    // Orders: students can see only their own, and can never list them. Nobody can delete one.
+    // Asking for an order that doesn't exist yet is allowed: placing an order checks it wasn't already sent.
+    match /arcusOrders/{id} {
+      allow get: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || isStaff());
+      allow list: if isStaff();
+      allow create: if signedIn() && validNewOrder(id);
+      allow update: if isStaff() || validStudentCancel(id);
+      allow delete: if false;
+    }
+
+    // One small record per student listing their open orders. This is what limits them to 3.
+    match /arcusMine/{uid} {
+      allow read: if signedIn() && (uid == request.auth.uid || isStaff());
+      allow create, update: if isStaff() || (signedIn() && uid == request.auth.uid && validMineStep());
+      allow delete: if false;
+    }
+    function validMineStep() {
+      let d = request.resource.data;
+      let before = resource == null ? [] : resource.data.open;
+      let path = orderPath(d.lastOrder);
+      return d.keys().hasOnly(['open', 'lastOrder'])
+        && d.lastOrder is string
+        && d.open is list && d.open.size() <= 3
+        && ((isNewOrder(path)
+              && d.open.size() == before.size() + 1
+              && d.open.hasAll(before)
+              && d.open.hasAny([d.lastOrder]))
+          || (isStudentCancel(path)
+              && d.open.size() == before.size() - 1
+              && before.hasAll(d.open)
+              && before.hasAny([d.lastOrder])
+              && !d.open.hasAny([d.lastOrder])));
+    }
+
+    // The overall numbers students see: how many orders, never whose or what. No cart numbers.
+    match /arcus/counts {
+      allow read: if signedIn();
+      allow create, update: if isStaff() || (signedIn() && validCountStep());
+      allow delete: if false;
+    }
+    function validCountStep() {
+      let d = request.resource.data;
+      let placed = resource == null ? 0 : resource.data.placed;
+      let confirmed = resource == null ? 0 : resource.data.confirmed;
+      let ready = resource == null ? 0 : resource.data.ready;
+      let path = orderPath(d.lastOrder);
+      return d.keys().hasOnly(['placed', 'confirmed', 'ready', 'lastOrder'])
+        && d.keys().hasAll(['placed', 'confirmed', 'ready', 'lastOrder'])
+        && d.lastOrder is string
+        && d.confirmed == confirmed
+        && d.ready == ready
+        && ((isNewOrder(path) && d.placed == placed + 1)
+          || (isStudentCancel(path) && d.placed == placed - 1));
+    }
+
+    // Opening hours and handler phone numbers. Read only while the Arcus tab is open. Only Mishu can change them.
+    match /arcus/shop {
+      allow read: if signedIn();
+      allow write: if isOwner()
+        && request.resource.data.dayStart.matches('^[0-2][0-9]:[0-5][0-9]$')
+        && request.resource.data.nightStart.matches('^[0-2][0-9]:[0-5][0-9]$')
+        && request.resource.data.closeAt.matches('^[0-2][0-9]:[0-5][0-9]$')
+        && request.resource.data.lastOrder.matches('^[0-2][0-9]:[0-5][0-9]$')
+        && request.resource.data.dayPhone.matches('^([0-9]{10})?$')
+        && request.resource.data.nightPhone.matches('^([0-9]{10})?$');
+    }
   }
 }
 ```
