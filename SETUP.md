@@ -10,25 +10,60 @@ To make it **live for the whole hostel**, do the 3 steps below.
 2. **Build → Authentication → Get started → Sign-in method → Anonymous → Enable.**
    (This gives each phone an invisible ID so people can't edit each other's rides.)
 3. **Build → Firestore Database → Create database** → location `asia-south1 (Mumbai)` → **Start in production mode**.
-4. Open the **Rules** tab, replace everything with the rules below, then click **Publish**:
+4. Open the **Rules** tab, replace everything with the rules below (the same text is in `firestore.rules`), then click **Publish**:
 ```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    // Mishu's Google account only. The sign-in method is checked too, so an email + password
+    // login (handlers, from Stage 4) can never pass as this account.
+    function isOwner() {
+      return signedIn()
+        && request.auth.token.get('email', '') == 'anantgarg419@gmail.com'
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com';
+    }
+
+    // ---- Rides: unchanged. Maximum 5 riders. ----
     match /rides/{id} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null
+      allow read: if signedIn();
+      allow create: if signedIn()
         && request.resource.data.creator == request.auth.uid
         && request.resource.data.riders.size() <= 5;
-      allow update: if request.auth != null
+      allow update: if signedIn()
         && request.resource.data.creator == resource.data.creator
         && request.resource.data.riders.size() <= 5;
       allow delete: if false;
     }
-    match /bulbs/{uid} {            // 💡 "I'm flexible" — each person can only switch their own bulb
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && uid == request.auth.uid
+
+    // ---- 💡 Flexible bulb: unchanged. Each person can only switch their own. ----
+    match /bulbs/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && uid == request.auth.uid
         && request.resource.data.uid == request.auth.uid;
+    }
+
+    // ---- Sign-ups: each phone reads and saves its own record. Only admin.html reads everyone's. ----
+    match /users/{uid} {
+      allow read: if (signedIn() && uid == request.auth.uid) || isOwner();
+      allow write: if signedIn() && uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    // ---- Arcus (new in Stage 2): any app user can read. Only Mishu can change. ----
+    match /arcus/settings {
+      allow read: if signedIn();
+      allow write: if isOwner() && request.resource.data.live is bool;
+    }
+    match /arcus/menu {
+      allow read: if signedIn();
+      allow write: if isOwner()
+        && request.resource.data.categories is list
+        && request.resource.data.rev is int;
     }
   }
 }

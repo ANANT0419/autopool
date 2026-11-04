@@ -17,7 +17,9 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 - `index.html`: the whole app (HTML, CSS and JS in one file). The settings block near the top is `window.AUTOPOOL_CONFIG`.
 - `admin.html`: stats page (sign-ups, rides posted or cancelled, money saved, CSV downloads). Only `anantgarg419@gmail.com` can see it.
 - `sw.js` + `manifest.json` + `icon-*`: let the site install like an app and open offline.
-  - **Bump the cache version `V` in `sw.js` (currently "autopool-v3") whenever you change files**, or phones keep showing the old app.
+  - **Bump the cache version `V` in `sw.js` (currently "autopool-v4") whenever you change files**, or phones keep showing the old app.
+- `ARCUS_PLAN.md`: the brief for Arcus, the campus canteen ordering feature, and its stages. Read it before any Arcus work.
+- `firestore.rules`: the full security rules, to paste into the Firebase console. Keep it the same as the block in `SETUP.md`.
 - `SETUP.md`: the original go-live guide. Note that its Netlify hosting step is out of date: the app now runs on GitHub Pages.
 
 ## Product decisions (keep these)
@@ -39,7 +41,9 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 - Firebase project `autopool-93a9d` (Firestore + anonymous Auth). The web config in `index.html` is safe to be public. The Firestore security rules are what protect the data.
 - **Check the live rules:** `SETUP.md` now says `riders.size() <= 5` (it used to say 4). The app allows 5 people.
   - Check the live rules in the Firebase console. If they still say 4, a 5th person can't join. Update them to 5.
+- **Arcus records:** `arcus/settings` (`live` = the off switch; 1 read per app open) and `arcus/menu` (the whole menu as one record; read only while the Arcus tab is open).
+- `admin.html` signs in under its own Firebase app name ("admin"), so the Google login and the app's anonymous login on one phone don't replace each other.
   - Any new feature that adds data needs matching rule changes. Write out the new rules for Mishu to paste into the console, because Claude can't edit the console.
 
 ## Status (Nov 2026)
-Live and in use. Mishu has a **new add-on feature idea**. Start by brainstorming it with him before writing code.
+Live and in use. Arcus Stage 2 (browsable menu, switched off for students) is built. See `ARCUS_PLAN.md` for the next stages.

@@ -151,6 +151,44 @@ a.btn{text-decoration:none;display:inline-block}
 .set span{flex:1}.set b{font-weight:550}.set small{display:block;color:var(--mute);font-size:12.5px}
 .lglang{float:right;font-size:13px;font-weight:600;color:var(--acink);padding:4px 0}
 :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+/* Rides / Arcus navigation: only appears once Arcus is switched on */
+.nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--glass);border-top:.5px solid var(--line);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
+.nav .wrap{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 4px;border-radius:14px;color:var(--mute);font-size:12px;font-weight:600}
+.nav svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--acink);background:var(--soft)}
+body.has-nav{padding-bottom:calc(172px + env(safe-area-inset-bottom))}
+body.has-nav .nav{display:block}
+body.has-nav .fab{bottom:calc(76px + env(safe-area-inset-bottom))}
+body.v-arcus{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+#vArcus{display:none}
+body.v-arcus #vArcus{display:block}
+body.v-arcus #vRides,body.v-arcus .fab{display:none!important}
+.vin{animation:rideIn .5s var(--spring) backwards}
+/* In Arcus, Chhotu shrinks and sits beside the speech bubble so the menu stays in view */
+body.v-arcus .mz{flex-direction:row;align-items:center;gap:10px;padding:10px 12px}
+body.v-arcus .mz svg{width:68px;height:68px;margin:0}
+body.v-arcus .bub{flex:1;min-width:0;text-align:left;font-size:14px;padding:10px 12px}
+/* Arcus menu */
+.ahead{display:flex;align-items:baseline;gap:8px;margin:18px 4px 2px}
+.ahead h2{font-size:24px;font-weight:700;letter-spacing:-.025em}.ahead small{color:var(--mute);font-size:13px}
+.achips{display:flex;gap:7px;overflow-x:auto;position:sticky;top:calc(56px + env(safe-area-inset-top));z-index:4;margin:8px -16px 0;padding:8px 16px;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);scrollbar-width:none}
+.achips::-webkit-scrollbar{display:none}
+.achips .chip{flex:none;padding:7px 13px;font-size:14px}
+.mcat{scroll-margin-top:calc(118px + env(safe-area-inset-top));margin-top:14px}
+.mcat h3{margin:0 4px 7px;font-size:14px;font-weight:600;color:var(--ink)}
+.mlist{background:var(--card);border:.5px solid var(--cardln);box-shadow:var(--sh);border-radius:20px;padding:2px 14px}
+.mi{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-top:.5px solid var(--line)}
+.mi:first-child{border-top:0}
+.mi .mn{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}
+.mi .mp{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mi .oos{display:block;font-size:12.5px;font-weight:500;color:var(--mute);margin-top:1px}
+.mi.off .vm,.mi.off .mp{opacity:.45}.mi.off .mt{color:var(--mute)}.mi.off .mp{text-decoration:line-through}
+/* India's food marks: green dot in a square = veg, brown triangle in a square = non-veg */
+.vm{flex:none;width:16px;height:16px;margin-top:2px;border:1.5px solid #14803c;border-radius:3px;background:#fff;display:grid;place-items:center}
+.vm:after{content:"";width:8px;height:8px;border-radius:50%;background:#14803c}
+.vm.nv{border-color:#7a3e12}
+.vm.nv:after{width:0;height:0;border-radius:0;background:none;border:4.5px solid transparent;border-top:0;border-bottom:8px solid #7a3e12}
 /* tab change: the ride list slides, everything else stays put */
 #list{view-transition-name:rides}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
@@ -159,18 +197,22 @@ a.btn{text-decoration:none;display:inline-block}
 @keyframes vtOut{to{opacity:0;transform:translateX(calc(var(--vtd,1)*-18px))}}
 @keyframes vtIn{from{opacity:0;transform:translateX(calc(var(--vtd,1)*26px))}}
 /* phones that struggle: solid colour instead of live blur */
-html.lowfx header,html.lowfx .sheet,html.lowfx .toast,html.lowfx .login .box{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--solid)}
+html.lowfx header,html.lowfx .nav,html.lowfx .achips,html.lowfx .sheet,html.lowfx .toast,html.lowfx .login .box{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--solid)}
 html.lowfx .sheet{will-change:auto}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){header,.sheet,.toast,.login .box{background:var(--solid)}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){header,.nav,.achips,.sheet,.toast,.login .box{background:var(--solid)}}
 /* 🔠 big text & high contrast */
 body.big{--mute:#1f2937;--line:#6b7280;--bg:#fff;--card:#fff;--cardln:#111114;--glass:#fff;--glassln:#111114;--fill:#e5e7eb;--seg:#d1d5db;--soft:#dbeafe;--acink:#0a4fc4}
 body.big:before{display:none}
-body.big main,body.big .sheet,body.big .fab,body.big .login .box{zoom:1.2}
-body.big header,body.big .sheet,body.big .toast,body.big .login .box{-webkit-backdrop-filter:none;backdrop-filter:none}
+body.big main,body.big .sheet,body.big .fab,body.big .nav,body.big .login .box{zoom:1.2}
+body.big header,body.big .nav,body.big .achips,body.big .sheet,body.big .toast,body.big .login .box{-webkit-backdrop-filter:none;backdrop-filter:none}
 body.big .btn,body.big .chip,body.big .call{border:2px solid var(--ink)}
-body.big .ride,body.big .sc,body.big .bulb,body.big .bub,body.big .mz{border:2px solid var(--ink);box-shadow:none}
+body.big .ride,body.big .sc,body.big .bulb,body.big .bub,body.big .mz,body.big .mlist{border:2px solid var(--ink);box-shadow:none}
 body.big .x,body.big .note,body.big small{color:var(--ink)!important}
 body.big .fab{bottom:calc(10px + env(safe-area-inset-bottom))}
+body.big.has-nav .fab{bottom:calc(66px + env(safe-area-inset-bottom))}
+body.big.has-nav{padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+body.big.v-arcus{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+body.big .achips{top:calc(47px + env(safe-area-inset-top))}
 @media(prefers-color-scheme:dark){body.big{--ink:#fff;--mute:#e5e7eb;--line:#9ca3af;--bg:#000;--solid:#111;--card:#111;--cardln:#fff;--glass:#111;--glassln:#fff;--fill:#2a2a30;--seg:#3a3a42;--soft:#12305f;--acink:#9cc6ff}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 </style>
@@ -245,6 +287,7 @@ window.AUTOPOOL_CONFIG = {
     </svg>
     <div class="bub" id="bub" aria-live="polite">Hi! I'm Chhotu 🛺</div>
   </div>
+  <div id="vRides">
   <div id="settle"></div>
   <div class="shut" id="shut"></div>
   <div class="tabs" role="tablist">
@@ -255,10 +298,20 @@ window.AUTOPOOL_CONFIG = {
   <div id="bulb"></div>
   <div id="list"></div>
   <button class="invite" id="bInvite" data-t="📣 Invite friends to AutoPool|📣 दोस्तों को AutoPool पर बुलाएँ"></button>
+  </div>
+  <section id="vArcus" aria-labelledby="arcusTitle">
+    <div class="ahead"><h2 id="arcusTitle">Arcus</h2><small data-t="Campus canteen menu|कैंपस कैंटीन का मेन्यू"></small></div>
+    <div id="arcusMenu"></div>
+  </section>
   <p class="credit">🛺 <span data-t="Made with 💛 at CDL by|CDL पर 💛 से बनाया —"></span> <b>MISHU</b></p>
 </main>
 
 <button class="fab" id="fab" data-glance></button>
+
+<nav class="nav" id="nav" data-al="Main sections|मुख्य हिस्से"><div class="wrap">
+  <button data-view="rides" class="on" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16V9.5C4 7 6 5 8.5 5H14l5 6.5V16"/><path d="M2.5 16h19M12 5v6.5H4.2M12 11.5h7"/><circle cx="7" cy="17.5" r="2"/><circle cx="17" cy="17.5" r="2"/></svg><span data-t="Rides|राइड"></span></button>
+  <button data-view="arcus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7M4 3v4.5A3 3 0 0 0 7 10.5a3 3 0 0 0 3-3V3M7 10.5V21"/><path d="M17 21v-7h-2.5V8c0-3 1.3-5 4-5.5V21"/></svg><span>Arcus</span></button>
+</div></nav>
 
 <!-- Leave sheet -->
 <div class="ov" id="ovLeave" role="dialog"><div class="sheet">
@@ -349,7 +402,7 @@ window.AUTOPOOL_CONFIG = {
 
 <script type="module">
 const C = window.AUTOPOOL_CONFIG;
-const APP_VERSION = "2026-11-04-v12";   // bump on every upload → open apps notice and refresh
+const APP_VERSION = "2026-11-04-v13";   // bump on every upload → open apps notice and refresh
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const EXPIRE_MS = 40 * 1000;        // card shows "Leaving now" for 40 s after leave time, then disappears
@@ -371,7 +424,7 @@ function applyStatic() {
   $("#bLang").textContent = lang === "hi" ? "EN" : "हि";
   $("#lgLang").textContent = lang === "hi" ? "View in English" : "हिंदी में देखें";
 }
-function setLang(l) { lang = l; localStorage.setItem("ap_lang", l); applyStatic(); if (started) { renderShuttle(); render(); } log("i", "Language: " + l); }
+function setLang(l) { lang = l; localStorage.setItem("ap_lang", l); applyStatic(); if (started) { renderShuttle(); render(); renderArcus(); } log("i", "Language: " + l); }
 
 /* ---------------- Big text & high contrast ---------------- */
 const setBig = on => { document.body.classList.toggle("big", on); localStorage.setItem("ap_big", on ? "1" : "0"); $("#bigSw").classList.toggle("on", on); $("#bigSw").setAttribute("aria-checked", on); };
@@ -417,6 +470,7 @@ let me = JSON.parse(localStorage.getItem("ap_me") || "null");
 function uidLocal() { let u = localStorage.getItem("ap_uid"); if (!u) { u = "u" + Math.random().toString(36).slice(2, 10); localStorage.setItem("ap_uid", u); } return u; }
 const validPhone = p => /^[6-9]\d{9}$/.test(p);
 const validUpi = u => /^[\w.\-]{2,}@[a-zA-Z][a-zA-Z0-9.]{1,}$/.test(u);
+const readJSON = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
 const hash = s => { let h = 5381; for (const c of String(s)) h = ((h << 5) + h + c.charCodeAt(0)) >>> 0; return h.toString(36); };
 const myTopic = () => C.ntfyTopic && me ? `${C.ntfyTopic}-${hash(me.phone)}` : "";   // personal reminder channel (phone not exposed)
 let started = false;
@@ -489,7 +543,15 @@ async function initBackend() {
           return fs.onSnapshot(q, s => cb(s.docs.map(d => d.data())), e => log("e", "Bulb sync failed: " + e.message));
         },
         async setBulb(b) { await fs.setDoc(fs.doc(db, "bulbs", b.uid), b); },
-        async clearBulb(uid) { await fs.setDoc(fs.doc(db, "bulbs", uid), { uid, until: 0 }); }
+        async clearBulb(uid) { await fs.setDoc(fs.doc(db, "bulbs", uid), { uid, until: 0 }); },
+        // Arcus: one small settings record (costs 1 read per app open) and one menu record (read only when the Arcus tab is open).
+        // Offline with nothing saved, Firestore reports "no such record" from its cache: that must not count as "switched off".
+        watchArcusSettings(cb, onErr) {
+          return fs.onSnapshot(fs.doc(db, "arcus", "settings"), s => { if (s.exists() || !s.metadata.fromCache) cb(s.exists() ? s.data() : {}); }, onErr);
+        },
+        watchMenu(cb, onErr) {
+          return fs.onSnapshot(fs.doc(db, "arcus", "menu"), s => cb(s.exists() ? s.data() : null, !s.exists() && s.metadata.fromCache), onErr);
+        }
       };
       log("i", "Connected to Firebase (live mode)");
       return;
@@ -528,7 +590,19 @@ async function initBackend() {
     async setPayer(id, uid, upi) { const rs = read(), r = rs.find(x => x.id === id); if (!r) throw new Error(tr("Ride no longer exists", "यह राइड अब नहीं है")); r.payer = uid; r.riders = r.riders.map(x => x.uid === uid ? { ...x, paid: true, ...(upi ? { upi } : {}) } : x); write(rs); },
     watchBulbs(cb) { bcbs.push(cb); cb(readB()); },
     async setBulb(b) { writeB([...readB().filter(x => x.uid !== b.uid), b]); },
-    async clearBulb(uid) { writeB(readB().filter(x => x.uid !== uid)); }
+    async clearBulb(uid) { writeB(readB().filter(x => x.uid !== uid)); },
+    // Arcus stays hidden in demo mode unless a test copy of admin.html has switched it on (same keys).
+    watchArcusSettings(cb) {
+      const send = () => cb(readJSON("ap_demo_arcus_settings") || {});
+      window.addEventListener("storage", e => { if (e.key === "ap_demo_arcus_settings") send(); });
+      send(); return () => {};
+    },
+    watchMenu(cb) {
+      const send = () => cb(readJSON("ap_demo_arcus_menu"), false);
+      const on = e => { if (e.key === "ap_demo_arcus_menu") send(); };
+      window.addEventListener("storage", on);
+      send(); return () => window.removeEventListener("storage", on);
+    }
   };
   log("i", "Demo mode (no Firebase config)");
 }
@@ -537,7 +611,7 @@ async function initBackend() {
 const fareFor = n => C.fares[Math.min(Math.max(n, 1), C.seats)];   // total auto fare for n people
 const perHead = n => Math.ceil(fareFor(n) / Math.max(n, 1));         // what each person pays
 const used = r => r.riders.reduce((a, x) => a + (x.n || 1), 0);
-let rides = [], tab = "c2m", bootAt = Date.now();
+let rides = [], tab = "c2m", view = "rides", bootAt = Date.now();
 const live = () => rides.filter(r => !r.cancelled && r.leaveAt > Date.now() - EXPIRE_MS).sort((a, b) => a.leaveAt - b.leaveAt);
 const myRide = () => live().find(r => r.riders.some(x => x.uid === api.uid));
 const meIn = r => r.riders.find(x => x.uid === api.uid);
@@ -643,6 +717,89 @@ function render() {
   }
   $("#list").innerHTML = h;
 }
+
+/* ---------------- Arcus: tab navigation and browsable menu ---------------- */
+let arcusLive = localStorage.getItem("ap_arcus_live") === "1";   // last known switch, so the tab doesn't flicker on open
+let arcusMenu = readJSON("ap_arcus_menu");                       // last saved menu, so it still shows with weak internet
+let menuState = "loading", menuUnsub = null;                     // loading | ok | offline | error
+const menuCats = () => (Array.isArray(arcusMenu?.categories) ? arcusMenu.categories : []).filter(c => Array.isArray(c.items) && c.items.length);
+const nameOf = x => (lang === "hi" && x.hi) || x.en || "";
+
+function renderArcus() {
+  if (view !== "arcus") return;
+  try {
+    const cats = menuCats();
+    if (!cats.length) {
+      const msg = menuState === "loading" ? tr("Loading the menu…", "मेन्यू आ रहा है…")
+        : menuState === "offline" ? tr("Connect to the internet to see the menu.", "मेन्यू देखने के लिए इंटरनेट चालू करें।")
+        : menuState === "error" ? tr("Couldn't load the menu. Please try again.", "मेन्यू नहीं आया। दोबारा कोशिश करें।")
+        : tr("The menu is coming soon.", "मेन्यू जल्द आएगा।");
+      $("#arcusMenu").innerHTML = `<div class="empty" style="margin-top:14px"><div aria-hidden="true">🍽️</div>${msg}</div>`;
+      return;
+    }
+    const stale = menuState === "offline" || menuState === "error";
+    $("#arcusMenu").innerHTML = (stale ? `<p class="note" style="margin:6px 4px 0">${tr("No connection. This is the last menu saved on your phone.", "कनेक्शन नहीं है। यह आपके फ़ोन पर सेव आख़िरी मेन्यू है।")}</p>` : "")
+      + (cats.length > 1 ? `<div class="achips" id="aChips">${cats.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-jump="${i}">${esc(nameOf(c))}</button>`).join("")}</div>` : "")
+      + cats.map((c, i) => `<div class="mcat" id="mcat${i}"><h3>${esc(nameOf(c))}</h3><div class="mlist">${c.items.map(it => {
+          const inStock = it.inStock !== false, veg = it.veg !== false;
+          return `<div class="mi ${inStock ? "" : "off"}"><span class="vm ${veg ? "" : "nv"}" role="img" aria-label="${veg ? tr("Veg", "शाकाहारी") : tr("Non-veg", "मांसाहारी")}"></span><span class="mn"><span class="mt">${esc(nameOf(it))}</span>${inStock ? "" : `<span class="oos">${tr("Out of stock", "स्टॉक में नहीं")}</span>`}</span><span class="mp">₹${esc(it.price)}</span></div>`;
+        }).join("")}</div></div>`).join("");
+    spyChips();
+  } catch (e) { log("e", "Menu display failed: " + e.message); }
+}
+function spyChips() {   // highlights the category currently on screen
+  const bar = $("#aChips"); if (!bar || view !== "arcus") return;
+  const line = bar.getBoundingClientRect().bottom + 24, secs = [...document.querySelectorAll(".mcat")];
+  let cur = 0; secs.forEach((m, i) => { if (m.getBoundingClientRect().top <= line) cur = i; });
+  if (scrollY > 0 && innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = secs.length - 1;
+  const old = bar.querySelector(".on"), now = bar.children[cur];
+  if (old === now || !now) return;
+  old?.classList.remove("on"); now.classList.add("on");
+  bar.scrollTo({ left: now.offsetLeft - 16, behavior: stillFx() ? "auto" : "smooth" });
+}
+const stillFx = () => matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("lowfx");
+let spyQueued = false;
+addEventListener("scroll", () => { if (view !== "arcus" || spyQueued) return; spyQueued = true; requestAnimationFrame(() => { spyQueued = false; spyChips(); }); }, { passive: true });
+$("#arcusMenu").onclick = e => {
+  const b = e.target.closest("[data-jump]"); if (!b) return;
+  $("#mcat" + b.dataset.jump)?.scrollIntoView({ behavior: stillFx() ? "auto" : "smooth", block: "start" });
+};
+// The menu is only watched while the Arcus tab is on screen, to protect the free plan's daily reads.
+function syncMenu() {
+  const want = api && arcusLive && view === "arcus" && !document.hidden;
+  if (want && !menuUnsub) {
+    menuUnsub = api.watchMenu((m, offline) => {
+      if (offline) { menuState = "offline"; log("w", "Arcus menu: offline, nothing fresh to show"); return renderArcus(); }
+      arcusMenu = m; menuState = "ok";
+      try { localStorage.setItem("ap_arcus_menu", JSON.stringify(m)); } catch (e) { log("w", "Couldn't save the menu on this phone: " + e.message); }
+      log("i", `Arcus menu loaded (${menuCats().length} categories)`);
+      renderArcus();
+    }, e => { menuState = "error"; menuUnsub = null; log("e", "Arcus menu failed: " + e.message); renderArcus(); });
+  } else if (!want && menuUnsub) { menuUnsub(); menuUnsub = null; }
+}
+document.addEventListener("visibilitychange", syncMenu);
+function setView(v) {
+  if (v === "arcus" && !arcusLive) v = "rides";
+  if (v === view) return;
+  view = v;
+  document.body.classList.toggle("v-arcus", v === "arcus");
+  document.querySelectorAll(".nav button").forEach(b => { const on = b.dataset.view === v; b.classList.toggle("on", on); on ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"); });
+  scrollTo(0, 0);
+  const el = $(v === "arcus" ? "#vArcus" : "#vRides");
+  el.classList.remove("vin"); void el.offsetWidth; el.classList.add("vin");
+  menuState = menuState === "ok" ? "ok" : "loading";
+  syncMenu(); renderArcus(); render();
+  log("i", "Opened " + v);
+}
+function setArcusLive(on) {
+  if (on !== arcusLive) log("i", "Arcus switched " + (on ? "on" : "off"));
+  arcusLive = on;
+  localStorage.setItem("ap_arcus_live", on ? "1" : "0");
+  document.body.classList.toggle("has-nav", on);
+  if (!on) setView("rides");
+  syncMenu();
+}
+$("#nav").onclick = e => { const b = e.target.closest("[data-view]"); if (b && api) setView(b.dataset.view); };
 
 /* ---------------- Alerts ---------------- */
 function toast(t, ms = 2600) { const el = $("#toast"); el.textContent = t; el.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = "none", ms); }
@@ -881,7 +1038,8 @@ function slideRender(dir) {
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("lowfx");
   if (!document.startViewTransition || still) return render();
   document.documentElement.style.setProperty("--vtd", dir);
-  try { document.startViewTransition(render); } catch (e) { log("w", "Tab slide failed: " + e.message); render(); }
+  // A quick second tap cancels the slide in progress. The list still redraws, so that isn't an error.
+  try { document.startViewTransition(render).ready.catch(() => {}); } catch (e) { log("w", "Tab slide failed: " + e.message); render(); }
 }
 document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); }); localStorage.setItem("ap_tab", tab); slideRender(tab === "m2c" ? 1 : -1); };
 
@@ -1031,7 +1189,7 @@ function initMascot() {
   }
   return {
     react(kind) { s.browT = 1; s.blinkT = 0; const c = kind === "happy" ? "joy" : "hop"; if (kind === "happy") { s.smileT = 1; s.joy = 1; } svg.classList.remove("hop", "joy"); void svg.getBoundingClientRect(); svg.classList.add(c); },
-    lookAt(el, ms = 1600) { if (!el) return; const r = el.getBoundingClientRect(); s.tap = { x: r.left + r.width / 2, y: r.top + r.height / 2, until: performance.now() + ms }; },
+    lookAt(el, ms = 1600) { if (!el) return; const r = el.getBoundingClientRect(); if (!r.width) return; s.tap = { x: r.left + r.width / 2, y: r.top + r.height / 2, until: performance.now() + ms }; },
     get state() { return { yaw: s.yaw, eyeYaw: s.ey, blink: s.blink, brow: s.brow }; }
   };
 }
@@ -1072,6 +1230,7 @@ function say() {
       sub = tr(`Leave your room 2 min before ${fmt(new Date(mine.leaveAt))}.`, `${fmt(new Date(mine.leaveAt))} से 2 मिनट पहले कमरे से निकलें।`); }
     if (n >= C.seats && ms > 0 && !my.gate) { sub = tr(`Auto full · ₹${perHead(n)} each.`, `ऑटो भरा · ₹${perHead(n)} प्रति व्यक्ति।`); if (mood !== "urgent") mood = "good"; }
   }
+  else if (view === "arcus") { t = tr("🍽️ Have a look at the menu. <b>Ordering opens soon!</b>", "🍽️ मेन्यू देख लीजिए। <b>ऑर्डर जल्द शुरू होंगे!</b>"); sub = tr("Greyed-out items are out of stock.", "धुंधले आइटम अभी स्टॉक में नहीं हैं।"); }
   else if (S.length) { const r = S[0], p = r.payer && r.riders.find(x => x.uid === r.payer);
     t = !p ? tr("💸 Who paid the driver? Tap it in <b>Settle up</b> above.", "💸 ड्राइवर को किसने दिए? ऊपर <b>हिसाब करें</b> में बताएँ।")
       : p.uid === api.uid ? tr("💸 I'll remind the others to pay you back.", "💸 मैं बाकियों को आपको पैसे लौटाने को कहूँगा।")
@@ -1165,7 +1324,15 @@ async function start() {
   tab = localStorage.getItem("ap_tab") || (new Date().getHours() >= 13 && new Date().getHours() < 21 ? "m2c" : "c2m");
   document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x.dataset.d === tab); x.setAttribute("aria-selected", x.dataset.d === tab); });
   try { mascot = window.__mascot = initMascot(); } catch (e) { log("e", "Mascot failed: " + e.message); }
+  document.body.classList.toggle("has-nav", arcusLive);
   await initBackend();
+  // Anything going wrong here must only ever hide Arcus; Rides carries on untouched.
+  try {
+    api.watchArcusSettings(s => setArcusLive(s.live === true), e => {
+      if (e.code === "permission-denied") { log("w", "Arcus settings not allowed yet (rules not pasted?), keeping it hidden"); setArcusLive(false); }
+      else log("e", "Arcus settings failed: " + e.message);
+    });
+  } catch (e) { log("e", "Arcus settings failed: " + e.message); setArcusLive(false); }
   api.saveUser(me).then(() => log("i", "Registration saved")).catch(e => log("w", "Registration save failed: " + e.message));
   api.watch((rs, added) => {
     rides = rs;
