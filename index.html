@@ -189,6 +189,58 @@ body.v-arcus .bub{flex:1;min-width:0;text-align:left;font-size:14px;padding:10px
 .vm:after{content:"";width:8px;height:8px;border-radius:50%;background:#14803c}
 .vm.nv{border-color:#7a3e12}
 .vm.nv:after{width:0;height:0;border-radius:0;background:none;border:4.5px solid transparent;border-top:0;border-bottom:8px solid #7a3e12}
+/* Arcus ordering */
+.mr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.addb{background:var(--soft);color:var(--acink);font-weight:600;font-size:14px;padding:6px 18px;border-radius:11px;min-height:34px}
+.stp{display:inline-flex;align-items:center;background:var(--ac);color:#fff;border-radius:11px;min-height:34px;animation:rideIn .4s var(--spring) backwards}
+.stp button{width:34px;height:34px;font-size:18px;font-weight:600;color:inherit}
+.stp b{min-width:20px;text-align:center;font-weight:650;font-variant-numeric:tabular-nums}
+.ashop{display:flex;align-items:center;gap:10px;margin:8px 4px 0;font-size:13.5px;color:var(--mute)}
+.ashop span{flex:1;min-width:0}.ashop b{color:var(--ink);font-weight:600}
+.acount{display:flex;flex-wrap:wrap;gap:6px;margin:9px 4px 0}
+.acount span{background:var(--fill);border-radius:99px;padding:4px 10px;font-size:12.5px;font-weight:500;color:var(--mute)}
+.acount b{color:var(--ink);font-weight:650;font-variant-numeric:tabular-nums}
+.ocard{background:var(--card);border:.5px solid var(--cardln);box-shadow:var(--sh);border-radius:20px;padding:14px;margin-top:12px;animation:rideIn .5s var(--spring) backwards}
+.ocard .ot{display:flex;align-items:center;gap:8px}
+.ocard .ono{font-size:18px;font-weight:700;letter-spacing:-.01em;flex:1;font-variant-numeric:tabular-nums}
+.ocard .opill{background:var(--soft);color:var(--acink);border-radius:99px;padding:4px 10px;font-size:12.5px;font-weight:600}
+.ocard.gone .opill{background:var(--r2);color:var(--r)}
+.ocard .oi{margin-top:6px;font-size:14px;overflow-wrap:anywhere}
+.ocard .om{margin-top:2px;font-size:13px;color:var(--mute);overflow-wrap:anywhere}
+.ost{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:11px}
+.ost i{display:block;height:4px;border-radius:2px;background:var(--seg);transition:background-color .3s}
+.ost div.on i{background:var(--ac)}
+.ost span{display:block;margin-top:4px;font-size:11.5px;color:var(--mute);font-weight:500}
+.ost div.cur span{color:var(--ink);font-weight:650}
+.oacts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:11px}
+.oacts .btn{padding:7px 13px;font-size:13px;border-radius:11px}
+.ndot{position:absolute;top:4px;left:calc(50% + 9px);width:8px;height:8px;border-radius:50%;background:var(--ac);display:none}
+.nav button{position:relative}
+body.has-order .ndot{display:block}
+.cartbar{display:none;position:fixed;z-index:5;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom));width:calc(100% - 32px);max-width:488px;align-items:center;gap:10px;background:var(--ac);color:#fff;padding:13px 16px;border-radius:16px;font-weight:600;box-shadow:0 8px 24px rgba(10,108,255,.35);animation:barIn .5s var(--spring) backwards}
+.cartbar:active{transform:translateX(-50%) scale(.97)}
+.cartbar .cc{flex:1;text-align:left}
+body.v-arcus.has-cart .cartbar{display:flex}
+body.v-arcus.has-cart{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+@keyframes barIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translateX(-50%)}}
+.roll{display:inline-flex;font-variant-numeric:tabular-nums}
+.rc{display:block;height:1.25em;line-height:1.25em;overflow:hidden}
+.rc>span{display:block;transition:transform .5s var(--spring)}
+.rc>span>span{display:block;height:1.25em}
+html.lowfx .rc>span{transition:none}
+.cl{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:.5px solid var(--line)}
+.cl:first-child{border-top:0}
+.cl .cn{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:500}.cl .cn small{display:block;font-weight:400;color:var(--mute);font-size:12.5px}
+.cl .cp{font-weight:650;font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.cl.off .cn{color:var(--mute)}
+.ctot{display:flex;align-items:center;justify-content:space-between;font-size:18px;font-weight:700;margin-top:12px;padding-top:12px;border-top:.5px solid var(--line)}
+.sheet textarea.fld{resize:none;margin-bottom:0;font-family:inherit;color:inherit}
+.placed{text-align:center;padding:6px 0 2px}
+.placed svg{width:72px;height:72px;fill:none;stroke:var(--ac);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ov.show .placed svg{animation:joy .8s var(--spring) backwards}
+.placed h3{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.placed .pno{font-size:38px;font-weight:750;letter-spacing:.02em;margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.placed .call{display:inline-block;margin-top:12px;padding:9px 16px;font-size:14px}
 /* tab change: the ride list slides, everything else stays put */
 #list{view-transition-name:rides}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
@@ -203,10 +255,11 @@ html.lowfx .sheet{will-change:auto}
 /* 🔠 big text & high contrast */
 body.big{--mute:#1f2937;--line:#6b7280;--bg:#fff;--card:#fff;--cardln:#111114;--glass:#fff;--glassln:#111114;--fill:#e5e7eb;--seg:#d1d5db;--soft:#dbeafe;--acink:#0a4fc4}
 body.big:before{display:none}
-body.big main,body.big .sheet,body.big .fab,body.big .nav,body.big .login .box{zoom:1.2}
+body.big main,body.big .sheet,body.big .fab,body.big .nav,body.big .login .box,body.big .cartbar{zoom:1.2}
 body.big header,body.big .nav,body.big .achips,body.big .sheet,body.big .toast,body.big .login .box{-webkit-backdrop-filter:none;backdrop-filter:none}
 body.big .btn,body.big .chip,body.big .call{border:2px solid var(--ink)}
-body.big .ride,body.big .sc,body.big .bulb,body.big .bub,body.big .mz,body.big .mlist{border:2px solid var(--ink);box-shadow:none}
+body.big .ride,body.big .sc,body.big .bulb,body.big .bub,body.big .mz,body.big .mlist,body.big .ocard{border:2px solid var(--ink);box-shadow:none}
+body.big.v-arcus.has-cart{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
 body.big .x,body.big .note,body.big small{color:var(--ink)!important}
 body.big .fab{bottom:calc(10px + env(safe-area-inset-bottom))}
 body.big.has-nav .fab{bottom:calc(66px + env(safe-area-inset-bottom))}
@@ -300,17 +353,52 @@ window.AUTOPOOL_CONFIG = {
   </div>
   <section id="vArcus" aria-labelledby="arcusTitle">
     <div class="ahead"><h2 id="arcusTitle">Arcus</h2><small data-t="Campus canteen menu|कैंपस कैंटीन का मेन्यू"></small></div>
+    <div id="arcusShop"></div>
+    <div id="arcusCounts"></div>
+    <div id="arcusOrders"></div>
     <div id="arcusMenu"></div>
   </section>
   <p class="credit">🛺 <span data-t="Made with 💛 at CDL by|CDL पर 💛 से बनाया —"></span> <b>MISHU</b></p>
 </main>
 
 <button class="fab" id="fab" data-glance></button>
+<button class="cartbar" id="cartBar"><span class="cc" id="cartCount"></span><span>₹<span class="roll" id="barTotal"></span></span><span aria-hidden="true">›</span></button>
 
 <nav class="nav" id="nav" data-al="Main sections|मुख्य हिस्से"><div class="wrap">
   <button data-view="rides" class="on" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16V9.5C4 7 6 5 8.5 5H14l5 6.5V16"/><path d="M2.5 16h19M12 5v6.5H4.2M12 11.5h7"/><circle cx="7" cy="17.5" r="2"/><circle cx="17" cy="17.5" r="2"/></svg><span data-t="Rides|राइड"></span></button>
-  <button data-view="arcus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7M4 3v4.5A3 3 0 0 0 7 10.5a3 3 0 0 0 3-3V3M7 10.5V21"/><path d="M17 21v-7h-2.5V8c0-3 1.3-5 4-5.5V21"/></svg><span>Arcus</span></button>
+  <button data-view="arcus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7M4 3v4.5A3 3 0 0 0 7 10.5a3 3 0 0 0 3-3V3M7 10.5V21"/><path d="M17 21v-7h-2.5V8c0-3 1.3-5 4-5.5V21"/></svg><span>Arcus</span><i class="ndot" aria-hidden="true"></i></button>
 </div></nav>
+
+<!-- Arcus: cart -->
+<div class="ov" id="ovCart" role="dialog" aria-labelledby="cartTitle"><div class="sheet">
+  <h2><span id="cartTitle" data-t="Your order|आपका ऑर्डर"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div id="cartLines"></div>
+  <div class="ctot"><span data-t="Total|कुल"></span><span>₹<span class="roll" id="cartTotal"></span></span></div>
+  <div class="lbl" data-t="Note for Arcus (optional)|Arcus के लिए नोट (अगर चाहें)"></div>
+  <textarea class="fld" id="cartNote" rows="2" maxlength="140" data-ph="Less spicy, no onion…|कम मसाला, बिना प्याज़…" data-al="Note for Arcus|Arcus के लिए नोट"></textarea>
+  <p class="note" style="margin-top:9px" data-t="Pick up from Arcus and pay there. No online payment.|Arcus से ले जाएँ और वहीं पैसे दें। ऑनलाइन भुगतान नहीं है।"></p>
+  <div class="row"><button class="btn" id="bPlace" data-t="Place order|ऑर्डर करें"></button></div>
+</div></div>
+
+<!-- Arcus: order placed -->
+<div class="ov" id="ovPlaced" role="dialog" aria-labelledby="placedTitle"><div class="sheet">
+  <div class="placed">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20"/><path d="m15 25 6 6 12-13"/></svg>
+    <h3 id="placedTitle" data-t="Order placed!|ऑर्डर हो गया!"></h3>
+    <div class="pno" id="placedNo"></div>
+    <p class="note" data-t="Show this number at Arcus when you pick up, and pay there.|लेते समय Arcus पर यह नंबर दिखाएँ और वहीं पैसे दें।"></p>
+    <div id="placedCall"></div>
+  </div>
+  <div class="row"><button class="btn" data-close data-t="OK|ठीक है"></button></div>
+</div></div>
+
+<!-- Arcus: cancel an order -->
+<div class="ov" id="ovCancelOrder" role="dialog" aria-labelledby="coTitle"><div class="sheet">
+  <h2><span id="coTitle"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div class="lbl" data-t="Why are you cancelling?|रद्द क्यों कर रहे हैं?"></div>
+  <div class="chips" id="coReasons"></div>
+  <div class="row"><button class="btn ghost" data-close data-t="Keep order|ऑर्डर रखें"></button><button class="btn red" id="bCancelOrder" data-t="Cancel order|ऑर्डर रद्द करें"></button></div>
+</div></div>
 
 <!-- Leave sheet -->
 <div class="ov" id="ovLeave" role="dialog"><div class="sheet">
@@ -402,7 +490,7 @@ window.AUTOPOOL_CONFIG = {
 
 <script type="module">
 const C = window.AUTOPOOL_CONFIG;
-const APP_VERSION = "2026-11-04-v14";   // bump on every upload → open apps notice and refresh
+const APP_VERSION = "2026-11-04-v15";   // bump on every upload → open apps notice and refresh
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const EXPIRE_MS = 40 * 1000;        // card shows "Leaving now" for 40 s after leave time, then disappears
@@ -424,7 +512,7 @@ function applyStatic() {
   $("#bLang").textContent = lang === "hi" ? "EN" : "हि";
   $("#lgLang").textContent = lang === "hi" ? "View in English" : "हिंदी में देखें";
 }
-function setLang(l) { lang = l; localStorage.setItem("ap_lang", l); applyStatic(); if (started) { renderShuttle(); render(); renderArcus(); } log("i", "Language: " + l); }
+function setLang(l) { lang = l; localStorage.setItem("ap_lang", l); applyStatic(); if (started) { renderShuttle(); render(); renderArcus(); if ($("#ovCart").classList.contains("show")) renderCart(); } log("i", "Language: " + l); }
 
 /* ---------------- Big text & high contrast ---------------- */
 const setBig = on => { document.body.classList.toggle("big", on); localStorage.setItem("ap_big", on ? "1" : "0"); $("#bigSw").classList.toggle("on", on); $("#bigSw").setAttribute("aria-checked", on); };
@@ -477,6 +565,15 @@ let started = false;
 
 /* ---------------- Backend: Firebase or Demo ---------------- */
 let api;
+const ARCUS_MAX_OPEN = 3;   // open orders per person. The same limit is in the Firestore rules: change both together.
+function demoWatch(key, send) {   // test copies only: tells this tab and others when a saved value changes
+  const on = e => { if (!e.key || e.key === key) send(); };
+  const local = e => { if (e.detail === key) send(); };
+  addEventListener("storage", on); addEventListener("ap-demo", local);
+  send();
+  return () => { removeEventListener("storage", on); removeEventListener("ap-demo", local); };
+}
+function demoWrite(key, value) { localStorage.setItem(key, JSON.stringify(value)); dispatchEvent(new CustomEvent("ap-demo", { detail: key })); }
 async function initBackend() {
   if (C.firebase && C.firebase.apiKey) {
     try {
@@ -551,6 +648,53 @@ async function initBackend() {
         },
         watchMenu(cb, onErr) {
           return fs.onSnapshot(fs.doc(db, "arcus", "menu"), s => cb(s.exists() ? s.data() : null, !s.exists() && s.metadata.fromCache), onErr);
+        },
+        // Opening hours + handler phones, and the overall order numbers: read only while the Arcus tab is on screen.
+        watchShop(cb, onErr) {
+          return fs.onSnapshot(fs.doc(db, "arcus", "shop"), s => { if (s.exists() || !s.metadata.fromCache) cb(s.exists() ? s.data() : null); }, onErr);
+        },
+        watchCounts(cb, onErr) {
+          return fs.onSnapshot(fs.doc(db, "arcus", "counts"), s => { if (s.exists() || !s.metadata.fromCache) cb(s.exists() ? s.data() : {}); }, onErr);
+        },
+        watchOrder(id, cb, onErr) {
+          const ms = t => t?.toMillis ? t.toMillis() : (+t || Date.now());
+          return fs.onSnapshot(fs.doc(db, "arcusOrders", id), s => {
+            if (!s.exists()) { if (!s.metadata.fromCache) cb(null); return; }
+            const d = s.data(); cb({ ...d, id, createdAt: ms(d.createdAt), statusAt: ms(d.statusAt) });
+          }, onErr);
+        },
+        async myOpenOrders() {
+          const s = await fs.getDoc(fs.doc(db, "arcusMine", cred.user.uid));
+          return s.exists() && Array.isArray(s.data().open) ? s.data().open : [];
+        },
+        newOrderId() { return fs.doc(fs.collection(db, "arcusOrders")).id; },
+        // A transaction only works online, so an order can never sit unsent on the phone and arrive hours later.
+        // The order, the student's open list and the overall numbers all change together, or not at all.
+        async placeOrder(id, build) {
+          const oRef = fs.doc(db, "arcusOrders", id), mRef = fs.doc(db, "arcusMine", cred.user.uid), cRef = fs.doc(db, "arcus", "counts"), menuRef = fs.doc(db, "arcus", "menu");
+          return fs.runTransaction(db, async tx => {
+            const o = await tx.get(oRef);
+            if (o.exists()) return o.data();    // a retry after a weak connection: the first try already got through
+            const [menu, mine, cn] = [await tx.get(menuRef), await tx.get(mRef), await tx.get(cRef)];
+            const open = mine.exists() ? mine.data().open || [] : [], c = cn.exists() ? cn.data() : {};
+            if (open.length >= ARCUS_MAX_OPEN) throw new Error("order-limit");
+            const order = build(menu.exists() ? menu.data() : null), now = fs.serverTimestamp();
+            tx.set(oRef, { ...order, createdAt: now, statusAt: now });
+            tx.set(mRef, { open: [...open, id], lastOrder: id });
+            tx.set(cRef, { placed: (c.placed || 0) + 1, confirmed: c.confirmed || 0, ready: c.ready || 0, lastOrder: id });
+            return order;
+          });
+        },
+        async cancelOrder(id, reason) {
+          const oRef = fs.doc(db, "arcusOrders", id), mRef = fs.doc(db, "arcusMine", cred.user.uid), cRef = fs.doc(db, "arcus", "counts");
+          await fs.runTransaction(db, async tx => {
+            const o = await tx.get(oRef), mine = await tx.get(mRef), cn = await tx.get(cRef);
+            if (!o.exists() || o.data().status !== "placed") throw new Error("order-too-late");
+            const open = mine.exists() ? mine.data().open || [] : [], c = cn.exists() ? cn.data() : {};
+            tx.update(oRef, { status: "cancelled", statusAt: fs.serverTimestamp(), cancelReason: reason, cancelledBy: "student" });
+            tx.set(mRef, { open: open.filter(x => x !== id), lastOrder: id });
+            tx.set(cRef, { placed: (c.placed || 0) - 1, confirmed: c.confirmed || 0, ready: c.ready || 0, lastOrder: id });
+          });
         }
       };
       log("i", "Connected to Firebase (live mode)");
@@ -602,6 +746,41 @@ async function initBackend() {
       const on = e => { if (e.key === "ap_demo_arcus_menu") send(); };
       window.addEventListener("storage", on);
       send(); return () => window.removeEventListener("storage", on);
+    },
+    // Arcus ordering in a test copy: everything stays in this browser. Nothing reaches real students.
+    demo: true,
+    watchShop(cb) { return demoWatch("ap_demo_arcus_shop", () => cb(readJSON("ap_demo_arcus_shop"))); },
+    watchCounts(cb) { return demoWatch("ap_demo_arcus_counts", () => cb(readJSON("ap_demo_arcus_counts") || {})); },
+    watchOrder(id, cb) { return demoWatch("ap_demo_orders", () => cb((readJSON("ap_demo_orders") || {})[id] || null)); },
+    async myOpenOrders() { return readJSON("ap_demo_mine")?.open || []; },
+    newOrderId() { return "o" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); },
+    async placeOrder(id, build) {
+      const all = readJSON("ap_demo_orders") || {};
+      if (all[id]) return all[id];
+      const open = readJSON("ap_demo_mine")?.open || [], c = readJSON("ap_demo_arcus_counts") || {};
+      if (open.length >= ARCUS_MAX_OPEN) throw new Error("order-limit");
+      const order = { ...build(readJSON("ap_demo_arcus_menu")), id, createdAt: Date.now(), statusAt: Date.now() };
+      demoWrite("ap_demo_mine", { open: [...open, id] });
+      demoWrite("ap_demo_arcus_counts", { placed: (c.placed || 0) + 1, confirmed: c.confirmed || 0, ready: c.ready || 0 });
+      demoWrite("ap_demo_orders", { ...all, [id]: order });
+      return order;
+    },
+    async cancelOrder(id, reason) {
+      const all = readJSON("ap_demo_orders") || {}, o = all[id], c = readJSON("ap_demo_arcus_counts") || {};
+      if (!o || o.status !== "placed") throw new Error("order-too-late");
+      demoWrite("ap_demo_mine", { open: (readJSON("ap_demo_mine")?.open || []).filter(x => x !== id) });
+      demoWrite("ap_demo_arcus_counts", { ...c, placed: (c.placed || 0) - 1 });
+      demoWrite("ap_demo_orders", { ...all, [id]: { ...o, status: "cancelled", statusAt: Date.now(), cancelReason: reason, cancelledBy: "student" } });
+    },
+    // Stands in for the handler screen (Stage 4) so a test copy can walk an order through every status.
+    demoHandler(id, to, reason) {
+      const all = readJSON("ap_demo_orders") || {}, o = all[id], c = { placed: 0, confirmed: 0, ready: 0, ...readJSON("ap_demo_arcus_counts") };
+      if (!o) return;
+      if (c[o.status] !== undefined) c[o.status]--;
+      if (c[to] !== undefined) c[to]++;
+      if (to === "done" || to === "cancelled") demoWrite("ap_demo_mine", { open: (readJSON("ap_demo_mine")?.open || []).filter(x => x !== id) });
+      demoWrite("ap_demo_arcus_counts", c);
+      demoWrite("ap_demo_orders", { ...all, [id]: { ...o, status: to, statusAt: Date.now(), ...(reason ? { cancelReason: reason, cancelledBy: "handler" } : {}) } });
     }
   };
   log("i", "Demo mode (no Firebase config)");
@@ -726,7 +905,9 @@ const menuCats = () => (Array.isArray(arcusMenu?.categories) ? arcusMenu.categor
 const nameOf = x => (lang === "hi" && x.hi) || x.en || "";
 
 function renderArcus() {
+  updateCartBar();
   if (view !== "arcus") return;
+  renderArcusTop();
   try {
     const cats = menuCats();
     if (!cats.length) {
@@ -742,7 +923,7 @@ function renderArcus() {
       + (cats.length > 1 ? `<div class="achips" id="aChips">${cats.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-jump="${i}">${esc(nameOf(c))}</button>`).join("")}</div>` : "")
       + cats.map((c, i) => `<div class="mcat" id="mcat${i}"><h3>${esc(nameOf(c))}</h3><div class="mlist">${c.items.map(it => {
           const inStock = it.inStock !== false, veg = it.veg !== false;
-          return `<div class="mi ${inStock ? "" : "off"}"><span class="vm ${veg ? "" : "nv"}" role="img" aria-label="${veg ? tr("Veg", "शाकाहारी") : tr("Non-veg", "मांसाहारी")}"></span><span class="mn"><span class="mt">${esc(nameOf(it))}</span>${inStock ? "" : `<span class="oos">${tr("Out of stock", "स्टॉक में नहीं")}</span>`}</span><span class="mp">₹${esc(it.price)}</span></div>`;
+          return `<div class="mi ${inStock ? "" : "off"}"><span class="vm ${veg ? "" : "nv"}" role="img" aria-label="${veg ? tr("Veg", "शाकाहारी") : tr("Non-veg", "मांसाहारी")}"></span><span class="mn"><span class="mt">${esc(nameOf(it))}</span>${inStock ? "" : `<span class="oos">${tr("Out of stock", "स्टॉक में नहीं")}</span>`}</span><span class="mr"><span class="mp">₹${esc(it.price)}</span>${inStock && shopNow().accepting ? `<span data-q="${esc(it.id)}">${stepHtml(it)}</span>` : ""}</span></div>`;
         }).join("")}</div></div>`).join("");
     spyChips();
   } catch (e) { log("e", "Menu display failed: " + e.message); }
@@ -761,12 +942,15 @@ const stillFx = () => matchMedia("(prefers-reduced-motion: reduce)").matches || 
 let spyQueued = false;
 addEventListener("scroll", () => { if (view !== "arcus" || spyQueued) return; spyQueued = true; requestAnimationFrame(() => { spyQueued = false; spyChips(); }); }, { passive: true });
 $("#arcusMenu").onclick = e => {
+  const q = e.target.closest("[data-inc],[data-dec]");
+  if (q) return changeQty(q.dataset.inc || q.dataset.dec, q.dataset.inc ? 1 : -1);
   const b = e.target.closest("[data-jump]"); if (!b) return;
   $("#mcat" + b.dataset.jump)?.scrollIntoView({ behavior: stillFx() ? "auto" : "smooth", block: "start" });
 };
 // The menu is only watched while the Arcus tab is on screen, to protect the free plan's daily reads.
 function syncMenu() {
   const want = api && arcusLive && view === "arcus" && !document.hidden;
+  syncShopAndCounts(want);
   if (want && !menuUnsub) {
     menuUnsub = api.watchMenu((m, offline) => {
       if (offline) { menuState = "offline"; log("w", "Arcus menu: offline, nothing fresh to show"); return renderArcus(); }
@@ -789,6 +973,7 @@ function setView(v) {
   el.classList.remove("vin"); void el.offsetWidth; el.classList.add("vin");
   menuState = menuState === "ok" ? "ok" : "loading";
   syncMenu(); renderArcus(); render();
+  if (v === "arcus") findMyOrders();
   log("i", "Opened " + v);
 }
 function setArcusLive(on) {
@@ -800,6 +985,251 @@ function setArcusLive(on) {
   syncMenu();
 }
 $("#nav").onclick = e => { const b = e.target.closest("[data-view]"); if (b && api) setView(b.dataset.view); };
+
+/* ---------------- Arcus: opening hours and the overall order numbers ---------------- */
+const SHOP_DEFAULTS = { dayStart: "09:30", nightStart: "20:30", closeAt: "04:00", lastOrder: "03:45", dayPhone: "", nightPhone: "" };
+let arcusShop = { ...SHOP_DEFAULTS, ...readJSON("ap_arcus_shop") };
+let arcusCounts = null, shopUnsub = null, countsUnsub = null;
+const toMin = s => { const [h, m] = String(s).split(":").map(Number); return h * 60 + m; };
+const to12 = s => { const [h, m] = String(s).split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+// Always worked out in India time, whatever the phone's time zone is set to.
+function shopNow(now = Date.now()) {
+  const S = arcusShop, t = Math.floor((now + 330 * 60000) / 60000) % 1440;
+  const day = toMin(S.dayStart), night = toMin(S.nightStart);
+  const sinceNight = (t - night + 1440) % 1440, nightLen = (toMin(S.closeAt) - night + 1440) % 1440, lastAfter = (toMin(S.lastOrder) - night + 1440) % 1440;
+  const shift = t >= day && t < night ? "day" : sinceNight < nightLen ? "night" : null;
+  return { shift, accepting: shift === "day" || (shift === "night" && sinceNight < lastAfter), phone: shift === "day" ? S.dayPhone : shift === "night" ? S.nightPhone : "" };
+}
+const callArcus = cls => { const p = shopNow().phone; return p ? `<a class="call ${cls || ""}" href="tel:${esc(p)}">📞 ${tr("Call Arcus", "Arcus को कॉल करें")}</a>` : ""; };
+function renderArcusTop() {
+  const n = shopNow(), S = arcusShop;
+  $("#arcusShop").innerHTML = `<div class="ashop"><span>${n.accepting
+    ? tr(`<b>Open</b> · last orders ${to12(S.lastOrder)}`, `<b>खुला है</b> · आख़िरी ऑर्डर ${to12(S.lastOrder)}`)
+    : n.shift ? tr(`<b>Last orders are over.</b> Opens again ${to12(S.dayStart)}`, `<b>आख़िरी ऑर्डर का समय निकल गया।</b> फिर ${to12(S.dayStart)} पर खुलेगा`)
+    : tr(`<b>Closed.</b> Opens ${to12(S.dayStart)}`, `<b>बंद है।</b> ${to12(S.dayStart)} पर खुलेगा`)}</span>${callArcus()}</div>`;
+  const c = arcusCounts;   // numbers only: never names, items or phone numbers
+  if (!c) $("#arcusCounts").innerHTML = "";
+  else {
+    const w = Math.max(0, c.placed || 0), m = Math.max(0, c.confirmed || 0), r = Math.max(0, c.ready || 0);
+    $("#arcusCounts").innerHTML = `<div class="acount">${w + m + r === 0 ? `<span>${tr("No orders in the queue right now", "अभी कतार में कोई ऑर्डर नहीं")}</span>`
+      : `<span><b>${w}</b> ${tr("waiting", "इंतज़ार में")}</span><span><b>${m}</b> ${tr("being made", "बन रहे हैं")}</span><span><b>${r}</b> ${tr("ready", "तैयार")}</span>`}</div>`;
+  }
+  renderMyOrders();
+}
+function syncShopAndCounts(want) {
+  if (want && !shopUnsub) {
+    shopUnsub = api.watchShop(d => {
+      arcusShop = { ...SHOP_DEFAULTS, ...d };
+      try { localStorage.setItem("ap_arcus_shop", JSON.stringify(arcusShop)); } catch (e) { log("w", "Couldn't save opening hours: " + e.message); }
+      renderArcus();
+    }, e => { shopUnsub = null; log("e", "Arcus hours failed: " + e.message); });
+    countsUnsub = api.watchCounts(c => { arcusCounts = c; if (view === "arcus") renderArcusTop(); },
+      e => { countsUnsub = null; arcusCounts = null; log("e", "Arcus order numbers failed: " + e.message); });
+  } else if (!want) {
+    shopUnsub?.(); countsUnsub?.(); shopUnsub = countsUnsub = null;
+  }
+}
+
+/* ---------------- Arcus: cart. It lives only on this phone until the order is placed ---------------- */
+const QTY_MAX = 20, NOTE_MAX = 140;
+let cart = readJSON("ap_arcus_cart") || {};
+const saveCart = () => { try { localStorage.setItem("ap_arcus_cart", JSON.stringify(cart)); } catch (e) { log("w", "Couldn't save the cart: " + e.message); } };
+// Prices always come from the menu, never from what was saved in the cart.
+function priceCart(menu) {
+  const cats = Array.isArray(menu?.categories) ? menu.categories : [], lines = [], off = [];
+  cats.forEach(c => (c.items || []).forEach(it => {
+    const qty = cart[it.id]; if (!qty) return;
+    if (it.inStock === false) off.push(it);
+    else lines.push({ id: it.id, en: it.en || "", hi: it.hi || "", price: +it.price || 0, qty, veg: it.veg !== false });
+  }));
+  return { lines, off, count: lines.reduce((a, l) => a + l.qty, 0), total: Math.round(lines.reduce((a, l) => a + l.price * l.qty, 0)) };
+}
+const stepHtml = it => {
+  const q = cart[it.id] || 0, nm = esc(nameOf(it));
+  return q ? `<span class="stp"><button data-dec="${esc(it.id)}" aria-label="${tr("One less", "एक कम")}: ${nm}">−</button><b aria-live="polite">${q}</b><button data-inc="${esc(it.id)}" aria-label="${tr("One more", "एक और")}: ${nm}" ${q >= QTY_MAX ? "disabled" : ""}>+</button></span>`
+    : `<button class="addb" data-inc="${esc(it.id)}" aria-label="${tr("Add", "जोड़ें")}: ${nm}">${tr("Add", "जोड़ें")}</button>`;
+};
+function rollTo(el, n) {   // the total rolls to its new value, digit by digit
+  const s = String(n), col = `<span class="rc" aria-hidden="true"><span>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => `<span>${d}</span>`).join("")}</span></span>`;
+  el.setAttribute("role", "img"); el.setAttribute("aria-label", "₹" + n);
+  while (el.children.length < s.length) el.insertAdjacentHTML("afterbegin", col);
+  while (el.children.length > s.length) el.firstElementChild.remove();
+  [...el.children].forEach((c, i) => c.firstElementChild.style.transform = `translateY(${-1.25 * +s[i]}em)`);
+}
+function changeQty(id, by) {
+  cart[id] = Math.min(QTY_MAX, Math.max(0, (cart[id] || 0) + by));
+  if (!cart[id]) delete cart[id];
+  saveCart();
+  const it = menuCats().flatMap(c => c.items).find(x => x.id === id);
+  document.querySelectorAll("[data-q]").forEach(el => { if (el.dataset.q === id && it) el.innerHTML = stepHtml(it); });
+  if (by > 0) navigator.vibrate?.(8);
+  updateCartBar();
+  if ($("#ovCart").classList.contains("show")) renderCart();
+}
+function updateCartBar() {
+  const p = priceCart(arcusMenu), show = arcusLive && p.count > 0 && shopNow().accepting;
+  document.body.classList.toggle("has-cart", show);
+  if (!show) return;
+  $("#cartCount").textContent = tr(`${p.count} item${p.count > 1 ? "s" : ""} · View order`, `${p.count} आइटम · ऑर्डर देखें`);
+  rollTo($("#barTotal"), p.total);
+}
+function renderCart() {
+  const p = priceCart(arcusMenu);
+  if (!p.count && !p.off.length) { $("#ovCart").classList.remove("show"); return; }
+  $("#cartLines").innerHTML = p.lines.map(l => `<div class="cl"><span class="vm ${l.veg ? "" : "nv"}" style="margin-top:0" role="img" aria-label="${l.veg ? tr("Veg", "शाकाहारी") : tr("Non-veg", "मांसाहारी")}"></span><span class="cn">${esc(nameOf(l))}<small>₹${esc(l.price)}</small></span>${stepHtml(l)}<span class="cp">₹${Math.round(l.price * l.qty)}</span></div>`).join("")
+    + p.off.map(it => `<div class="cl off"><span class="cn">${esc(nameOf(it))}<small>${tr("Out of stock. It won't be ordered.", "स्टॉक में नहीं। यह ऑर्डर में नहीं जुड़ेगा।")}</small></span><button class="btn ghost" style="padding:6px 11px;font-size:13px" data-drop="${esc(it.id)}">${tr("Remove", "हटाएँ")}</button></div>`).join("");
+  rollTo($("#cartTotal"), p.total);
+  const n = shopNow(), b = $("#bPlace");
+  if (!busyPlacing) { b.disabled = !p.count || !n.accepting; b.textContent = n.accepting ? tr("Place order", "ऑर्डर करें") : tr("Arcus isn't taking orders now", "Arcus अभी ऑर्डर नहीं ले रहा"); }
+}
+$("#cartBar").onclick = () => { $("#cartNote").value = localStorage.getItem("ap_arcus_note") || ""; renderCart(); open("#ovCart"); log("i", "Cart opened"); };
+$("#cartLines").onclick = e => {
+  const d = e.target.closest("[data-drop]"); if (d) { delete cart[d.dataset.drop]; saveCart(); updateCartBar(); return renderCart(); }
+  const q = e.target.closest("[data-inc],[data-dec]"); if (q) changeQty(q.dataset.inc || q.dataset.dec, q.dataset.inc ? 1 : -1);
+};
+$("#cartNote").oninput = e => { try { localStorage.setItem("ap_arcus_note", e.target.value); } catch (x) {} };
+
+/* ---------------- Arcus: placing an order ---------------- */
+let busyPlacing = false;
+const newCode = () => { const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", r = crypto.getRandomValues(new Uint8Array(4)); return [...r].map(x => A[x % A.length]).join(""); };
+function withTimeout(promise, ms) { return Promise.race([promise, new Promise((_, no) => setTimeout(() => no(Object.assign(new Error("Timed out"), { code: "unavailable" })), ms))]); }
+$("#bPlace").onclick = async () => {
+  if (busyPlacing) return;
+  const seen = priceCart(arcusMenu), note = $("#cartNote").value.trim().slice(0, NOTE_MAX), n = shopNow();
+  if (!seen.count) return;
+  if (!n.accepting) { toast(tr("Arcus isn't taking orders right now", "Arcus अभी ऑर्डर नहीं ले रहा")); return renderCart(); }
+  if (openOrders().length >= ARCUS_MAX_OPEN) return toast(tr(`You can have ${ARCUS_MAX_OPEN} open orders at a time`, `एक समय में ${ARCUS_MAX_OPEN} ऑर्डर ही चल सकते हैं`), 3500);
+  // The same attempt keeps the same ID, so tapping again after a weak connection can't place it twice.
+  const sig = JSON.stringify([cart, note]);
+  let attempt = readJSON("ap_arcus_try");
+  if (!attempt || attempt.sig !== sig) { attempt = { id: api.newOrderId(), code: newCode(), sig }; localStorage.setItem("ap_arcus_try", JSON.stringify(attempt)); }
+  const b = $("#bPlace"); busyPlacing = true; b.disabled = true; b.textContent = tr("Placing your order…", "ऑर्डर हो रहा है…");
+  try {
+    const order = await withTimeout(api.placeOrder(attempt.id, menu => {
+      const p = priceCart(menu);   // checked against the newest menu, at the moment of ordering
+      if (p.total !== seen.total || p.count !== seen.count) throw new Error("cart-changed");
+      return { uid: api.uid, code: attempt.code, name: String(me?.name || "").slice(0, 60), phone: String(me?.phone || "").slice(0, 15), mode: "pickup", items: p.lines, count: p.count, total: p.total, note, shift: n.shift, status: "placed" };
+    }), 20000);
+    myOrders[attempt.id] = { ...order, id: attempt.id, createdAt: Date.now(), statusAt: Date.now() };
+    saveMyOrders(); trackOrders();
+    cart = {}; saveCart(); localStorage.removeItem("ap_arcus_note"); localStorage.removeItem("ap_arcus_try"); $("#cartNote").value = "";
+    log("i", `Order placed #${attempt.code} (${order.count} items)`);
+    closeAll(); renderArcus();
+    $("#placedNo").textContent = "#" + attempt.code;
+    $("#placedCall").innerHTML = callArcus();
+    open("#ovPlaced");
+    mascot?.react("happy"); navigator.vibrate?.([30, 60, 30]);
+  } catch (e) {
+    const code = e.message;
+    log(code === "cart-changed" || code === "order-limit" ? "w" : "e", "Order failed: " + (e.code || "") + " " + code);
+    if (code === "cart-changed") { toast(tr("The menu just changed. Please check your order again.", "मेन्यू अभी बदला है। अपना ऑर्डर फिर देख लें।"), 4000); }
+    else if (code === "order-limit") toast(tr(`You can have ${ARCUS_MAX_OPEN} open orders at a time`, `एक समय में ${ARCUS_MAX_OPEN} ऑर्डर ही चल सकते हैं`), 3500);
+    else if (e.code === "permission-denied") toast(tr("Arcus isn't taking orders right now", "Arcus अभी ऑर्डर नहीं ले रहा"), 3500);
+    else toast(tr("Couldn't place your order. Check internet and tap again.", "ऑर्डर नहीं हुआ। इंटरनेट देखकर फिर दबाएँ।"), 4000);
+  } finally { busyPlacing = false; renderCart(); }
+};
+
+/* ---------------- Arcus: my orders. Costs nothing for anyone who hasn't ordered ---------------- */
+const O_STEPS = ["placed", "confirmed", "ready", "done"];
+const O_NAMES = { placed: ["Placed", "ऑर्डर हुआ"], confirmed: ["Confirmed", "पक्का हुआ"], ready: ["Ready", "तैयार"], done: ["Done", "पूरा हुआ"], cancelled: ["Cancelled", "रद्द"] };
+const oName = s => tr(...(O_NAMES[s] || [s, s]));
+const O_REASONS = [["Changed my mind", "मन बदल गया"], ["Ordered by mistake", "ग़लती से ऑर्डर हुआ"], ["Taking too long", "बहुत समय लग रहा है"], ["Something else", "कुछ और"]];
+const reasonText = r => { const f = O_REASONS.find(x => x[0] === r); return f ? tr(f[0], f[1]) : r; };
+const isOpenOrder = o => o.status !== "done" && o.status !== "cancelled";
+let myOrders = readJSON("ap_arcus_orders") || {}, orderUnsubs = {}, cancelling = null, cancelReason = "", foundMine = false;
+const openOrders = () => Object.values(myOrders).filter(isOpenOrder);
+const saveMyOrders = () => {
+  try { localStorage.setItem("ap_arcus_orders", JSON.stringify(myOrders)); } catch (e) { log("w", "Couldn't save your orders: " + e.message); }
+  document.body.classList.toggle("has-order", openOrders().length > 0);
+};
+function dropOrder(id) { orderUnsubs[id]?.(); delete orderUnsubs[id]; delete myOrders[id]; saveMyOrders(); }
+function trackOrders() {
+  if (!api) return;
+  Object.keys(myOrders).forEach(id => {
+    if (orderUnsubs[id]) return;
+    try {
+      orderUnsubs[id] = api.watchOrder(id, o => {
+        if (!o) { log("w", "Order no longer exists: " + id); dropOrder(id); renderArcus(); return; }
+        const before = myOrders[id]?.status;
+        myOrders[id] = { ...o, id }; saveMyOrders();
+        if (before && before !== o.status) orderChanged(myOrders[id]);
+        if (view === "arcus") renderMyOrders();
+      }, e => { delete orderUnsubs[id]; log("e", "Order status failed: " + (e.code || "") + " " + e.message); });
+    } catch (e) { log("e", "Order status failed: " + e.message); }
+  });
+}
+function orderChanged(o) {
+  log("i", `Order #${o.code} is now ${o.status}`);
+  const msg = o.status === "confirmed" ? tr(`✅ #${o.code} confirmed. Arcus is making it.`, `✅ #${o.code} पक्का। Arcus बना रहा है।`)
+    : o.status === "ready" ? tr(`🎉 #${o.code} is ready. Go pick it up!`, `🎉 #${o.code} तैयार है। ले जाइए!`)
+    : o.status === "cancelled" && o.cancelledBy !== "student" ? tr(`#${o.code} was cancelled by Arcus.`, `#${o.code} Arcus ने रद्द कर दिया।`) : "";
+  if (!msg) return;
+  toast(msg, 5000); notify("Arcus", msg, "arcus-" + o.id);
+  navigator.vibrate?.(o.status === "ready" ? [200, 80, 200] : 120);
+  if (o.status === "ready") mascot?.react("happy");
+}
+// Picks up orders this phone lost track of, for example if a weak connection hid the "placed" moment.
+function findMyOrders() {
+  if (foundMine || !api) return; foundMine = true;
+  api.myOpenOrders().then(ids => { ids.forEach(id => { if (!myOrders[id]) myOrders[id] = { id, status: "placed", items: [], code: "····", total: 0, count: 0 }; }); saveMyOrders(); trackOrders(); if (view === "arcus") renderMyOrders(); })
+    .catch(e => { foundMine = false; log("w", "Couldn't check your open orders: " + (e.code || "") + " " + e.message); });
+}
+function renderMyOrders() {
+  const list = Object.values(myOrders).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  $("#arcusOrders").innerHTML = list.map(o => {
+    const gone = o.status === "cancelled", at = O_STEPS.indexOf(o.status);
+    const items = (o.items || []).map(l => `${l.qty} × ${esc(nameOf(l))}`).join(", ");
+    const test = api?.demo && isOpenOrder(o) ? `<button class="btn ghost" data-otest="${esc(o.id)}">${tr("Test: next status", "टेस्ट: अगला स्टेटस")}</button><button class="btn ghost" data-ostop="${esc(o.id)}">${tr("Test: Arcus cancels", "टेस्ट: Arcus रद्द करे")}</button>` : "";
+    return `<div class="ocard ${gone ? "gone" : ""}"><div class="ot"><span class="ono">#${esc(o.code)}</span><span class="opill">${esc(oName(o.status))}</span></div>
+      <div class="oi">${items}</div>
+      <div class="om">₹${esc(o.total)} · ${tr("pay at Arcus", "Arcus पर पैसे दें")}${o.note ? ` · ${esc(o.note)}` : ""}</div>
+      ${gone ? `<div class="om">${tr("Reason", "कारण")}: ${esc(reasonText(o.cancelReason || ""))}</div>`
+        : `<div class="ost" role="img" aria-label="${tr("Status", "स्टेटस")}: ${esc(oName(o.status))}">${O_STEPS.map((s, i) => `<div class="${i <= at ? "on" : ""} ${i === at ? "cur" : ""}"><i></i><span>${esc(oName(s))}</span></div>`).join("")}</div>`}
+      <div class="oacts">${isOpenOrder(o) ? callArcus() : ""}${o.status === "placed" ? `<button class="btn red" data-ocancel="${esc(o.id)}">${tr("Cancel", "रद्द करें")}</button>` : ""}${isOpenOrder(o) ? "" : `<button class="btn ghost" data-odrop="${esc(o.id)}">${tr("Dismiss", "हटाएँ")}</button>`}${test}</div></div>`;
+  }).join("");
+}
+$("#arcusOrders").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.odrop) { dropOrder(b.dataset.odrop); return renderMyOrders(); }
+  if (b.dataset.ocancel) return openCancelOrder(b.dataset.ocancel);
+  if (api?.demo && b.dataset.otest) { const o = myOrders[b.dataset.otest]; return api.demoHandler(o.id, O_STEPS[O_STEPS.indexOf(o.status) + 1]); }
+  if (api?.demo && b.dataset.ostop) return api.demoHandler(b.dataset.ostop, "cancelled", "Item ran out");
+};
+function openCancelOrder(id) {
+  cancelling = id; cancelReason = "";
+  $("#coTitle").textContent = tr("Cancel", "रद्द करें") + " #" + (myOrders[id]?.code || "");
+  renderReasons(); open("#ovCancelOrder");
+}
+function renderReasons() {
+  $("#coReasons").innerHTML = O_REASONS.map(r => `<button class="chip ${cancelReason === r[0] ? "on" : ""}" data-why="${esc(r[0])}">${esc(tr(r[0], r[1]))}</button>`).join("");
+  $("#bCancelOrder").disabled = !cancelReason;
+}
+$("#coReasons").onclick = e => { const b = e.target.closest("[data-why]"); if (b) { cancelReason = b.dataset.why; renderReasons(); } };
+$("#bCancelOrder").onclick = async () => {
+  if (!cancelling || !cancelReason) return;
+  const b = $("#bCancelOrder"); b.disabled = true;
+  try {
+    await withTimeout(api.cancelOrder(cancelling, cancelReason), 20000);
+    log("i", "Order cancelled: " + cancelling);
+    if (myOrders[cancelling]) { myOrders[cancelling] = { ...myOrders[cancelling], status: "cancelled", cancelReason, cancelledBy: "student", statusAt: Date.now() }; saveMyOrders(); }
+    closeAll(); renderMyOrders();
+    toast(tr("Order cancelled", "ऑर्डर रद्द हो गया"));
+  } catch (e) {
+    log(e.message === "order-too-late" ? "w" : "e", "Cancel failed: " + (e.code || "") + " " + e.message);
+    if (e.message === "order-too-late") { closeAll(); toast(tr("Arcus has already confirmed it. Call them to change it.", "Arcus इसे पक्का कर चुका है। बदलने के लिए कॉल करें।"), 4500); }
+    else { b.disabled = false; toast(tr("Couldn't cancel. Check internet and try again.", "रद्द नहीं हुआ। इंटरनेट देखकर फिर कोशिश करें।"), 4000); }
+  }
+};
+// What Chhotu says on the Arcus tab.
+function arcusSay() {
+  const O = openOrders(), ready = O.find(o => o.status === "ready"), making = O.find(o => o.status === "confirmed"), waiting = O.find(o => o.status === "placed"), n = shopNow(), c = priceCart(arcusMenu).count;
+  if (ready) return { t: tr(`🎉 <b>#${esc(ready.code)} is ready!</b> Go pick it up.`, `🎉 <b>#${esc(ready.code)} तैयार है!</b> ले जाइए।`), sub: tr("Pay at Arcus when you collect it.", "लेते समय Arcus पर पैसे दें।"), mood: "good" };
+  if (making) return { t: tr(`👨‍🍳 Arcus is making <b>#${esc(making.code)}</b>.`, `👨‍🍳 Arcus <b>#${esc(making.code)}</b> बना रहा है।`), sub: tr("I'll buzz you when it's ready.", "तैयार होते ही बताऊँगा।") };
+  if (waiting) return { t: tr(`🧾 <b>#${esc(waiting.code)}</b> is waiting for Arcus to confirm.`, `🧾 <b>#${esc(waiting.code)}</b> पक्का होने का इंतज़ार कर रहा है।`), sub: tr("You can still cancel it for now.", "अभी रद्द कर सकते हैं।") };
+  if (!n.accepting) return { t: tr("🌙 Arcus isn't taking orders right now.", "🌙 Arcus अभी ऑर्डर नहीं ले रहा।"), sub: tr(`It opens at ${to12(arcusShop.dayStart)}.`, `${to12(arcusShop.dayStart)} पर खुलेगा।`) };
+  if (c) return { t: tr("🛒 Looks tasty! <b>Tap the blue bar</b> to order.", "🛒 बढ़िया! ऑर्डर के लिए <b>नीली पट्टी दबाएँ</b>।"), sub: tr("Pick up from Arcus and pay there.", "Arcus से ले जाएँ, वहीं पैसे दें।") };
+  return { t: tr("🍽️ Hungry? <b>Tap Add</b> on anything you like.", "🍽️ भूख लगी? जो पसंद हो उस पर <b>जोड़ें</b> दबाएँ।"), sub: tr("Greyed-out items are out of stock.", "धुंधले आइटम अभी स्टॉक में नहीं हैं।") };
+}
 
 /* ---------------- Alerts ---------------- */
 function toast(t, ms = 2600) { const el = $("#toast"); el.textContent = t; el.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = "none", ms); }
@@ -1230,7 +1660,7 @@ function say() {
       sub = tr(`Leave your room 2 min before ${fmt(new Date(mine.leaveAt))}.`, `${fmt(new Date(mine.leaveAt))} से 2 मिनट पहले कमरे से निकलें।`); }
     if (n >= C.seats && ms > 0 && !my.gate) { sub = tr(`Auto full · ₹${perHead(n)} each.`, `ऑटो भरा · ₹${perHead(n)} प्रति व्यक्ति।`); if (mood !== "urgent") mood = "good"; }
   }
-  else if (view === "arcus") { t = tr("🍽️ Have a look at the menu. <b>Ordering opens soon!</b>", "🍽️ मेन्यू देख लीजिए। <b>ऑर्डर जल्द शुरू होंगे!</b>"); sub = tr("Greyed-out items are out of stock.", "धुंधले आइटम अभी स्टॉक में नहीं हैं।"); }
+  else if (view === "arcus") { const a = arcusSay(); t = a.t; sub = a.sub; if (a.mood) mood = a.mood; }
   else if (S.length) { const r = S[0], p = r.payer && r.riders.find(x => x.uid === r.payer);
     t = !p ? tr("💸 Who paid the driver? Tap it in <b>Settle up</b> above.", "💸 ड्राइवर को किसने दिए? ऊपर <b>हिसाब करें</b> में बताएँ।")
       : p.uid === api.uid ? tr("💸 I'll remind the others to pay you back.", "💸 मैं बाकियों को आपको पैसे लौटाने को कहूँगा।")
@@ -1333,6 +1763,11 @@ async function start() {
       else log("e", "Arcus settings failed: " + e.message);
     });
   } catch (e) { log("e", "Arcus settings failed: " + e.message); setArcusLive(false); }
+  // Finished orders clear themselves after 12 hours. Orders still open keep updating, whichever tab is showing.
+  try {
+    Object.values(myOrders).forEach(o => { if (!isOpenOrder(o) && Date.now() - (o.statusAt || 0) > 12 * 3600e3) delete myOrders[o.id]; });
+    saveMyOrders(); trackOrders();
+  } catch (e) { log("e", "Your Arcus orders failed: " + e.message); }
   api.saveUser(me).then(() => log("i", "Registration saved")).catch(e => log("w", "Registration save failed: " + e.message));
   api.watch((rs, added) => {
     rides = rs;
@@ -1366,6 +1801,8 @@ async function start() {
     });
   }, 1000);
   setInterval(renderShuttle, 30000);
+  let shopKey = "";   // opening and closing happen on their own: redraw Arcus when the shop changes state
+  setInterval(() => { try { const n = shopNow(), k = n.shift + "|" + n.accepting; if (k !== shopKey) { shopKey = k; renderArcus(); if ($("#ovCart").classList.contains("show")) renderCart(); } } catch (e) { log("e", "Arcus hours check failed: " + e.message); } }, 20000);
 }
 fxProbe();
 applyStatic();

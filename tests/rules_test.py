@@ -203,5 +203,125 @@ check("student changes the menu", False, commit("arcus/menu", {"categories": [],
 check("other Google account changes the menu", False, commit("arcus/menu", {"categories": [], "rev": 3}, OTHER_G))
 check("password login with your email changes the menu", False, commit("arcus/menu", {"categories": [], "rev": 3}, FAKE_PW))
 
+print("--- Arcus ordering ---")
+def batch(tok, *writes):
+    """Sends several changes as one all-or-nothing commit, the way the app's order transaction does."""
+    out = []
+    for path, d, stamps, ex in writes:
+        w = {"update": {"name": f"{ROOT}/{path}", "fields": fields(d)}}
+        if ex is not None:
+            w["currentDocument"] = {"exists": ex}
+        if stamps:
+            w["updateTransforms"] = [{"fieldPath": f, "setToServerValue": "REQUEST_TIME"} for f in stamps]
+        out.append(w)
+    return call("POST", f"/v1/{ROOT}:commit", {"writes": out}, tok)[0]
+
+
+STAMPS = ["createdAt", "statusAt"]
+line = {"id": "i1", "en": "SAMPLE item 1", "hi": "", "price": 10, "qty": 2, "veg": True}
+
+
+def order(uid="a", **kw):
+    return {"uid": uid, "code": "A7K2", "name": "A", "phone": "9000000001", "mode": "pickup", "items": [line], "count": 2,
+            "total": 20, "note": "", "shift": "day", "status": "placed", **kw}
+
+
+def counts(placed, last, confirmed=0, ready=0):
+    return {"placed": placed, "confirmed": confirmed, "ready": ready, "lastOrder": last}
+
+
+def place(oid, tok, uid, open_after, placed_after, **kw):
+    return batch(tok, (f"arcusOrders/{oid}", order(uid, **kw), STAMPS, False),
+                 (f"arcusMine/{uid}", {"open": open_after, "lastOrder": oid}, None, None),
+                 ("arcus/counts", counts(placed_after, oid), None, None))
+
+
+def cancel(oid, tok, uid, open_after, placed_after, reason="Changed my mind"):
+    w = {"update": {"name": f"{ROOT}/arcusOrders/{oid}", "fields": fields({"status": "cancelled", "cancelReason": reason, "cancelledBy": "student"})},
+         "updateMask": {"fieldPaths": ["status", "cancelReason", "cancelledBy"]},
+         "updateTransforms": [{"fieldPath": "statusAt", "setToServerValue": "REQUEST_TIME"}],
+         "currentDocument": {"exists": True}}
+    rest = [{"update": {"name": f"{ROOT}/arcusMine/{uid}", "fields": fields({"open": open_after, "lastOrder": oid})}},
+            {"update": {"name": f"{ROOT}/arcus/counts", "fields": fields(counts(placed_after, oid))}}]
+    return call("POST", f"/v1/{ROOT}:commit", {"writes": [w, *rest]}, tok)[0]
+
+
+def fresh(uid, opened, placed):
+    """Clean starting point: Arcus on, this student has these open orders, counts as given."""
+    seed("arcus/settings", {"live": True})
+    seed("arcus/counts", counts(placed, "seed"))
+    seed(f"arcusMine/{uid}", {"open": opened, "lastOrder": "seed"})
+    for x in opened:
+        seed(f"arcusOrders/{x}", order(uid))
+
+
+call("DELETE", f"/v1/{ROOT}/arcus/counts", None, OWNER_ADMIN)
+seed("arcus/settings", {"live": True})
+check("very first order, counts and my list don't exist yet", True, place("o1", A, "a", ["o1"], 1))
+check("read my own order", True, call("GET", f"/v1/{ROOT}/arcusOrders/o1", None, A)[0])
+check("check an order that doesn't exist yet", True, call("GET", f"/v1/{ROOT}/arcusOrders/nothing", None, A)[0] in (200, 404) and 200 or 403)
+check("read the overall counts", True, call("GET", f"/v1/{ROOT}/arcus/counts", None, B)[0])
+check("read my open orders list", True, call("GET", f"/v1/{ROOT}/arcusMine/a", None, A)[0])
+fresh("a", ["p1", "p2"], 2)
+check("third open order", True, place("p3", A, "a", ["p1", "p2", "p3"], 3))
+fresh("a", ["c1"], 1)
+check("cancel my order while Placed", True, cancel("c1", A, "a", [], 0))
+s = call("GET", f"/v1/{ROOT}/arcusOrders/c1", None, A)
+check("the cancelled order is still readable, so the student sees it", True, s[0])
+
+print("--- Arcus ordering misuse ---")
+fresh("a", ["p1", "p2", "p3"], 3)
+check("4th open order", False, place("p4", A, "a", ["p1", "p2", "p3", "p4"], 4))
+check("empty my list to get round the limit", False, commit("arcusMine/a", {"open": [], "lastOrder": "p1"}, A))
+check("shrink my list while placing, to get round the limit", False, place("p4", A, "a", ["p4"], 4))
+fresh("a", [], 0)
+check("order sent without updating the counts", False, batch(A, ("arcusOrders/n1", order(), STAMPS, False), ("arcusMine/a", {"open": ["n1"], "lastOrder": "n1"}, None, None)))
+check("order sent without updating my list", False, batch(A, ("arcusOrders/n1", order(), STAMPS, False), ("arcus/counts", counts(1, "n1"), None, None)))
+check("order alone", False, batch(A, ("arcusOrders/n1", order(), STAMPS, False)))
+check("counts raised by 5 with one order", False, place("n1", A, "a", ["n1"], 5))
+check("counts raised with no order", False, commit("arcus/counts", counts(9, "n1"), A))
+check("counts lowered with no cancel", False, commit("arcus/counts", counts(0, "n1"), A))
+check("student changes the confirmed count", False, batch(A, ("arcusOrders/n1", order(), STAMPS, False), ("arcusMine/a", {"open": ["n1"], "lastOrder": "n1"}, None, None), ("arcus/counts", counts(1, "n1", confirmed=4), None, None)))
+check("order as someone else", False, place("n1", B, "a", ["n1"], 1))
+check("order that starts as Ready", False, place("n1", A, "a", ["n1"], 1, status="ready"))
+check("order with a very long note", False, place("n1", A, "a", ["n1"], 1, note="x" * 141))
+check("order with no items", False, place("n1", A, "a", ["n1"], 1, items=[]))
+check("order with too many lines", False, place("n1", A, "a", ["n1"], 1, items=[line] * 31))
+check("order with a negative total", False, place("n1", A, "a", ["n1"], 1, total=-5))
+check("order with an extra field", False, place("n1", A, "a", ["n1"], 1, paid=True))
+check("order for delivery (pickup only at launch)", False, place("n1", A, "a", ["n1"], 1, mode="delivery"))
+check("signed-out visitor orders", False, place("n1", None, "a", ["n1"], 1))
+seed("arcus/settings", {"live": False})
+check("order while Arcus is switched off", False, place("n1", A, "a", ["n1"], 1))
+fresh("a", ["c2"], 1)
+seed("arcusOrders/c2", order(status="confirmed"))
+check("cancel after it was confirmed", False, cancel("c2", A, "a", [], 0))
+fresh("a", ["c3"], 1)
+check("cancel someone else's order", False, cancel("c3", B, "b", [], 0))
+check("cancel with no reason", False, cancel("c3", A, "a", [], 0, reason=""))
+check("cancel without updating the counts", False, commit("arcusOrders/c3", {"status": "cancelled", "cancelReason": "x", "cancelledBy": "student"}, A, mask=["status", "cancelReason", "cancelledBy"]))
+check("mark my own order Ready", False, commit("arcusOrders/c3", {"status": "ready"}, A, mask=["status"]))
+check("lower my own total", False, commit("arcusOrders/c3", {"total": 1}, A, mask=["total"]))
+check("read someone else's order", False, call("GET", f"/v1/{ROOT}/arcusOrders/c3", None, B)[0])
+s, n = query("arcusOrders", None, 0, A)
+check("student lists orders", False, s)
+check("read someone else's open orders", False, call("GET", f"/v1/{ROOT}/arcusMine/a", None, B)[0])
+check("delete an order", False, call("POST", f"/v1/{ROOT}:commit", {"writes": [{"delete": f"{ROOT}/arcusOrders/c3"}]}, A)[0])
+
+print("--- Arcus shop details and Mishu's controls ---")
+shop = {"dayStart": "09:30", "nightStart": "20:30", "closeAt": "04:00", "lastOrder": "03:45", "dayPhone": "9000000011", "nightPhone": ""}
+check("you save opening hours and phones", True, commit("arcus/shop", shop, ME))
+check("student reads opening hours", True, call("GET", f"/v1/{ROOT}/arcus/shop", None, A)[0])
+check("signed-out visitor reads handler phones", False, call("GET", f"/v1/{ROOT}/arcus/shop", None, None)[0])
+check("student changes opening hours", False, commit("arcus/shop", shop, A))
+check("other Google account changes phones", False, commit("arcus/shop", shop, OTHER_G))
+check("a badly written phone number", False, commit("arcus/shop", {**shop, "dayPhone": "call me"}, ME))
+check("you move an order to Confirmed", True, commit("arcusOrders/c3", {"status": "confirmed"}, ME, mask=["status"]))
+check("you read any order", True, call("GET", f"/v1/{ROOT}/arcusOrders/c3", None, ME)[0])
+s, n = query("arcusOrders", None, 0, ME)
+check(f"you list orders, got {n}", True, s)
+check("you correct the counts", True, commit("arcus/counts", counts(0, "fix"), ME))
+check("password login with your email moves an order", False, commit("arcusOrders/c3", {"status": "ready"}, FAKE_PW, mask=["status"]))
+
 print(f"\n{sum(results)} of {len(results)} passed")
 sys.exit(0 if all(results) else 1)

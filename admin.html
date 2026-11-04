@@ -84,6 +84,7 @@ select.pick option,select.fld option{color:#111}
 .gate h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}.gate p{color:var(--mute);margin-bottom:16px;line-height:1.45}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.split>div{min-width:0}@media(max-width:700px){.split{grid-template-columns:1fr}}
 /* Arcus editor */
+.shopg{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.shopg label{display:block;min-width:0}.shopg .lbl{display:block}
 .set{display:flex;align-items:center;gap:12px}
 .set .st{flex:1;min-width:0}.set .st b{font-weight:600}.set .st small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
 .sw{width:51px;height:31px;border-radius:16px;background:var(--seg);position:relative;flex:none;transition:background-color .25s}
@@ -190,6 +191,19 @@ html.lowfx header,html.lowfx .sheet,html.lowfx .toast,html.lowfx .savebar{-webki
     <div class="card set">
       <span class="st"><b data-t="Show Arcus to students|छात्रों को Arcus दिखाएँ"></b><small id="liveNote"></small></span>
       <button class="sw" id="liveSw" role="switch" aria-checked="false" data-al="Show Arcus to students|छात्रों को Arcus दिखाएँ"></button>
+    </div>
+    <div class="card" id="shopCard">
+      <div class="ch"><span class="cn" data-t="Hours and phone numbers|समय और फ़ोन नंबर"></span></div>
+      <p class="note" style="margin:0 0 4px" data-t="Times are India time. Students call the number of whichever shift is on now.|समय भारत के हिसाब से है। छात्र उस समय की शिफ़्ट के नंबर पर कॉल करते हैं।"></p>
+      <div class="shopg">
+        <label><span class="lbl" data-t="Day shift starts|दिन की शिफ़्ट शुरू"></span><input class="fld" type="time" id="sDayStart"></label>
+        <label><span class="lbl" data-t="Night shift starts|रात की शिफ़्ट शुरू"></span><input class="fld" type="time" id="sNightStart"></label>
+        <label><span class="lbl" data-t="Last orders|आख़िरी ऑर्डर"></span><input class="fld" type="time" id="sLastOrder"></label>
+        <label><span class="lbl" data-t="Closes|बंद होने का समय"></span><input class="fld" type="time" id="sCloseAt"></label>
+        <label><span class="lbl" data-t="Day handler's phone|दिन के हैंडलर का फ़ोन"></span><input class="fld" type="tel" inputmode="numeric" maxlength="10" id="sDayPhone"></label>
+        <label><span class="lbl" data-t="Night handler's phone|रात के हैंडलर का फ़ोन"></span><input class="fld" type="tel" inputmode="numeric" maxlength="10" id="sNightPhone"></label>
+      </div>
+      <div class="row"><button class="btn" id="bSaveShop" data-t="Save hours and phones|समय और फ़ोन सेव करें"></button></div>
     </div>
     <div id="editor"></div>
   </section>
@@ -302,12 +316,13 @@ let store = null;   // where the Arcus settings and menu live (Firebase, or this
 const denied = e => e?.code === "permission-denied";
 
 function firebaseStore() {
-  const sRef = fs.doc(db, "arcus", "settings"), mRef = fs.doc(db, "arcus", "menu");
+  const sRef = fs.doc(db, "arcus", "settings"), mRef = fs.doc(db, "arcus", "menu"), hRef = fs.doc(db, "arcus", "shop");
   return {
     async load() {
-      const [s, m] = await Promise.all([fs.getDoc(sRef), fs.getDoc(mRef)]);
-      return { live: s.exists() && s.data().live === true, menu: m.exists() ? m.data() : null };
+      const [s, m, h] = await Promise.all([fs.getDoc(sRef), fs.getDoc(mRef), fs.getDoc(hRef)]);
+      return { live: s.exists() && s.data().live === true, menu: m.exists() ? m.data() : null, shop: h.exists() ? h.data() : null };
     },
+    async saveShop(d) { await fs.setDoc(hRef, d); },
     async setLive(on) { await fs.setDoc(sRef, { live: on, updatedAt: Date.now() }, { merge: true }); },
     async saveMenu(categories, baseRev) {   // refuses to overwrite a menu someone changed after this page loaded it
       return fs.runTransaction(db, async tx => {
@@ -322,7 +337,8 @@ function firebaseStore() {
 function testStore() {   // only used when FIREBASE is null, in a test copy of this page
   const read = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } };
   return {
-    async load() { return { live: read("ap_demo_arcus_settings")?.live === true, menu: read("ap_demo_arcus_menu") }; },
+    async load() { return { live: read("ap_demo_arcus_settings")?.live === true, menu: read("ap_demo_arcus_menu"), shop: read("ap_demo_arcus_shop") }; },
+    async saveShop(d) { localStorage.setItem("ap_demo_arcus_shop", JSON.stringify(d)); },
     async setLive(on) { localStorage.setItem("ap_demo_arcus_settings", JSON.stringify({ live: on, updatedAt: Date.now() })); },
     async saveMenu(categories, baseRev) {
       const rev = read("ap_demo_arcus_menu")?.rev || 0;
@@ -414,11 +430,33 @@ function sampleMenu() {   // placeholders only, until Mishu sends the real menu
     { id: newId("c"), en: "SAMPLE category B", hi: "SAMPLE कैटेगरी B", items: [it(4, 40, true, false), it(5, 50, false)] }
   ];
 }
+/* ---- Hours and handler phones: stored in Firestore, never in the code, because the repo is public ---- */
+const SHOP_DEFAULTS = { dayStart: "09:30", nightStart: "20:30", closeAt: "04:00", lastOrder: "03:45", dayPhone: "", nightPhone: "" };
+const SHOP_FIELDS = { dayStart: "#sDayStart", nightStart: "#sNightStart", closeAt: "#sCloseAt", lastOrder: "#sLastOrder", dayPhone: "#sDayPhone", nightPhone: "#sNightPhone" };
+function fillShop(d) { const v = { ...SHOP_DEFAULTS, ...d }; Object.entries(SHOP_FIELDS).forEach(([k, id]) => $(id).value = v[k] || ""); }
+function shopProblem(d) {
+  const m = s => { const [h, i] = s.split(":").map(Number); return h * 60 + i; }, after = s => (m(s) - m(d.nightStart) + 1440) % 1440;
+  if (["dayStart", "nightStart", "closeAt", "lastOrder"].some(k => !/^[0-2]\d:[0-5]\d$/.test(d[k]))) return tr("Please fill in all four times.", "चारों समय भरें।");
+  if (m(d.dayStart) >= m(d.nightStart)) return tr("The day shift must start before the night shift.", "दिन की शिफ़्ट रात की शिफ़्ट से पहले शुरू होनी चाहिए।");
+  if (after(d.closeAt) > after(d.dayStart)) return tr("Arcus must close before the day shift starts.", "दिन की शिफ़्ट शुरू होने से पहले Arcus बंद होना चाहिए।");
+  if (after(d.lastOrder) >= after(d.closeAt)) return tr("Last orders must be during the night shift, before closing.", "आख़िरी ऑर्डर रात की शिफ़्ट में, बंद होने से पहले होना चाहिए।");
+  if ([d.dayPhone, d.nightPhone].some(p => !/^(\d{10})?$/.test(p))) return tr("Phone numbers must be 10 digits.", "फ़ोन नंबर 10 अंकों का होना चाहिए।");
+  return "";
+}
+$("#bSaveShop").onclick = async () => {
+  const d = {}; Object.entries(SHOP_FIELDS).forEach(([k, id]) => d[k] = $(id).value.trim());
+  const bad = shopProblem(d); if (bad) return toast(bad);
+  const b = $("#bSaveShop"); b.disabled = true;
+  try { await store.saveShop(d); log("i", "Arcus hours and phones saved"); toast(tr("Saved", "सेव हो गया")); }
+  catch (e) { log("e", "Arcus hours save failed: " + (e.code || "") + " " + e.message); toast(denied(e) ? tr("Not allowed. Have the new Firestore rules been pasted?", "अनुमति नहीं है। क्या नए Firestore नियम डाले गए हैं?") : tr("Couldn't save. Check internet.", "सेव नहीं हुआ। इंटरनेट देखें।")); }
+  b.disabled = false;
+};
 async function loadArcus() {
   arcusError = ""; draft = null; renderEditor();
   try {
     const r = await store.load();
     live = r.live; draft = clean(r.menu); savedJson = JSON.stringify(draft); baseRev = r.menu?.rev || 0; arcusLoaded = true;
+    fillShop(r.shop);
     log("i", `Arcus loaded: ${live ? "on" : "off"}, ${itemCount()} items`);
   } catch (e) {
     log("e", "Arcus load failed: " + (e.code || "") + " " + e.message);
