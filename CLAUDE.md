@@ -17,7 +17,7 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 - `index.html`: the whole app (HTML, CSS and JS in one file). The settings block near the top is `window.AUTOPOOL_CONFIG`.
 - `admin.html`: stats page (sign-ups, rides posted or cancelled, money saved, CSV downloads). Only `anantgarg419@gmail.com` can see it.
 - `sw.js` + `manifest.json` + `icon-*`: let the site install like an app and open offline.
-  - **Bump the cache version `V` in `sw.js` (currently "autopool-v4") whenever you change files**, or phones keep showing the old app.
+  - **Bump the cache version `V` in `sw.js` (currently "autopool-v5") whenever you change files**, or phones keep showing the old app.
 - `ARCUS_PLAN.md`: the brief for Arcus, the campus canteen ordering feature, and its stages. Read it before any Arcus work.
 - `firestore.rules`: the full security rules, to paste into the Firebase console. Keep it the same as the block in `SETUP.md`.
 - `SETUP.md`: the original go-live guide. Note that its Netlify hosting step is out of date: the app now runs on GitHub Pages.
@@ -35,7 +35,7 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
   - Closed-app alerts via the **ntfy** app. Topic: `imt-cdl-autopool-66cea7`, plus a per-user channel.
 - **Works on Android and iPhone.** On iPhone, it must be installed from Safari.
 - **Languages:** English and Hindi toggle. There's also a large-text mode.
-- **🐞 Issue log button:** every feature should log errors there, even when things work, so Mishu can report them.
+- **🐞 Issue log:** a row in the 👤 You & settings sheet, with a red dot on 👤 when there are new errors. Every feature should log errors there, even when things work, so Mishu can report them. Each phone only sees its own log.
 
 ## Backend
 - Firebase project `autopool-93a9d` (Firestore + anonymous Auth). The web config in `index.html` is safe to be public. The Firestore security rules are what protect the data.
