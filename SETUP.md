@@ -28,21 +28,93 @@ service cloud.firestore {
         && request.auth.token.firebase.sign_in_provider == 'google.com';
     }
 
-    // ---- Rides: unchanged. Maximum 5 riders. ----
+    // Lists of rides and bulbs only reach back this far, so nobody can download the full history.
+    // 3 hours leaves room for a phone whose clock is a little wrong (the app asks for the last hour).
+    function recentCutoff() {
+      return request.time.toMillis() - 3 * 60 * 60 * 1000;
+    }
+
+    // ---- Ride changes: each one below matches one action in the app ----
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+    function isPoster() {
+      return resource.data.creator == request.auth.uid;
+    }
+    function nothingChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys().size() == 0;
+    }
+    function validSeats(rider) {
+      return rider.n is int && rider.n >= 1 && rider.n <= 5;
+    }
+    // Join: your own entry is added at the end, and everyone else stays as they were.
+    function isJoin(before, after) {
+      return changedOnly(['riders'])
+        && resource.data.get('cancelled', false) == false
+        && after.size() == before.size() + 1
+        && after[0:before.size()] == before
+        && after[before.size()].uid == request.auth.uid
+        && validSeats(after[before.size()]);
+    }
+    // Leave: only your own entry is removed.
+    function isLeave(before, after) {
+      return changedOnly(['riders'])
+        && after.size() == before.size() - 1
+        && before.hasAll(after)
+        && before.removeAll(after).size() == 1
+        && before.removeAll(after)[0].uid == request.auth.uid;
+    }
+    // "At the gate", "I've paid": only your own entry changes, and not your seat count.
+    function changesOnlyMyEntry(before, after) {
+      return after.size() == before.size()
+        && before.removeAll(after).size() == 1
+        && after.removeAll(before).size() == 1
+        && before.removeAll(after)[0].uid == request.auth.uid
+        && after.removeAll(before)[0].uid == request.auth.uid
+        && after.removeAll(before)[0].n == before.removeAll(after)[0].n;
+    }
+    function isSetPayer(before, after) {
+      return changedOnly(['payer', 'riders'])
+        && request.resource.data.payer == request.auth.uid
+        && resource.data.get('payer', request.auth.uid) == request.auth.uid
+        && changesOnlyMyEntry(before, after);
+    }
+    function isCancel() {
+      return isPoster() && changedOnly(['cancelled']) && request.resource.data.cancelled == true;
+    }
+    function isSetTime(before) {
+      return isPoster() && changedOnly(['leaveAt'])
+        && request.resource.data.leaveAt is number
+        && before.size() <= 1;
+    }
+
+    // ---- Rides. Maximum 5 riders. Riders can only add, remove or change themselves. ----
     match /rides/{id} {
-      allow read: if signedIn();
+      allow get: if signedIn();
+      allow list: if isOwner() || (signedIn() && resource.data.leaveAt > recentCutoff());
       allow create: if signedIn()
         && request.resource.data.creator == request.auth.uid
-        && request.resource.data.riders.size() <= 5;
+        && request.resource.data.leaveAt is number
+        && request.resource.data.riders.size() == 1
+        && request.resource.data.riders[0].uid == request.auth.uid
+        && validSeats(request.resource.data.riders[0]);
       allow update: if signedIn()
         && request.resource.data.creator == resource.data.creator
-        && request.resource.data.riders.size() <= 5;
+        && request.resource.data.riders.size() <= 5
+        && (nothingChanged()
+          || isJoin(resource.data.riders, request.resource.data.riders)
+          || isLeave(resource.data.riders, request.resource.data.riders)
+          || (changedOnly(['riders']) && changesOnlyMyEntry(resource.data.riders, request.resource.data.riders))
+          || isSetPayer(resource.data.riders, request.resource.data.riders)
+          || isCancel()
+          || isSetTime(resource.data.riders));
       allow delete: if false;
     }
 
-    // ---- 💡 Flexible bulb: unchanged. Each person can only switch their own. ----
+    // ---- 💡 Flexible bulb: each person can only switch their own, and only recent ones can be listed. ----
     match /bulbs/{uid} {
-      allow read: if signedIn();
+      allow get: if signedIn() && uid == request.auth.uid;
+      allow list: if signedIn() && resource.data.until > recentCutoff();
       allow write: if signedIn() && uid == request.auth.uid
         && request.resource.data.uid == request.auth.uid;
     }
