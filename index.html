@@ -240,8 +240,7 @@ window.AUTOPOOL_CONFIG = {
   <div class="logo">Auto<span>Pool</span></div>
   <button class="ib lang" id="bLang" aria-label="Switch language / भाषा बदलें">हि</button>
   <button class="ib" id="bAlerts" data-al="Alerts|अलर्ट"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 16 6 10z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></button>
-  <button class="ib" id="bLog" data-al="Issue log|समस्या लॉग"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="8" width="10" height="13" rx="5"/><path d="M9 8a3 3 0 0 1 6 0M12 12v9M3.5 13H7M17 13h3.5M4.5 7.5 8 10M19.5 7.5 16 10M4.5 19 8 17M19.5 19 16 17"/></svg><span class="dot" id="logDot" style="display:none">0</span></button>
-  <button class="ib" id="bMe" data-al="Profile and settings|प्रोफ़ाइल और सेटिंग"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg></button>
+  <button class="ib" id="bMe" data-al="Profile and settings|प्रोफ़ाइल और सेटिंग"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg><span class="dot" id="logDot" style="display:none">0</span></button>
 </div></header>
 <div class="inst" id="instBar" style="display:none"><span data-t="📲 Install AutoPool as an app|📲 AutoPool को ऐप की तरह इंस्टॉल करें"></span><button id="instBtn" data-t="Install|इंस्टॉल"></button><button id="instX" data-al="Close|बंद करें">✕</button></div>
 <div class="demo" id="demoBar" style="display:none" data-t="Demo mode: rides are saved on this device only.|डेमो मोड: राइड सिर्फ़ इसी फ़ोन पर सेव हैं।"></div>
@@ -384,6 +383,7 @@ window.AUTOPOOL_CONFIG = {
   <p class="note" style="margin:-4px 0 10px" data-t="With a UPI ID, co-riders can pay you back in one tap when you pay the driver.|UPI ID डालने पर, जब आप ड्राइवर को पैसे देंगे, साथी एक टैप में आपको लौटा पाएँगे।"></p>
   <div class="set"><span><b data-t="🔠 Big text & high contrast|🔠 बड़ा टेक्स्ट और गहरे रंग"></b><small data-t="Easier to read in sunlight or with weak eyesight|धूप में या कमज़ोर नज़र में पढ़ना आसान"></small></span><button class="sw" id="bigSw" role="switch" data-al="Big text|बड़ा टेक्स्ट"></button></div>
   <div class="set"><span><b data-t="🌐 Language|🌐 भाषा"></b><small data-t="English or Hindi|अंग्रेज़ी या हिंदी"></small></span><div class="chips" id="langChips"></div></div>
+  <div class="set"><span><b data-t="🐞 Issue log|🐞 समस्या लॉग"></b><small data-t="Only if something breaks: copy it and send it to Mishu|कुछ ख़राब होने पर ही: कॉपी करके Mishu को भेजें"></small></span><button class="btn ghost" id="bLog" data-t="Open|खोलें"></button></div>
   <div class="row"><button class="btn" id="meSave" data-t="Save|सेव करें"></button></div>
 </div></div>
 
@@ -402,7 +402,7 @@ window.AUTOPOOL_CONFIG = {
 
 <script type="module">
 const C = window.AUTOPOOL_CONFIG;
-const APP_VERSION = "2026-11-04-v13";   // bump on every upload → open apps notice and refresh
+const APP_VERSION = "2026-11-04-v14";   // bump on every upload → open apps notice and refresh
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const EXPIRE_MS = 40 * 1000;        // card shows "Leaving now" for 40 s after leave time, then disappears
@@ -1043,7 +1043,7 @@ function slideRender(dir) {
 }
 document.querySelector(".tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.d; document.querySelectorAll(".tabs button").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); }); localStorage.setItem("ap_tab", tab); slideRender(tab === "m2c" ? 1 : -1); };
 
-$("#bLog").onclick = () => { $("#verTag").textContent = APP_VERSION; unseenErr = 0; $("#logDot").style.display = "none"; renderLog(); open("#ovLog"); };
+$("#bLog").onclick = () => { $("#verTag").textContent = APP_VERSION; unseenErr = 0; $("#logDot").style.display = "none"; renderLog(); closeAll(); open("#ovLog"); };
 $("#logCopy").onclick = async () => { try { await navigator.clipboard.writeText(logs.map(l => `[${l.t}] ${l.level} ${l.msg}`).join("\n")); toast(tr("Copied", "कॉपी हुआ")); } catch { toast(tr("Copy blocked: select the text manually", "कॉपी नहीं हुआ: टेक्स्ट ख़ुद चुनें")); } };
 $("#logClear").onclick = () => { logs = []; localStorage.setItem(LOGK, "[]"); renderLog(); };
 $("#bAlerts").onclick = () => {

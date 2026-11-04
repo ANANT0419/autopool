@@ -107,4 +107,4 @@ Firestore's free tier allows 50,000 reads and 20,000 writes a day. A busy hostel
 - Uses the phone's clock. A phone with wrong time shows wrong countdowns.
 
 ## If something breaks
-Tap 🐞 (issue log) → **Copy** → send it to whoever maintains the app.
+Tap 👤 → 🐞 **Issue log** → **Open** → **Copy** → send it to whoever maintains the app.
