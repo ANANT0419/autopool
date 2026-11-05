@@ -28,10 +28,12 @@ Saved at the start of Stage 2 so later stages can use it. This is Mishu's brief,
 - Prices come from the menu when the order is placed, but the rules can't compare them with the menu. A student could fake a total, so the handler should charge from the menu.
 - Opening hours are checked on the student's phone only, using its clock.
 
-## Must do in Stage 4
-- Add the handlers' logins to `isStaff()` in `firestore.rules`.
-- Every status change must also update `arcus/counts`. Done and Cancelled must also remove the order from the student's `arcusMine`, or that student stays stuck at the limit.
-- Remove nothing else: the "Test:" buttons on order cards only appear in demo mode.
+## Built in Stage 4
+- `arcus.html` + `arcus.webmanifest`: the handler screen. Logins: `arcus-day@autopool-93a9d.firebaseapp.com` and `arcus-night@autopool-93a9d.firebaseapp.com` (made-up addresses, passwords set by Mishu).
+- Create both logins BEFORE publishing the rules, so nobody else can register those addresses.
+- `arcus/stock` (`out` = list of item IDs) is the handlers' one-tap out of stock. It sits on top of the menu's own in-stock switch, so handlers can never change the menu or prices.
+- `arcus/shop` also holds `dayTopic` and `nightTopic`, the ntfy channels. admin.html creates them on Save, and the student's phone sends the alert.
+- A handler's status change moves the order, `arcus/counts` and, for Done or Cancelled, the student's `arcusMine` in one transaction.
 
 ## Stage 2 scope
 - Rides and Arcus tabs with clear navigation between them.

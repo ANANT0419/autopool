@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f4f9">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07080c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Arcus">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="arcus.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Arcus · Handler</title>
+<style>
+@font-face{font-family:Inter;src:url(fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+20A0-20C0,U+2190-2193,U+21C4}
+:root{color-scheme:light dark;
+  --bg:#f2f4f9;--solid:#fff;--card:rgba(255,255,255,.74);--cardln:rgba(255,255,255,.95);--ink:#111114;--mute:#66666e;--line:rgba(20,20,40,.1);
+  --glass:rgba(255,255,255,.62);--glassln:rgba(255,255,255,.8);--fill:rgba(20,20,50,.06);--seg:rgba(120,125,145,.16);--thumb:#fff;
+  --ac:#0a6cff;--ac2:#3d8bff;--soft:rgba(10,108,255,.11);--acink:#0a5ee0;
+  --g:#14803c;--g2:rgba(40,190,90,.14);--r:#d92d20;--r2:rgba(230,50,40,.1);--am:rgba(250,190,40,.16);
+  --b1:#bcd8ff;--b2:#dbe6ff;--b3:#cff2ec;--sh:0 1px 2px rgba(20,30,60,.05),0 10px 30px rgba(20,30,60,.07);
+  --spring:cubic-bezier(.34,1.56,.64,1);--sheet:cubic-bezier(.32,.72,0,1)}
+@supports(transition-timing-function:linear(0,1)){:root{--spring:linear(0,.009,.035 2.1%,.141 4.4%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1)}}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#07080c;--solid:#1a1b22;--card:rgba(255,255,255,.075);--cardln:rgba(255,255,255,.1);--ink:#f5f5f7;--mute:#a3a3ac;--line:rgba(255,255,255,.11);
+  --glass:rgba(28,30,40,.6);--glassln:rgba(255,255,255,.12);--fill:rgba(255,255,255,.09);--seg:rgba(255,255,255,.1);--thumb:rgba(255,255,255,.2);
+  --ac:#2f8bff;--ac2:#67a9ff;--soft:rgba(47,139,255,.2);--acink:#7db6ff;
+  --g:#5ee08c;--g2:rgba(60,210,110,.16);--r:#ff7b70;--r2:rgba(255,90,80,.16);--am:rgba(250,190,40,.13);
+  --b1:#10306a;--b2:#1a1f4f;--b3:#0b3a3f;--sh:0 10px 30px rgba(0,0,0,.35)}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,"Noto Sans Devanagari",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.35;padding-bottom:110px;-webkit-font-smoothing:antialiased;letter-spacing:-.006em}
+:lang(hi) body,:lang(hi) *{letter-spacing:0!important}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(60% 34% at 10% 6%,var(--b1),transparent 70%),radial-gradient(55% 32% at 96% 30%,var(--b2),transparent 70%),radial-gradient(60% 34% at 18% 88%,var(--b3),transparent 70%)}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;touch-action:manipulation;transition:transform .32s var(--spring),background-color .2s,color .2s,opacity .2s}
+button:active{transform:scale(.95)}
+input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.narrow{max-width:560px;margin:0 auto}
+header{background:var(--glass);border-bottom:.5px solid var(--line);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);padding:calc(10px + env(safe-area-inset-top)) 0 10px;position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:8px}
+.logo{font-weight:700;font-size:20px;flex:1;letter-spacing:-.025em;white-space:nowrap}.logo span{color:var(--ac)}.logo small{font-size:14px;font-weight:500;color:var(--mute);letter-spacing:0}
+.ib{width:36px;height:36px;border-radius:50%;background:var(--fill);display:grid;place-items:center;position:relative;flex:none}
+.ib svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lang{font-size:14px;font-weight:600;color:var(--acink)}
+.dot{position:absolute;top:-3px;right:-3px;background:var(--r);color:#fff;font-size:10px;font-weight:600;min-width:16px;height:16px;border-radius:8px;display:none;place-items:center;padding:0 3px}
+.demo{background:var(--am);font-size:12.5px;padding:7px 12px;text-align:center}
+.btn{background:var(--ac);color:#fff;padding:10px 17px;border-radius:13px;font-weight:600}
+.btn.ghost{background:var(--fill);color:var(--ink)}.btn.red{background:var(--r2);color:var(--r)}
+.btn:disabled{opacity:.5}
+.tiny{padding:6px 11px;border-radius:10px;font-size:13px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--seg);border-radius:13px;padding:3px;position:relative;margin-top:14px}
+.tabs button{padding:9px 4px;border-radius:10px;font-weight:550;color:var(--mute);position:relative;z-index:1}
+.tabs button.on{background:var(--thumb);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+@supports selector(:has(a)){
+  .tabs:before{content:"";position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--thumb);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.14);transition:transform .5s var(--spring)}
+  .tabs:has(button:last-child.on):before{transform:translateX(100%)}
+  .tabs button.on{background:none;box-shadow:none}}
+.vin{animation:rideIn .5s var(--spring) backwards}
+@keyframes rideIn{from{opacity:0;transform:translateY(14px) scale(.97)}}
+h2{font-size:13px;color:var(--mute);font-weight:500;margin:20px 4px 8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.k,.card,.gate{background:var(--card);border:.5px solid var(--cardln);box-shadow:var(--sh)}
+.k{border-radius:18px;padding:12px 14px}
+.k b{display:block;font-size:25px;line-height:1.2;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.k small{color:var(--mute);font-size:12px}
+.k.hl{background:var(--g2)}.k.hl b{color:var(--g)}
+.card{border-radius:20px;padding:14px;margin-top:10px;overflow:auto}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:16px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:14px}
+.bar i{display:block;width:100%;background:var(--ac);border-radius:5px 5px 0 0;min-height:2px}
+.bar i.c{background:var(--r);opacity:.55}
+.bar em{font-style:normal;font-size:10px;color:var(--mute);margin-top:4px;white-space:nowrap}
+.bar span{font-size:10px;font-weight:600;margin-bottom:2px}
+.legend{font-size:12px;color:var(--mute);margin-top:8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin:0 4px 0 10px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:.5px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--solid)}
+td a{color:var(--acink)}
+.tag{display:inline-block;padding:1px 8px;border-radius:8px;font-size:11.5px;font-weight:600}
+.t-ok{background:var(--g2);color:var(--g)}.t-x{background:var(--r2);color:var(--r)}.t-up{background:var(--soft);color:var(--acink)}.t-solo{background:var(--fill);color:var(--mute)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.note{color:var(--mute);font-size:13px;line-height:1.5;margin-top:8px}
+select.pick{background:var(--fill);border:0;border-radius:10px;padding:7px 10px;font-weight:550}
+select.pick option,select.fld option{color:#111}
+.gate{max-width:420px;margin:60px auto;border-radius:28px;padding:24px;text-align:center;animation:rideIn .7s var(--spring) backwards}
+.gate h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}.gate p{color:var(--mute);margin-bottom:16px;line-height:1.45}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.split>div{min-width:0}@media(max-width:700px){.split{grid-template-columns:1fr}}
+/* Arcus editor */
+.shopg{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.shopg label{display:block;min-width:0}.shopg .lbl{display:block}
+.set{display:flex;align-items:center;gap:12px}
+.set .st{flex:1;min-width:0}.set .st b{font-weight:600}.set .st small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+.sw{width:51px;height:31px;border-radius:16px;background:var(--seg);position:relative;flex:none;transition:background-color .25s}
+.sw:after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;transition:transform .42s var(--spring);box-shadow:0 2px 5px rgba(0,0,0,.25)}
+.sw.on{background:#2fbf5b}.sw.on:after{transform:translateX(20px)}
+.sw:active{transform:none}
+.ch{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.ch .cn{flex:1;min-width:0;font-weight:650;font-size:16px;overflow-wrap:anywhere}.ch .cn small{display:block;font-weight:400;font-size:13px;color:var(--mute)}
+.ei{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:.5px solid var(--line)}
+.ei .en{flex:1;min-width:0;overflow-wrap:anywhere}.ei .en b{font-weight:500}.ei .en small{display:block;color:var(--mute);font-size:13px;margin-top:1px}.ei .en em{font-style:normal;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+.ei.off .en b{color:var(--mute)}
+.addi{width:100%;margin-top:4px}
+.vm{flex:none;width:16px;height:16px;border:1.5px solid #14803c;border-radius:3px;background:#fff;display:grid;place-items:center}
+.vm:after{content:"";width:8px;height:8px;border-radius:50%;background:#14803c}
+.vm.nv{border-color:#7a3e12}
+.vm.nv:after{width:0;height:0;border-radius:0;background:none;border:4.5px solid transparent;border-top:0;border-bottom:8px solid #7a3e12}
+.empty{text-align:center;color:var(--mute);padding:22px 12px}.empty div{font-size:34px;margin-bottom:6px}
+.savebar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100% - 32px);max-width:528px;display:none;align-items:center;gap:8px;padding:10px 10px 10px 16px;border-radius:18px;background:var(--glass);border:.5px solid var(--glassln);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:0 12px 34px rgba(0,0,0,.2);z-index:6;animation:barIn .5s var(--spring)}
+.savebar.show{display:flex}.savebar span{flex:1;font-size:13.5px;font-weight:550;line-height:1.25}
+@keyframes barIn{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translateX(-50%)}}
+/* sheets, fields, toast: same as the app */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:20;display:flex;align-items:flex-end;justify-content:center;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .22s,visibility 0s .3s}
+.ov.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .25s}
+.sheet{background:var(--glass);border:.5px solid var(--glassln);border-bottom:0;-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,1,1);box-shadow:0 -10px 40px rgba(0,0,0,.14)}
+.ov.show .sheet{transform:none;transition:transform .5s var(--sheet)}
+.sheet h3{font-size:21px;font-weight:700;letter-spacing:-.02em;margin-bottom:12px;display:flex;align-items:center;gap:10px}.sheet h3 button{margin-left:auto;width:30px;height:30px;flex:none;border-radius:50%;background:var(--fill);font-size:13px;color:var(--mute)}
+.lbl{font-size:13px;color:var(--mute);margin:10px 0 6px;font-weight:500}
+.fld{width:100%;padding:13px 14px;border:.5px solid var(--line);background:var(--card);border-radius:13px;font-size:16px;transition:box-shadow .2s;appearance:none;-webkit-appearance:none}
+.fld:focus{outline:0;box-shadow:0 0 0 3px var(--soft),0 0 0 1px var(--ac)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:9px 15px;border-radius:99px;background:var(--fill);font-weight:550;display:inline-flex;align-items:center;gap:7px}
+.chip.on{background:var(--soft);color:var(--acink);box-shadow:inset 0 0 0 1.5px var(--ac)}
+.row{display:flex;gap:8px;margin-top:16px}.row .btn{flex:1;padding:14px}
+.toast{position:fixed;top:calc(66px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;background:var(--glass);border:.5px solid var(--glassln);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);font-weight:500;padding:11px 18px;border-radius:18px;box-shadow:0 12px 34px rgba(0,0,0,.18);z-index:30;font-size:14px;max-width:90%;text-align:center;display:none;animation:toastIn .5s var(--spring)}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-14px) scale(.94)}to{opacity:1;transform:translateX(-50%)}}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--fill);border-radius:12px;padding:10px;max-height:45vh;overflow:auto;white-space:pre-wrap}
+.log .e{color:var(--r)}.log .w{color:#b7791f}.log .i{color:var(--mute)}
+/* phones that struggle: solid colour instead of live blur */
+html.lowfx header,html.lowfx .sheet,html.lowfx .toast,html.lowfx .savebar{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--solid)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){header,.sheet,.toast,.savebar{background:var(--solid)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.sheet h2{font-size:21px;font-weight:700;letter-spacing:-.02em;margin-bottom:12px;display:flex;align-items:center;gap:10px}.sheet h2 button{margin-left:auto;width:30px;height:30px;flex:none;border-radius:50%;background:var(--fill);font-size:13px}
+/* Handler screen */
+main.h{max-width:560px;margin:0 auto;padding:0 16px calc(40px + env(safe-area-inset-bottom))}
+#gate{max-width:420px;margin:48px auto 0;padding:0 16px}
+#gate h1{font-size:26px;font-weight:700;letter-spacing:-.025em;margin-bottom:4px}
+.hchips{display:flex;gap:7px;margin:6px 0 4px}
+.hchip{flex:1;padding:11px;border-radius:13px;background:var(--fill);font-weight:600}
+.hchip.on{background:var(--ac);color:#fff}
+.hstat{display:flex;align-items:center;gap:10px;margin-top:14px}
+.hstat .hs{flex:1;min-width:0}.hstat b{font-weight:650;font-size:16px}.hstat small{display:block;color:var(--mute);font-size:13px;margin-top:1px}
+.hnum{text-align:right;flex:none}.hnum b{display:block;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}.hnum small{color:var(--mute);font-size:12px}
+.hban{margin-top:10px;background:var(--am);border-radius:14px;padding:11px 13px;font-size:14px;font-weight:500}
+.hsound{display:block;width:100%;margin-top:10px;background:var(--soft);color:var(--acink);border-radius:14px;padding:12px;font-weight:600}
+.htabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:12px;background:var(--seg);padding:3px;border-radius:13px}
+.htabs button{padding:9px;border-radius:10px;font-weight:600;color:var(--mute)}
+.htabs button.on{background:var(--thumb);color:var(--ink)}
+.oc{background:var(--card);border:.5px solid var(--cardln);box-shadow:var(--sh);border-radius:20px;padding:14px;margin-top:12px;animation:ocIn .5s var(--spring) backwards}
+@keyframes ocIn{from{opacity:0;transform:translateY(10px) scale(.98)}}
+.oc.isnew{border:2px solid var(--ac)}
+.oc .t{display:flex;align-items:center;gap:8px}
+.oc .no{font-size:24px;font-weight:750;font-variant-numeric:tabular-nums;flex:1}
+.oc .age{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.pill{background:var(--soft);color:var(--acink);border-radius:99px;padding:4px 10px;font-size:12.5px;font-weight:600}
+.tag{display:inline-block;margin-top:6px;background:var(--am);border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:600}
+.who{display:flex;align-items:center;gap:8px;margin-top:7px;font-weight:500;overflow-wrap:anywhere}.who span{flex:1;min-width:0}
+.call{background:var(--g2);color:var(--g);padding:8px 13px;border-radius:99px;font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap}
+.its{margin-top:9px;border-top:.5px solid var(--line);padding-top:8px}
+.its div{display:flex;gap:8px;padding:3px 0;font-size:16px;overflow-wrap:anywhere}.its b{font-weight:700;min-width:30px;font-variant-numeric:tabular-nums}
+.onote{margin-top:6px;background:var(--fill);border-radius:11px;padding:8px 10px;font-size:14px;overflow-wrap:anywhere}
+.otot{margin-top:7px;font-weight:650}
+.big{display:block;width:100%;margin-top:11px;background:var(--ac);color:#fff;border-radius:15px;padding:17px;font-size:18px;font-weight:700}
+.big.armed{background:var(--g);color:#fff}
+.big:disabled{opacity:.5}
+.cx{display:block;width:100%;margin-top:6px;padding:9px;color:var(--r);font-weight:600;font-size:14px}
+.hempty{text-align:center;color:var(--mute);padding:34px 12px;margin-top:12px}.hempty div{font-size:34px;margin-bottom:6px}
+.scat{margin:16px 4px 6px;font-weight:650}
+.si{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:.5px solid var(--line)}.si:first-child{border-top:0}
+.si .n{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:500}.si .n small{display:block;font-weight:400;color:var(--mute);font-size:12.5px}
+.si.off .n{color:var(--mute)}
+#hLog{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--fill);border-radius:12px;padding:10px;max-height:40vh;overflow:auto;white-space:pre-wrap;margin-top:8px}
+.hrow{padding:12px 0;border-top:.5px solid var(--line)}.hrow:first-of-type{border-top:0}
+.hrow b{font-weight:600}.hrow small{display:block;color:var(--mute);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="logo">Arcus <small data-t="Handler|हैंडलर"></small></div>
+  <button class="ib lang" id="bLang" aria-label="Switch language / भाषा बदलें">हि</button>
+  <button class="ib" id="bMore" data-al="Settings and issue log|सेटिंग और समस्या लॉग" style="display:none"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="dot" id="logDot"></span></button>
+</div></header>
+<div class="demo" id="demoBar" style="display:none" data-t="Test copy: nothing here reaches real students.|टेस्ट कॉपी: यहाँ से कुछ भी असली छात्रों तक नहीं जाता।"></div>
+
+<section id="gate" style="display:none">
+  <h1 data-t="Handler login|हैंडलर लॉगिन"></h1>
+  <p class="note" data-t="Choose your shift and enter your password.|अपनी शिफ़्ट चुनें और पासवर्ड डालें।"></p>
+  <div class="hchips" role="group" id="gShift">
+    <button class="hchip on" data-shift="day" data-t="Day|दिन"></button>
+    <button class="hchip" data-shift="night" data-t="Night|रात"></button>
+  </div>
+  <input class="fld" type="password" id="gPass" autocomplete="current-password" style="margin-top:10px" data-ph="Password|पासवर्ड" data-al="Password|पासवर्ड">
+  <p class="note" id="gMsg" style="color:var(--r);min-height:20px;margin-top:6px"></p>
+  <div class="row" style="margin-top:6px"><button class="btn" id="gGo" data-t="Log in|लॉग इन"></button></div>
+</section>
+
+<main class="h" id="app" style="display:none">
+  <div class="hstat"><div class="hs" id="hShift"></div><div class="hnum"><b id="hToday">–</b><small data-t="orders today|आज के ऑर्डर"></small></div></div>
+  <div id="hBan"></div>
+  <button class="hsound" id="bSound" style="display:none" data-t="🔔 Tap to turn on order sound|🔔 ऑर्डर की आवाज़ चालू करने के लिए दबाएँ"></button>
+  <div class="htabs" role="tablist"><button class="on" data-tab="orders" role="tab" id="tOrders"></button><button data-tab="stock" role="tab" data-t="Stock|स्टॉक"></button></div>
+  <div id="vOrders"></div>
+  <div id="vStock" style="display:none"></div>
+</main>
+
+<div class="ov" id="ovCancel" role="dialog" aria-labelledby="cTitle"><div class="sheet">
+  <h2><span id="cTitle"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div class="lbl" data-t="Why are you cancelling?|रद्द क्यों कर रहे हैं?"></div>
+  <div class="hchips" id="cWhy" style="flex-wrap:wrap"></div>
+  <div class="row"><button class="btn ghost" data-close data-t="Keep order|ऑर्डर रखें"></button><button class="btn red" id="bCancel" data-t="Cancel order|ऑर्डर रद्द करें"></button></div>
+</div></div>
+
+<div class="ov" id="ovMore" role="dialog" aria-labelledby="mTitle"><div class="sheet">
+  <h2><span id="mTitle" data-t="Settings|सेटिंग"></span><button data-close data-al="Close|बंद करें">✕</button></h2>
+  <div class="hrow"><b data-t="Alerts when this screen is closed|स्क्रीन बंद होने पर अलर्ट"></b><small id="mNtfy"></small></div>
+  <div class="hrow"><b id="mWho"></b><button class="btn ghost tiny" id="bOut" style="margin-top:7px" data-t="Log out|लॉग आउट"></button></div>
+  <div class="hrow"><b data-t="🐞 Issue log|🐞 समस्या लॉग"></b><small id="mVer"></small><div id="hLog"></div></div>
+</div></div>
+
+<div class="toast" id="toast" role="status" aria-live="assertive"></div>
+
+<script type="module">
+const FIREBASE = {
+  apiKey: "AIzaSyBPiSMuocTscBJv8u5Kv2JNoLnox4AjQn4",
+  authDomain: "autopool-93a9d.firebaseapp.com",
+  projectId: "autopool-93a9d",
+  storageBucket: "autopool-93a9d.firebasestorage.app",
+  messagingSenderId: "38116180279",
+  appId: "1:38116180279:web:74aef14d8bbea665489ab2"
+};
+const APP_VERSION = "2026-11-04-a1";   // bump on every upload → open screens notice and refresh
+const LOGINS = { day: "arcus-day@autopool-93a9d.firebaseapp.com", night: "arcus-night@autopool-93a9d.firebaseapp.com" };
+const SHOP_DEFAULTS = { dayStart: "09:30", nightStart: "20:30", closeAt: "04:00", lastOrder: "03:45", dayPhone: "", nightPhone: "", dayTopic: "", nightTopic: "" };
+const OPEN = ["placed", "confirmed", "ready"];
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const readJSON = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
+
+/* ---- Language ---- */
+let lang = localStorage.getItem("ap_lang") || "en";
+const tr = (en, hi) => lang === "hi" ? hi : en;
+function applyStatic() {
+  document.documentElement.lang = lang;
+  const pick = v => v.split("|")[lang === "hi" ? 1 : 0] ?? v;
+  document.querySelectorAll("[data-t]").forEach(el => el.textContent = pick(el.dataset.t));
+  document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = pick(el.dataset.ph));
+  document.querySelectorAll("[data-al]").forEach(el => { el.setAttribute("aria-label", pick(el.dataset.al)); el.title = pick(el.dataset.al); });
+  $("#bLang").textContent = lang === "hi" ? "EN" : "हि";
+}
+$("#bLang").onclick = () => { lang = lang === "hi" ? "en" : "hi"; localStorage.setItem("ap_lang", lang); applyStatic(); drawAll(); };
+
+/* ---- Issue log: this phone only ---- */
+let logs = readJSON("ap_handler_log") || [];
+function log(level, msg) {
+  logs.unshift(`[${new Date().toLocaleString("en-IN")}] ${level.toUpperCase()} ${msg}`); logs = logs.slice(0, 150);
+  try { localStorage.setItem("ap_handler_log", JSON.stringify(logs)); } catch (e) {}
+  if (level === "e") $("#logDot").style.display = "grid";
+  if (level !== "i") console.warn(msg);
+}
+addEventListener("error", e => log("e", "Page error: " + e.message));
+addEventListener("unhandledrejection", e => log("e", "Page error: " + (e.reason?.message || e.reason)));
+function toast(t, ms = 3000) { const el = $("#toast"); el.textContent = t; el.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = "none", ms); }
+const closeSheets = () => document.querySelectorAll(".ov").forEach(o => o.classList.remove("show"));
+const openSheet = id => $(id).classList.add("show");
+document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o || e.target.closest("[data-close]")) closeSheets(); }));
+
+/* ---- Where the data lives: Firebase, or this browser in a test copy ---- */
+function firebaseStore(fs, db) {
+  const col = fs.collection(db, "arcusOrders"), cRef = fs.doc(db, "arcus", "counts"), stockRef = fs.doc(db, "arcus", "stock");
+  const ms = t => t?.toMillis ? t.toMillis() : (+t || Date.now());
+  return {
+    watchOpen(cb, onErr) {   // only open orders, so a long history never costs reads
+      return fs.onSnapshot(fs.query(col, fs.where("status", "in", OPEN)), s => cb(s.docs.map(d => { const x = d.data(); return { ...x, id: d.id, createdAt: ms(x.createdAt), statusAt: ms(x.statusAt) }; })), onErr);
+    },
+    async todayCount(since) { return (await fs.getCountFromServer(fs.query(col, fs.where("createdAt", ">=", fs.Timestamp.fromMillis(since))))).data().count; },
+    watchShop(cb, onErr) { return fs.onSnapshot(fs.doc(db, "arcus", "shop"), s => cb(s.exists() ? s.data() : null), onErr); },
+    watchMenu(cb, onErr) { return fs.onSnapshot(fs.doc(db, "arcus", "menu"), s => cb(s.exists() ? s.data() : null), onErr); },
+    watchStock(cb, onErr) { return fs.onSnapshot(fs.doc(db, "arcus", "stock"), s => cb(s.exists() ? s.data().out || [] : []), onErr); },
+    async setOut(id, out) { await fs.setDoc(stockRef, { out: out ? fs.arrayUnion(id) : fs.arrayRemove(id), updatedAt: Date.now() }, { merge: true }); },
+    // The order, the overall numbers and the student's open list change together, or not at all.
+    async move(o, to, reason) {
+      const oRef = fs.doc(db, "arcusOrders", o.id), mRef = fs.doc(db, "arcusMine", o.uid);
+      await fs.runTransaction(db, async tx => {
+        const cur = await tx.get(oRef), cn = await tx.get(cRef), mine = await tx.get(mRef);
+        if (!cur.exists() || cur.data().status !== o.status) throw new Error("order-moved");
+        const c = stepCounts(cn.exists() ? cn.data() : {}, o.status, to);
+        tx.update(oRef, { status: to, statusAt: fs.serverTimestamp(), ...(reason ? { cancelReason: reason, cancelledBy: "handler" } : {}) });
+        tx.set(cRef, { ...c, lastOrder: o.id });
+        if (to === "done" || to === "cancelled") tx.set(mRef, { open: (mine.exists() ? mine.data().open || [] : []).filter(x => x !== o.id), lastOrder: o.id });
+      });
+    }
+  };
+}
+function stepCounts(c, from, to) {
+  const n = { placed: c.placed || 0, confirmed: c.confirmed || 0, ready: c.ready || 0 };
+  if (n[from] !== undefined) n[from] = Math.max(0, n[from] - 1);
+  if (n[to] !== undefined) n[to]++;
+  return n;
+}
+function testStore() {   // only used when FIREBASE is null, in a test copy of this page
+  const watch = (key, send) => { const on = e => { if (!e.key || e.key === key) send(); }; addEventListener("storage", on); send(); return () => removeEventListener("storage", on); };
+  const write = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); dispatchEvent(new StorageEvent("storage", { key: k })); };
+  return {
+    watchOpen(cb) { return watch("ap_demo_orders", () => cb(Object.values(readJSON("ap_demo_orders") || {}).filter(o => OPEN.includes(o.status)))); },
+    async todayCount(since) { return Object.values(readJSON("ap_demo_orders") || {}).filter(o => o.createdAt >= since).length; },
+    watchShop(cb) { return watch("ap_demo_arcus_shop", () => cb(readJSON("ap_demo_arcus_shop"))); },
+    watchMenu(cb) { return watch("ap_demo_arcus_menu", () => cb(readJSON("ap_demo_arcus_menu"))); },
+    watchStock(cb) { return watch("ap_demo_arcus_stock", () => cb(readJSON("ap_demo_arcus_stock")?.out || [])); },
+    async setOut(id, out) { const cur = (readJSON("ap_demo_arcus_stock")?.out || []).filter(x => x !== id); write("ap_demo_arcus_stock", { out: out ? [...cur, id] : cur }); },
+    async move(o, to, reason) {
+      const all = readJSON("ap_demo_orders") || {}, cur = all[o.id];
+      if (!cur || cur.status !== o.status) throw new Error("order-moved");
+      write("ap_demo_arcus_counts", stepCounts(readJSON("ap_demo_arcus_counts") || {}, o.status, to));
+      if (to === "done" || to === "cancelled") write("ap_demo_mine", { open: (readJSON("ap_demo_mine")?.open || []).filter(x => x !== o.id) });
+      write("ap_demo_orders", { ...all, [o.id]: { ...cur, status: to, statusAt: Date.now(), ...(reason ? { cancelReason: reason, cancelledBy: "handler" } : {}) } });
+    }
+  };
+}
+
+/* ---- Shifts: always India time ---- */
+let shop = { ...SHOP_DEFAULTS, ...readJSON("ap_arcus_shop") };
+const toMin = s => { const [h, m] = String(s).split(":").map(Number); return h * 60 + m; };
+const to12 = s => { const [h, m] = String(s).split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+const istMin = (now = Date.now()) => Math.floor((now + 330 * 60000) / 60000) % 1440;
+function shiftNow() {
+  const t = istMin(), night = toMin(shop.nightStart);
+  if (t >= toMin(shop.dayStart) && t < night) return "day";
+  return (t - night + 1440) % 1440 < (toMin(shop.closeAt) - night + 1440) % 1440 ? "night" : null;
+}
+// "Today" starts when the day shift starts, so a night shift running past midnight stays in one day.
+function todayStart(now = Date.now()) { return now - ((istMin(now) - toMin(shop.dayStart) + 1440) % 1440) * 60000 - now % 60000; }
+const shiftName = s => s === "day" ? tr("Day shift", "दिन की शिफ़्ट") : tr("Night shift", "रात की शिफ़्ट");
+
+/* ---- State ---- */
+let store = null, myShift = null, orders = [], seen = null, moving = new Set(), armed = null, armT = null, tab = "orders";
+let menu = null, outIds = [], menuUnsub = null, stockUnsub = null, unsubs = [], today = null, cancelling = null, cancelWhy = "", ringT = null;
+const REASONS = [["Item ran out", "आइटम ख़त्म हो गया"], ["Closing now", "अभी बंद हो रहा है"], ["Student didn't come", "छात्र नहीं आया"], ["Something else", "कुछ और"]];
+const STEP = { placed: { to: "confirmed", en: "Confirm order", hi: "ऑर्डर पक्का करें" }, confirmed: { to: "ready", en: "Mark ready", hi: "तैयार है" }, ready: { to: "done", en: "Picked up, done", hi: "ले गया, पूरा" } };
+const NAMES = { placed: ["New", "नया"], confirmed: ["Making", "बन रहा है"], ready: ["Ready", "तैयार"] };
+
+/* ---- Sound and vibration. Phones only allow sound after a tap, so the first tap unlocks it ---- */
+let audio = null;
+function unlockSound() {
+  try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume?.(); } catch (e) { log("w", "Sound unavailable: " + e.message); }
+  setTimeout(drawSound, 150);
+}
+function drawSound() { $("#bSound").style.display = audio && audio.state === "running" ? "none" : "block"; }
+function ring() {
+  navigator.vibrate?.([300, 120, 300, 120, 300]);
+  if (!audio || audio.state !== "running") return;
+  try {
+    [[880, 0], [1175, .18], [880, .36], [1175, .54]].forEach(([f, at]) => {
+      const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime + at;
+      o.frequency.value = f; o.type = "triangle"; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.9, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .17);
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + .18);
+    });
+  } catch (e) { log("w", "Sound failed: " + e.message); }
+}
+const shouldRing = () => { const s = shiftNow(); return !s || s === myShift; };   // the off-shift handler's phone stays quiet
+function syncRing() {   // keeps ringing every 20 seconds until new orders are confirmed
+  clearInterval(ringT); ringT = null;
+  if (orders.some(o => o.status === "placed") && shouldRing()) ringT = setInterval(() => { if (shouldRing()) ring(); }, 20000);
+}
+addEventListener("pointerdown", unlockSound);
+$("#bSound").onclick = () => { unlockSound(); setTimeout(() => { if (audio?.state === "running") ring(); }, 200); };
+let wake = null;
+async function keepAwake() { try { if (document.visibilityState === "visible" && navigator.wakeLock && !wake) { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => wake = null); } } catch (e) { log("i", "Screen stay-awake unavailable: " + e.message); } }
+document.addEventListener("visibilitychange", keepAwake);
+
+/* ---- Drawing ---- */
+function drawTop() {
+  const s = shiftNow(), mine = s === myShift;
+  $("#hShift").innerHTML = s ? `<b>${esc(shiftName(s))}</b><small>${s === "day" ? tr(`Until ${to12(shop.nightStart)}`, `${to12(shop.nightStart)} तक`) : tr(`Last orders ${to12(shop.lastOrder)} · closes ${to12(shop.closeAt)}`, `आख़िरी ऑर्डर ${to12(shop.lastOrder)} · ${to12(shop.closeAt)} पर बंद`)}</small>`
+    : `<b>${tr("Arcus is closed", "Arcus बंद है")}</b><small>${tr(`Opens ${to12(shop.dayStart)}`, `${to12(shop.dayStart)} पर खुलेगा`)}</small>`;
+  $("#hToday").textContent = today ?? "–";
+  $("#tOrders").textContent = tr("Orders", "ऑर्डर") + (orders.length ? ` (${orders.length})` : "");
+  const old = orders.filter(o => o.shift !== s), msgs = [];
+  if (s && !mine) msgs.push(tr(`You're logged in as ${shiftName(myShift).toLowerCase()}. The ${shiftName(s).toLowerCase()} is on now, so this phone stays quiet.`, `आप ${shiftName(myShift)} से लॉग इन हैं। अभी ${shiftName(s)} चल रही है, इसलिए यह फ़ोन चुप रहेगा।`));
+  if (old.length && s) msgs.push(tr(`${old.length} open order${old.length > 1 ? "s" : ""} passed on from the ${shiftName(s === "day" ? "night" : "day").toLowerCase()}. The ${shiftName(s).toLowerCase()} handles them now.`, `${shiftName(s === "day" ? "night" : "day")} से ${old.length} खुले ऑर्डर आए हैं। अब ${shiftName(s)} इन्हें देखेगी।`));
+  if (!s && orders.length) msgs.push(tr(`Arcus is closed, but ${orders.length} order${orders.length > 1 ? "s are" : " is"} still open.`, `Arcus बंद है, पर ${orders.length} ऑर्डर अभी खुले हैं।`));
+  $("#hBan").innerHTML = msgs.map(m => `<div class="hban">${esc(m)}</div>`).join("");
+}
+function drawOrders() {
+  const list = [...orders].sort((a, b) => OPEN.indexOf(a.status) - OPEN.indexOf(b.status) || a.createdAt - b.createdAt), s = shiftNow();
+  $("#vOrders").innerHTML = !list.length ? `<div class="card hempty"><div aria-hidden="true">🍽️</div>${tr("No open orders right now.", "अभी कोई खुला ऑर्डर नहीं।")}</div>` : list.map(o => {
+    const st = STEP[o.status], age = Math.max(0, Math.floor((Date.now() - o.createdAt) / 60000)), isArmed = armed === o.id;
+    return `<div class="oc ${o.status === "placed" ? "isnew" : ""}" data-id="${esc(o.id)}"><div class="t"><span class="no">#${esc(o.code)}</span><span class="age">${tr(`${age} min`, `${age} मिनट`)}</span><span class="pill">${esc(tr(...NAMES[o.status]))}</span></div>
+      ${o.shift !== s ? `<span class="tag">${o.shift === "day" ? tr("from day shift", "दिन की शिफ़्ट से") : tr("from night shift", "रात की शिफ़्ट से")}</span>` : ""}
+      <div class="who"><span>${esc(o.name)}</span><a class="call" href="tel:${esc(o.phone)}">📞 ${tr("Call", "कॉल")}</a></div>
+      <div class="its">${(o.items || []).map(l => `<div><b>${esc(l.qty)} ×</b><span>${esc((lang === "hi" && l.hi) || l.en)}</span></div>`).join("")}</div>
+      ${o.note ? `<div class="onote">📝 ${esc(o.note)}</div>` : ""}
+      <div class="otot">₹${esc(o.total)} · ${tr("collect at counter", "काउंटर पर लें")}</div>
+      <button class="big ${isArmed ? "armed" : ""}" data-go="${esc(o.id)}" ${moving.has(o.id) ? "disabled" : ""}>${isArmed ? tr("Tap again to finish", "पूरा करने के लिए फिर दबाएँ") : esc(tr(st.en, st.hi))}</button>
+      <button class="cx" data-stop="${esc(o.id)}" ${moving.has(o.id) ? "disabled" : ""}>${tr("Cancel order", "ऑर्डर रद्द करें")}</button></div>`;
+  }).join("");
+}
+function drawStock() {
+  const cats = Array.isArray(menu?.categories) ? menu.categories : [];
+  $("#vStock").innerHTML = !cats.length ? `<div class="card hempty"><div aria-hidden="true">🍽️</div>${menu === null ? tr("Loading the menu…", "मेन्यू आ रहा है…") : tr("The menu is empty.", "मेन्यू ख़ाली है।")}</div>`
+    : cats.map(c => `<div class="scat">${esc((lang === "hi" && c.hi) || c.en)}</div><div class="card" style="margin-top:0;padding:2px 14px">${(c.items || []).map(it => {
+        const locked = it.inStock === false, out = locked || outIds.includes(it.id), nm = esc((lang === "hi" && it.hi) || it.en);
+        return `<div class="si ${out ? "off" : ""}"><span class="n">${nm}<small>₹${esc(it.price)}${locked ? " · " + tr("switched off by Mishu", "Mishu ने बंद किया") : out ? " · " + tr("out of stock", "स्टॉक में नहीं") : ""}</small></span><button class="sw ${out ? "" : "on"}" role="switch" aria-checked="${!out}" aria-label="${tr("In stock", "स्टॉक में")}: ${nm}" data-stock="${esc(it.id)}" ${locked ? "disabled style=opacity:.4" : ""}></button></div>`;
+      }).join("")}</div>`).join("");
+}
+function drawMore() {
+  const t = myShift === "day" ? shop.dayTopic : shop.nightTopic;
+  $("#mNtfy").innerHTML = t ? tr(`Install the free ntfy app, tap +, and subscribe to: <b>${esc(t)}</b>`, `मुफ़्त ntfy ऐप इंस्टॉल करें, + दबाएँ और यह जोड़ें: <b>${esc(t)}</b>`) : tr("Mishu hasn't set up this shift's alert channel yet.", "Mishu ने इस शिफ़्ट का अलर्ट चैनल अभी नहीं बनाया।");
+  $("#mWho").textContent = tr("Logged in: ", "लॉग इन: ") + shiftName(myShift);
+  $("#mVer").textContent = APP_VERSION;
+  $("#hLog").textContent = logs.join("\n") || tr("Nothing yet.", "अभी कुछ नहीं।");
+}
+function drawAll() { if (!store || !myShift) return; drawTop(); drawOrders(); drawStock(); drawMore(); }
+
+/* ---- Moving orders ---- */
+async function moveOrder(o, to, reason) {
+  moving.add(o.id); drawOrders();
+  try {
+    await store.move(o, to, reason);
+    log("i", `Order #${o.code}: ${o.status} → ${to}`);
+    if (to === "done") toast(tr(`#${o.code} done`, `#${o.code} पूरा`));
+    if (to === "cancelled") toast(tr(`#${o.code} cancelled`, `#${o.code} रद्द`));
+  } catch (e) {
+    log(e.message === "order-moved" ? "w" : "e", `Order #${o.code} update failed: ${e.code || ""} ${e.message}`);
+    toast(e.message === "order-moved" ? tr("This order has just changed. Please check it again.", "यह ऑर्डर अभी बदला है। फिर देख लें।")
+      : e.code === "permission-denied" ? tr("Not allowed. Please tell Mishu.", "अनुमति नहीं है। Mishu को बताएँ।") : tr("Couldn't update. Check internet and tap again.", "अपडेट नहीं हुआ। इंटरनेट देखकर फिर दबाएँ।"), 4000);
+  } finally { moving.delete(o.id); drawOrders(); }
+}
+$("#vOrders").onclick = e => {
+  const go = e.target.closest("[data-go]"), stop = e.target.closest("[data-stop]");
+  if (stop) { cancelling = orders.find(o => o.id === stop.dataset.stop); if (!cancelling) return; cancelWhy = ""; $("#cTitle").textContent = tr("Cancel", "रद्द करें") + " #" + cancelling.code; drawWhy(); return openSheet("#ovCancel"); }
+  if (!go) return;
+  const o = orders.find(x => x.id === go.dataset.go); if (!o || moving.has(o.id)) return;
+  const to = STEP[o.status].to;
+  if (to === "done" && armed !== o.id) {   // finishing can't be undone, so it takes two taps
+    armed = o.id; clearTimeout(armT); armT = setTimeout(() => { armed = null; drawOrders(); }, 3500); return drawOrders();
+  }
+  armed = null; clearTimeout(armT); moveOrder(o, to);
+};
+function drawWhy() {
+  $("#cWhy").innerHTML = REASONS.map(r => `<button class="hchip ${cancelWhy === r[0] ? "on" : ""}" style="flex:1 1 45%" data-why="${esc(r[0])}">${esc(tr(r[0], r[1]))}</button>`).join("");
+  $("#bCancel").disabled = !cancelWhy;
+}
+$("#cWhy").onclick = e => { const b = e.target.closest("[data-why]"); if (b) { cancelWhy = b.dataset.why; drawWhy(); } };
+$("#bCancel").onclick = () => { if (!cancelling || !cancelWhy) return; const o = cancelling; cancelling = null; closeSheets(); moveOrder(o, "cancelled", cancelWhy); };
+
+/* ---- Stock: one tap. The menu is only read while this tab is open ---- */
+document.querySelector(".htabs").onclick = e => {
+  const b = e.target.closest("[data-tab]"); if (!b) return;
+  tab = b.dataset.tab;
+  document.querySelectorAll(".htabs button").forEach(x => x.classList.toggle("on", x === b));
+  $("#vOrders").style.display = tab === "orders" ? "block" : "none"; $("#vStock").style.display = tab === "stock" ? "block" : "none";
+  syncStockWatch();
+};
+function syncStockWatch() {
+  const want = tab === "stock" && !document.hidden;
+  if (want && !menuUnsub) {
+    menuUnsub = store.watchMenu(m => { menu = m || { categories: [] }; drawStock(); }, e => { menuUnsub = null; log("e", "Menu failed: " + e.message); });
+    stockUnsub = store.watchStock(o => { outIds = o; drawStock(); }, e => { stockUnsub = null; log("e", "Stock failed: " + e.message); });
+  } else if (!want) { menuUnsub?.(); stockUnsub?.(); menuUnsub = stockUnsub = null; }
+}
+document.addEventListener("visibilitychange", () => { if (store && myShift) syncStockWatch(); });
+$("#vStock").onclick = async e => {
+  const b = e.target.closest("[data-stock]"); if (!b || b.disabled) return;
+  const id = b.dataset.stock, out = !outIds.includes(id);
+  outIds = out ? [...outIds, id] : outIds.filter(x => x !== id); drawStock();
+  try { await store.setOut(id, out); log("i", `Stock: ${id} ${out ? "out" : "back in"}`); }
+  catch (e) { log("e", "Stock change failed: " + (e.code || "") + " " + e.message); outIds = out ? outIds.filter(x => x !== id) : [...outIds, id]; drawStock(); toast(tr("Couldn't change stock. Check internet.", "स्टॉक नहीं बदला। इंटरनेट देखें।")); }
+};
+$("#bMore").onclick = () => { $("#logDot").style.display = "none"; drawMore(); openSheet("#ovMore"); };
+
+/* ---- Starting up after login ---- */
+async function refreshToday() {
+  try { today = await store.todayCount(todayStart()); drawTop(); } catch (e) { log("w", "Today's count failed: " + (e.code || "") + " " + e.message); }
+}
+function startApp(shift) {
+  myShift = shift;
+  $("#gate").style.display = "none"; $("#app").style.display = "block"; $("#bMore").style.display = "grid";
+  log("i", "Logged in: " + shift + ", version " + APP_VERSION);
+  drawSound(); keepAwake();
+  let countT = null;
+  unsubs.push(store.watchShop(d => { shop = { ...SHOP_DEFAULTS, ...d }; drawAll(); refreshToday(); }, e => log("e", "Hours failed: " + e.message)));
+  unsubs.push(store.watchOpen(list => {
+    const ids = new Set(list.map(o => o.id)), fresh = seen ? list.filter(o => !seen.has(o.id) && o.status === "placed") : list.filter(o => o.status === "placed");
+    seen = ids; orders = list;
+    if (fresh.length) { log("i", `New order: ${fresh.map(o => "#" + o.code).join(", ")}`); if (shouldRing()) ring(); }
+    syncRing(); drawTop(); drawOrders();
+    clearTimeout(countT); countT = setTimeout(refreshToday, 2500);
+  }, e => { log("e", "Live orders failed: " + (e.code || "") + " " + e.message); toast(tr("Can't load orders. Check internet.", "ऑर्डर नहीं आ रहे। इंटरनेट देखें।"), 5000); }));
+  drawAll();
+  setInterval(() => { if (!armed && !moving.size) drawOrders(); drawTop(); syncRingQuiet(); }, 30000);
+  setInterval(checkUpdate, 5 * 60 * 1000);
+}
+function syncRingQuiet() { if (!!ringT !== (orders.some(o => o.status === "placed") && shouldRing())) syncRing(); }
+async function checkUpdate() {   // a newer version online: refresh, unless a sheet is open
+  if (!location.protocol.startsWith("http") || !navigator.onLine || document.querySelector(".ov.show")) return;
+  try {
+    const t = await (await fetch("arcus.html?v=" + Date.now(), { cache: "no-store" })).text(), v = (t.match(/APP_VERSION = "([^"]+)"/) || [])[1];
+    if (v && v !== APP_VERSION) { log("i", `Update found: ${v}`); location.reload(); }
+  } catch (e) { log("w", "Update check failed: " + e.message); }
+}
+function showGate(msg) { $("#app").style.display = "none"; $("#bMore").style.display = "none"; $("#gate").style.display = "block"; $("#gMsg").textContent = msg || ""; }
+let pick = localStorage.getItem("ap_handler_shift") === "night" ? "night" : "day";
+const drawPick = () => document.querySelectorAll("#gShift [data-shift]").forEach(b => b.classList.toggle("on", b.dataset.shift === pick));
+$("#gShift").onclick = e => { const b = e.target.closest("[data-shift]"); if (b) { pick = b.dataset.shift; localStorage.setItem("ap_handler_shift", pick); drawPick(); } };
+
+async function boot() {
+  applyStatic(); drawPick();
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(e => log("w", "Service worker failed: " + e.message));
+  if (!FIREBASE) { $("#demoBar").style.display = "block"; store = testStore(); log("i", "Test copy: no Firebase"); $("#bOut").style.display = "none"; return startApp(pick); }
+  try {
+    const V = "10.12.2";
+    const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+    const A = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+    const fs = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+    const app = initializeApp(FIREBASE, "handler");   // its own name, so it never replaces a student login on the same phone
+    const auth = A.getAuth(app), db = fs.getFirestore(app);
+    store = firebaseStore(fs, db);
+    $("#gGo").onclick = async () => {
+      const pass = $("#gPass").value; if (!pass) return showGate(tr("Enter your password.", "पासवर्ड डालें।"));
+      const b = $("#gGo"); b.disabled = true; $("#gMsg").textContent = "";
+      try { await A.signInWithEmailAndPassword(auth, LOGINS[pick], pass); $("#gPass").value = ""; }
+      catch (e) {
+        log("w", "Login failed: " + e.code);
+        showGate(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(e.code || "") ? tr("Wrong password for this shift.", "इस शिफ़्ट का पासवर्ड ग़लत है।") : tr("Couldn't log in. Check internet.", "लॉग इन नहीं हुआ। इंटरनेट देखें।"));
+      }
+      b.disabled = false;
+    };
+    $("#gPass").onkeydown = e => { if (e.key === "Enter") $("#gGo").click(); };
+    $("#bOut").onclick = async () => { await A.signOut(auth); location.reload(); };
+    let started = false;
+    A.onAuthStateChanged(auth, u => {
+      const shift = Object.keys(LOGINS).find(k => LOGINS[k] === u?.email);
+      if (shift && !started) { started = true; startApp(shift); }
+      else if (!u) showGate();
+    });
+  } catch (e) { log("e", "Firebase failed to load: " + e.message); showGate(tr("Couldn't load. Check internet and reopen.", "लोड नहीं हुआ। इंटरनेट देखकर फिर खोलें।")); }
+}
+boot();
+</script>
+</body>
+</html>

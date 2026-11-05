@@ -28,9 +28,10 @@ Suggest a new session when a new task or Arcus stage starts, because long sessio
 
 ## Files
 - `index.html`: the whole app (HTML, CSS and JS in one file). The settings block near the top is `window.AUTOPOOL_CONFIG`.
+- `arcus.html`: the handler screen for Arcus orders (installs as its own app via `arcus.webmanifest`). See `ARCUS_PLAN.md`.
 - `admin.html`: stats page (sign-ups, rides posted or cancelled, money saved, CSV downloads). Only `anantgarg419@gmail.com` can see it.
 - `sw.js` + `manifest.json` + `icon-*`: let the site install like an app and open offline.
-  - **Bump the cache version `V` in `sw.js` (currently "autopool-v6") whenever you change files**, or phones keep showing the old app.
+  - **Bump the cache version `V` in `sw.js` (currently "autopool-v7") whenever you change files**, or phones keep showing the old app.
 - `ARCUS_PLAN.md`: the brief for Arcus, the campus canteen ordering feature, and its stages. Read it before any Arcus work.
 - `firestore.rules`: the full security rules, to paste into the Firebase console. Keep it the same as the block in `SETUP.md`.
 - `SETUP.md`: the original go-live guide. Note that its Netlify hosting step is out of date: the app now runs on GitHub Pages.
@@ -53,7 +54,7 @@ Suggest a new session when a new task or Arcus stage starts, because long sessio
 ## Backend
 - Firebase project `autopool-93a9d` (Firestore + anonymous Auth). The web config in `index.html` is safe to be public. The Firestore security rules are what protect the data.
 - **Live rules:** the same as `firestore.rules` once published. The 5-rider limit is in them.
-- **Arcus records:** `arcus/settings` (`live` = the off switch; 1 read per app open) and `arcus/menu` (the whole menu as one record; read only while the Arcus tab is open). Stage 3 added `arcus/shop`, `arcus/counts`, `arcusOrders/{id}` and `arcusMine/{uid}`: see `ARCUS_PLAN.md`.
+- **Arcus records:** `arcus/settings` (`live` = the off switch; 1 read per app open) and `arcus/menu` (the whole menu as one record; read only while the Arcus tab is open). Later stages added `arcus/shop`, `arcus/counts`, `arcus/stock`, `arcusOrders/{id}` and `arcusMine/{uid}`: see `ARCUS_PLAN.md`.
 - `admin.html` signs in under its own Firebase app name ("admin"), so the Google login and the app's anonymous login on one phone don't replace each other.
   - Any new feature that adds data needs matching rule changes. Write out the new rules for Mishu to paste into the console, because Claude can't edit the console.
 
@@ -65,4 +66,4 @@ Suggest a new session when a new task or Arcus stage starts, because long sessio
 - **The admin page doesn't update itself:** reload `admin.html` before trusting the switch it shows.
 
 ## Status (Nov 2026)
-Live and in use. Arcus Stage 3 (ordering, switched off for students) is built. See `ARCUS_PLAN.md` for the next stages.
+Live and in use. Arcus Stage 4 (handler screen, switched off for students until Mishu flips it) is built. See `ARCUS_PLAN.md` for the next stages.

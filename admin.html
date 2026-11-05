@@ -203,6 +203,7 @@ html.lowfx header,html.lowfx .sheet,html.lowfx .toast,html.lowfx .savebar{-webki
         <label><span class="lbl" data-t="Day handler's phone|दिन के हैंडलर का फ़ोन"></span><input class="fld" type="tel" inputmode="numeric" maxlength="10" id="sDayPhone"></label>
         <label><span class="lbl" data-t="Night handler's phone|रात के हैंडलर का फ़ोन"></span><input class="fld" type="tel" inputmode="numeric" maxlength="10" id="sNightPhone"></label>
       </div>
+      <p class="note" id="shopTopics" style="margin-top:10px"></p>
       <div class="row"><button class="btn" id="bSaveShop" data-t="Save hours and phones|समय और फ़ोन सेव करें"></button></div>
     </div>
     <div id="editor"></div>
@@ -433,7 +434,10 @@ function sampleMenu() {   // placeholders only, until Mishu sends the real menu
 /* ---- Hours and handler phones: stored in Firestore, never in the code, because the repo is public ---- */
 const SHOP_DEFAULTS = { dayStart: "09:30", nightStart: "20:30", closeAt: "04:00", lastOrder: "03:45", dayPhone: "", nightPhone: "" };
 const SHOP_FIELDS = { dayStart: "#sDayStart", nightStart: "#sNightStart", closeAt: "#sCloseAt", lastOrder: "#sLastOrder", dayPhone: "#sDayPhone", nightPhone: "#sNightPhone" };
-function fillShop(d) { const v = { ...SHOP_DEFAULTS, ...d }; Object.entries(SHOP_FIELDS).forEach(([k, id]) => $(id).value = v[k] || ""); }
+let shopTopics = { dayTopic: "", nightTopic: "" };   // each shift's ntfy channel, made once with a hard-to-guess name
+const drawTopics = () => $("#shopTopics").innerHTML = shopTopics.dayTopic ? tr(`Handler screen: <a href="arcus.html">arcus.html</a><br>Day alerts: ${esc(shopTopics.dayTopic)}<br>Night alerts: ${esc(shopTopics.nightTopic)}`, `हैंडलर स्क्रीन: <a href="arcus.html">arcus.html</a><br>दिन के अलर्ट: ${esc(shopTopics.dayTopic)}<br>रात के अलर्ट: ${esc(shopTopics.nightTopic)}`) : tr("Saving creates an alert channel for each shift.", "सेव करने पर हर शिफ़्ट का अलर्ट चैनल बन जाएगा।");
+function fillShop(d) { const v = { ...SHOP_DEFAULTS, ...d }; Object.entries(SHOP_FIELDS).forEach(([k, id]) => $(id).value = v[k] || ""); shopTopics = { dayTopic: d?.dayTopic || "", nightTopic: d?.nightTopic || "" }; drawTopics(); }
+const newTopic = s => `arcus-${s}-` + [...crypto.getRandomValues(new Uint8Array(6))].map(x => x.toString(16).padStart(2, "0")).join("");
 function shopProblem(d) {
   const m = s => { const [h, i] = s.split(":").map(Number); return h * 60 + i; }, after = s => (m(s) - m(d.nightStart) + 1440) % 1440;
   if (["dayStart", "nightStart", "closeAt", "lastOrder"].some(k => !/^[0-2]\d:[0-5]\d$/.test(d[k]))) return tr("Please fill in all four times.", "चारों समय भरें।");
@@ -446,8 +450,9 @@ function shopProblem(d) {
 $("#bSaveShop").onclick = async () => {
   const d = {}; Object.entries(SHOP_FIELDS).forEach(([k, id]) => d[k] = $(id).value.trim());
   const bad = shopProblem(d); if (bad) return toast(bad);
+  d.dayTopic = shopTopics.dayTopic || newTopic("day"); d.nightTopic = shopTopics.nightTopic || newTopic("night");
   const b = $("#bSaveShop"); b.disabled = true;
-  try { await store.saveShop(d); log("i", "Arcus hours and phones saved"); toast(tr("Saved", "सेव हो गया")); }
+  try { await store.saveShop(d); shopTopics = { dayTopic: d.dayTopic, nightTopic: d.nightTopic }; drawTopics(); log("i", "Arcus hours and phones saved"); toast(tr("Saved", "सेव हो गया")); }
   catch (e) { log("e", "Arcus hours save failed: " + (e.code || "") + " " + e.message); toast(denied(e) ? tr("Not allowed. Have the new Firestore rules been pasted?", "अनुमति नहीं है। क्या नए Firestore नियम डाले गए हैं?") : tr("Couldn't save. Check internet.", "सेव नहीं हुआ। इंटरनेट देखें।")); }
   b.disabled = false;
 };
@@ -578,7 +583,8 @@ $("#liveSw").onclick = async () => {
   const on = !live;
   if (on) {
     if (isDirty()) return toast(tr("Save your menu changes first", "पहले मेन्यू के बदलाव सेव करें"));
-    const warn = !itemCount() ? tr("The menu is empty. Show Arcus to students anyway?", "मेन्यू ख़ाली है। फिर भी छात्रों को Arcus दिखाएँ?")
+    const warn = !$("#sDayPhone").value || !$("#sNightPhone").value || !shopTopics.dayTopic ? tr("Handler phone numbers or alert channels aren't saved yet. Show Arcus to students anyway?", "हैंडलर के फ़ोन नंबर या अलर्ट चैनल अभी सेव नहीं हैं। फिर भी छात्रों को Arcus दिखाएँ?")
+      : !itemCount() ? tr("The menu is empty. Show Arcus to students anyway?", "मेन्यू ख़ाली है। फिर भी छात्रों को Arcus दिखाएँ?")
       : sampleOnMenu() ? tr("The menu still has SAMPLE items. Show them to students anyway?", "मेन्यू में अभी SAMPLE आइटम हैं। फिर भी छात्रों को दिखाएँ?")
       : tr("Show Arcus to all students now?", "अभी सभी छात्रों को Arcus दिखाएँ?");
     if (!confirm(warn)) return;

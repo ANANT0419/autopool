@@ -1,6 +1,6 @@
 // AutoPool service worker: works offline, and always fetches the newest app when there is internet.
-const V = "autopool-v6";
-const SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-180.png", "./fonts/inter-latin.woff2"];
+const V = "autopool-v7";
+const SHELL = ["./", "./index.html", "./manifest.json", "./arcus.html", "./arcus.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-180.png", "./fonts/inter-latin.woff2"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k))))); self.clients.claim(); });
 self.addEventListener("fetch", e => {
