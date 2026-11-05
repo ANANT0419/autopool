@@ -13,6 +13,19 @@ AutoPool is a small web app for students at IMT Ghaziabad. It lets them share au
 - Use **free tools only**: Firebase free (Spark) plan, GitHub Pages, ntfy. Nothing that needs a card.
 - `main` is protected. Work on a branch and open a pull request. Mishu merges it.
 
+## Skills and saving usage
+Use these without waiting to be asked:
+- **Small fixes and changes:** use the `ponytail` skill. It doesn't replace the brainstorm step for new ideas.
+- **Before opening any pull request:** run `ponytail-review` and fix or report what it finds.
+- **Before a big launch, like switching Arcus on for students:** run `ponytail-audit`. It only reports, and Mishu decides what to fix.
+- **Don't use `graphify` here.** The project is small enough to read directly.
+
+Keep browser testing light:
+- Read pages as text (`get_page_text`, `read_page`). Take a screenshot only when the look of the page is what's being checked.
+- Group browser steps with `browser_batch`.
+
+Suggest a new session when a new task or Arcus stage starts, because long sessions use up more of the limit.
+
 ## Files
 - `index.html`: the whole app (HTML, CSS and JS in one file). The settings block near the top is `window.AUTOPOOL_CONFIG`.
 - `admin.html`: stats page (sign-ups, rides posted or cancelled, money saved, CSV downloads). Only `anantgarg419@gmail.com` can see it.
